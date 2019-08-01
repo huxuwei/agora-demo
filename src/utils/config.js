@@ -1,7 +1,8 @@
 
 export const videoConfig= {
-  appID: 'dbc792387ee5426b8c5a8964e119da15',
+  appID: '802aaeb154c74cbfa70a2fe393fb6df7',
   mode: 'rtc',
   codec: 'h264',
-  token: '006dbc792387ee5426b8c5a8964e119da15IAA3PA2z907FWkDdyFCP3JHd7gZz9dsHNbBXaEvGe6hRe/2G15IAAAAAEABY2AU+a1FCXQEAAQBrUUJd'
+  token: null,
+  streamType: 1,// 设置大小流0: 高分辨率、高码率的视频大流  ,1: 低分辨率、低码率的视频小流
 }

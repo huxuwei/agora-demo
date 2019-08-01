@@ -47,6 +47,7 @@ export default {
         console.log("用户 " + uid + " 加入直播间成功:" + this.channel);
         this.uid = uid
         this.createSteam()
+        console.log('client:',this.client)
       }, function(err) {
         console.log("加入直播间失败:", err);
       });
@@ -79,11 +80,23 @@ export default {
            * 监听 client.on('stream-added') 事件, 当有人发布音视频流到频道里时，会收到该事件。
            * 收到事件后，在回调中调用 client.subscribe 方法订阅远端音视频流。
            */
+            // _this.client.subscribe(stream, function (err) {
+            //   console.log("Subscribe stream failed222222222", err);
+            // });
+
 
           _this.client.on('stream-added', function (evt) {
             var stream = evt.stream;
-            console.log("New stream added:创建流 " + stream.getId());
-              
+            console.log("New stream added:创建流1111111111111 " + stream.getId());
+            // 设置小流
+            // _this.client.setRemoteVideoStreamType(stream, videoConfig.streamType)
+            // _this.client.setLowStreamParameter({
+            //   width: 120,
+            //   height: 120,
+            //   framerate: 15,
+            //   bitrate: 120,
+            // })
+
             _this.client.subscribe(stream, function (err) {
               console.log("Subscribe stream failed", err);
             });
@@ -94,8 +107,12 @@ export default {
             console.log("订阅远程流成功: " + remoteStream.getId());
             _this.remoteStreamDoMID = 'agora_remote' + remoteStream.getId()
             remoteStream.play(_this.remoteStreamDoMID);
-
-            
+          
+          // _this.client.unpublish(stream, function(err) {
+          //     console.log(err);
+          //     //……
+          // })
+             
           })
         }, function (err) {
           console.log("getUserMedia failed", err);
@@ -105,7 +122,8 @@ export default {
           // var stream = evt.stream;
             var uid = evt.uid;
           console.log("离开房间 ", uid);
-          document.getElementById('agora_remote' + uid).remove()
+          let dom = document.getElementById('agora_remote' + uid)
+          dom&& dom.remove()
           //……
       });
 
