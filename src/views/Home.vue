@@ -3,7 +3,7 @@
     <input type="text" v-model="channel">
     <button @click="join">进入</button>
     <button @click="leaveRoom">离开</button>
-    <div class="video" id="agora_local"></div>
+    <div  id="agora_local"></div>
     <div class="video" :id="remoteStreamDoMID"></div>
   </div>
 </template>
@@ -43,39 +43,15 @@ export default {
        * @param channel：频道名称。
        * @param uid 用户的 ID， 整数，需保证唯一性, 如果不指定，即用户 ID 设置为 null，回调会返回一个服务器分配的 uid。
        */
+      let _this = this
       this.client.join(videoConfig.token, this.channel, null, (uid)=> {
         console.log("用户 " + uid + " 加入直播间成功:" + this.channel);
         this.uid = uid
         this.createSteam()
         console.log('client:',this.client)
-      }, function(err) {
-        console.log("加入直播间失败:", err);
-      });
-    },
-    // 创建音视频流
-    // 初始化音视频流
-    createSteam() {
-      let _this = this
-      var localStream = AgoraRTC.createStream({
-          streamID: _this.uid,
-          audio: true,
-          video: true,
-          screen: false}
-      );
-      localStream.init(function() {
-          console.log("初始化流成功,播放本地流");
-          localStream.play('agora_local');
 
-          // 发布本地音视频流
-          _this.client.publish(localStream, function (err) {
-            console.log("Publish local stream error:发布本地音视频流错误 " + err);
-          });
 
-          _this.client.on('stream-published', function (evt) {
-            console.log("Publish local stream successfully,发布本地音视频流成功");
-          });
-
-          /**
+         /**
            * 订阅远端音视频
            * 监听 client.on('stream-added') 事件, 当有人发布音视频流到频道里时，会收到该事件。
            * 收到事件后，在回调中调用 client.subscribe 方法订阅远端音视频流。
@@ -114,6 +90,34 @@ export default {
           // })
              
           })
+      }, function(err) {
+        console.log("加入直播间失败:", err);
+      });
+    },
+    // 创建音视频流
+    // 初始化音视频流
+    createSteam() {
+      let _this = this
+      var localStream = AgoraRTC.createStream({
+          streamID: _this.uid,
+          audio: true,
+          video: true,
+          screen: false}
+      );
+      localStream.init(function() {
+          console.log("初始化流成功,播放本地流");
+          localStream.play('agora_local');
+
+          // 发布本地音视频流
+          _this.client.publish(localStream, function (err) {
+            console.log("Publish local stream error:发布本地音视频流错误 " + err);
+          });
+
+          _this.client.on('stream-published', function (evt) {
+            console.log("Publish local stream successfully,发布本地音视频流成功");
+          });
+
+         
         }, function (err) {
           console.log("getUserMedia failed", err);
         });
@@ -139,13 +143,13 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.agora_local{
-  width: 800px;
-  height: 400px;
+#agora_local{
+  width: 400px;
+  height: 300px;
 }
 .video{
-  width: 800px;
-  height: 400px;
+  width: 200px;
+  height: 100px;
 }
 </style>
 
