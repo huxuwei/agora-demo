@@ -10,10 +10,10 @@
       <g-icon class="icon" icon="iconellipse"></g-icon>
     </el-button>
     <el-button size='small' type="text"  @click="changeTool('eraser')">
-      <g-icon class="icon" icon="iconeraser"></g-icon>
+      <g-icon class="icon" icon="iconeraser1"></g-icon>
     </el-button>
     <el-button size='small' type="text"  @click="changeTool('text')">
-      <g-icon class="icon" icon="icontext"></g-icon>
+      <g-icon class="icon" icon="icontext1"></g-icon>
     </el-button>
   </div>
 </template>

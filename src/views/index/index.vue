@@ -5,13 +5,13 @@
         <div>
           <el-input class="room-input" 
           placeholder="房间号" v-model="room"></el-input>
-        <el-button class="room-join" @click="create">创建房间</el-button>
+        <el-button class="room-join" @click="create">加入房间</el-button>
         </div>
-        <div style="margin-top:10px;">
+        <!-- <div style="margin-top:10px;">
           <el-input class="room-input" 
           placeholder="房间号" v-model="roomJoin"></el-input>
         <el-button class="room-join" @click="join">加入房间</el-button>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="page-box-right"></div>
@@ -25,7 +25,7 @@ export default {
     return {
       room: '',
       roomJoin: '',
-      roomInfo: ''
+      roomInfo: {}
     }
   },
   methods: {
@@ -34,7 +34,13 @@ export default {
         console.log('res',res.data)
         this.roomInfo = res.data
         this.$store.commit('SET_roomInfo', this.roomInfo)
-        this.$router.push('/home')
+        this.$router.push({
+          path: 'home',
+          query: {
+            uuid: this.roomInfo.uuid,
+            roomName: this.roomInfo.name
+          }
+        })
       })
       
     },

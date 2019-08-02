@@ -20,6 +20,7 @@
 import AgoraRTC from 'agora-rtc-sdk'
 import {videoConfig} from '@/utils/config.js'
 import whiteJoin from '@/views/white/whiteJoin'
+import http from '@/utils/request'
 export default {
   name: 'home',
   components: {whiteJoin},
@@ -33,11 +34,12 @@ export default {
   },
   created() {
     this.init()
+    this.recordVideo()
   },
   computed: {
     channel() {
-      return this.$store.state.roomInfo.name
-    }
+      return this.$route.query.roomName
+    },
   },
   methods: {
     // 初始化 Client 对象
@@ -154,7 +156,23 @@ export default {
       }, function (err) {
         console.log("Leave channel failed");
       });
+    },
+
+    // 录制视频
+    recordVideo() {
+      axios({
+        url: videoConfig.acquireURL,
+        methods: 'post',
+        data: {
+          cname: this.channel,
+          uid: 8888,
+          clientRequest: {}
+        }
+      }).then(res=>{
+
+      })
     }
+
   }
 }
 </script>

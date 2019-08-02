@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     uuid() {
-      return this.$store.state.roomInfo.uuid
+      return  this.$route.query.uuid
     }
   },
   methods: {
