@@ -2,9 +2,16 @@
   <div class="page-box">
     <div class="page-box-left">
       <div class="page-box-left-mid">
-        <el-input class="room-input" 
+        <div>
+          <el-input class="room-input" 
           placeholder="房间号" v-model="room"></el-input>
-        <el-button class="room-join" @click="join">进入房间</el-button>
+        <el-button class="room-join" @click="create">创建房间</el-button>
+        </div>
+        <div style="margin-top:10px;">
+          <el-input class="room-input" 
+          placeholder="房间号" v-model="roomJoin"></el-input>
+        <el-button class="room-join" @click="join">加入房间</el-button>
+        </div>
       </div>
     </div>
     <div class="page-box-right"></div>
@@ -12,16 +19,28 @@
 </template>
 
 <script>
+import http from '@/utils/request'
 export default {
   data() {
     return {
-      room: ''
+      room: '',
+      roomJoin: '',
+      roomInfo: ''
     }
   },
   methods: {
+    create() {
+      http.get('room',{name:this.room}).then(res=>{
+        console.log('res',res.data)
+        this.roomInfo = res.data
+        this.$store.commit('SET_roomInfo', this.roomInfo)
+        this.$router.push('/home')
+      })
+      
+    },
     join() {
-      this.$store.commit('SET_videoRoom', this.room)
-      this.$router.push('/home')
+      // this.$store.commit('SET_roomInfo', this.roomJoin)
+      // this.$router.push('/home')
     }
   },
 }
@@ -47,6 +66,12 @@ export default {
       width: 360px;
       height: 320px;
       box-shadow: 0 0 16px #e7eaee;
+      >div{
+        display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      }
       .room-input{
         width: 200px;
       }

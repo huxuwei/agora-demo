@@ -4,6 +4,7 @@
 
 <script>
 import {whiteConfig} from '@/utils/config.js'
+// import WhiteWebSdk  from 'white-web-sdk'
 export default {
   data() {
     return {

@@ -8,8 +8,8 @@ export default new Router({
     {
       path: '/',
       name: 'index',
-      // component: () => import('@/views/index')
-      component: () => import('@/views/white')
+      component: () => import('@/views/index')
+      // component: () => import('@/views/white')
     },
     {
       path: '/home',

@@ -5,11 +5,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    videoRoom: ''
+    roomInfo: {}
   },
   mutations: {
-    SET_videoRoom: (state, room) =>{
-      state.videoRoom = room
+    SET_roomInfo: (state, roomInfo) =>{
+      state.roomInfo = roomInfo
     }
   },
   actions: {

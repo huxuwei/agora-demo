@@ -1,21 +1,28 @@
 <template>
-  <div class="home">
-    <input type="text" v-model="channel">
-    <!-- <button @click="join">进入</button> -->
-    <button @click="leaveRoom">离开</button>
-    <white></white>
-    <div  id="agora_local"></div>
-    <div class="video" :id="remoteStreamDoMID"></div>
+  <div class="room-page">
+    <!-- <div class="room-page-header">
+      <input type="text" v-model="channel">
+      <button @click="leaveRoom">离开</button>
+    </div> -->
+    <div class="room-page-main">
+      <div class="room-page-left">
+        <whiteJoin></whiteJoin>
+      </div>
+      <div class="videoWrap">
+        <div id="agora_local"></div>
+        <div class="video" :id="remoteStreamDoMID"></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import AgoraRTC from 'agora-rtc-sdk'
 import {videoConfig} from '@/utils/config.js'
-import White from '@/views/white'
+import whiteJoin from '@/views/white/whiteJoin'
 export default {
   name: 'home',
-  components: {White},
+  components: {whiteJoin},
   data() {
     return {
       // channel: '333',
@@ -29,7 +36,7 @@ export default {
   },
   computed: {
     channel() {
-      return this.$store.state.videoRoom
+      return this.$store.state.roomInfo.name
     }
   },
   methods: {
@@ -152,13 +159,26 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.room-page{
+  height: 100vh;
+  .room-page-main{
+    display: flex;
+    .room-page-left{
+      flex-basis: 80%;
+      height: 100vh;
+    }
+  }
+  
+}
 #agora_local{
   width: 400px;
   height: 300px;
+  background: red;
 }
 .video{
   width: 200px;
   height: 100px;
+  background: yellowgreen;
 }
 </style>
 

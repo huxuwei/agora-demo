@@ -1,0 +1,102 @@
+<template>
+    <div class="white-wrap">
+      <div class="wrap" ref="whiteWrap"></div>
+      <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
+    </div>
+</template>
+
+<script>
+import {whiteConfig} from '@/utils/config.js'
+import WhiteTool from './tools'
+export default {
+  components: {WhiteTool},
+  data() {
+    return {
+      room: {}
+    }
+  },
+  mounted() {
+    document.body.style.overflow = "hidden";
+    window.addEventListener('resize', ()=>{
+      if(this.room){
+        console.log('resize',this.room.refreshViewSize)
+        this.room.refreshViewSize()
+      }
+    })
+    this.init()
+  },
+  computed: {
+    uuid() {
+      return this.$store.state.roomInfo.uuid
+    }
+  },
+  methods: {
+    init() {
+      const that = this
+      var sdkToken = whiteConfig.token;
+      var url = `https://cloudcapiv4.herewhite.com/room/join?token=${sdkToken}&uuid=${this.uuid}`;
+      var requestInit = {
+          method: 'POST',
+          headers: {
+              "content-type": "application/json",
+          },
+          body: JSON.stringify({
+              name: '我的第一个 White 房间',
+              limit: 4, // 房间人数限制
+          }),
+      };
+
+      // 请求加入房间
+        // 请求创建房间（网络请求部分逻辑，请在服务器实现）
+        fetch(url, requestInit).then(function(response) {
+            // Step1: 服务器返回进入房间的秘钥 roomToken
+            return response.json();
+        }).then(function(json) {
+            // Step2: 加入房间
+            return that.initAndJoinRoom(json);
+        }).then(function(room) {
+            // Step3: 加入成功后想白板绑定到指定的 dom 中
+          room.bindHtmlElement(that.$refs.whiteWrap)
+          room.refreshViewSize()
+          that.room = room
+        }).catch(function(err) {
+            console.log(err);
+        });
+
+     
+    },
+    initAndJoinRoom (json) {
+      // 初始化 SDK，并且调用其成员方法 joinRoom
+      var whiteWebSdk = new WhiteWebSdk();
+      return whiteWebSdk.joinRoom({
+          uuid: this.uuid,
+          roomToken: json.msg.roomToken,
+      });
+    },
+    changeTool(val) {
+      this.room.setMemberState({
+        currentApplianceName: val,
+    });
+    }
+  },
+}
+</script>
+
+<style lang="less" scoped>
+.white-wrap{
+  position: relative;
+  height: 100%;
+  .wrap{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(241, 243, 244);
+  }
+  .white-tools{
+    position: absolute;
+    top: 20px;
+    left:50%;
+    transform: translateX(-50%);
+  }
+}
+
+</style>
