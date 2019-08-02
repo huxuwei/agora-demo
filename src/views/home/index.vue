@@ -1,8 +1,9 @@
 <template>
   <div class="home">
     <input type="text" v-model="channel">
-    <button @click="join">进入</button>
+    <!-- <button @click="join">进入</button> -->
     <button @click="leaveRoom">离开</button>
+    <white></white>
     <div  id="agora_local"></div>
     <div class="video" :id="remoteStreamDoMID"></div>
   </div>
@@ -11,11 +12,13 @@
 <script>
 import AgoraRTC from 'agora-rtc-sdk'
 import {videoConfig} from '@/utils/config.js'
+import White from '@/views/white'
 export default {
   name: 'home',
+  components: {White},
   data() {
     return {
-      channel: '333',
+      // channel: '333',
       client: {},
       uid: 0,
       remoteStreamDoMID : ''
@@ -24,13 +27,19 @@ export default {
   created() {
     this.init()
   },
+  computed: {
+    channel() {
+      return this.$store.state.videoRoom
+    }
+  },
   methods: {
     // 初始化 Client 对象
     init() {
       let {appID, mode, codec} = videoConfig
       this.client = AgoraRTC.createClient({mode, codec});
-      this.client.init( appID, function () {
+      this.client.init( appID,  ()=> {
         console.log("AgoraRTC client 初始化成功");
+        this.join()
       }, function (err) {
         console.log("AgoraRTC client 初始化失败:", err);
       });
