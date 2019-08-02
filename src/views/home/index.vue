@@ -173,12 +173,12 @@ export default {
 #agora_local{
   width: 400px;
   height: 300px;
-  background: red;
+  // background: red;
 }
 .video{
   width: 200px;
   height: 100px;
-  background: yellowgreen;
+  // background: yellowgreen;
 }
 </style>
 
