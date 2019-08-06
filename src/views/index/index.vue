@@ -4,14 +4,10 @@
       <div class="page-box-left-mid">
         <div>
           <el-input class="room-input" 
-          placeholder="房间号" v-model="room"></el-input>
-        <el-button class="room-join" @click="create">加入房间</el-button>
+            placeholder="房间号" v-model="room"></el-input>
+          <el-button class="room-join" @click="create">加入房间</el-button>
+          <el-button class="room-join" @click="replay">回放</el-button>
         </div>
-        <!-- <div style="margin-top:10px;">
-          <el-input class="room-input" 
-          placeholder="房间号" v-model="roomJoin"></el-input>
-        <el-button class="room-join" @click="join">加入房间</el-button>
-        </div> -->
       </div>
     </div>
     <div class="page-box-right"></div>
@@ -25,20 +21,27 @@ export default {
     return {
       room: '',
       roomJoin: '',
-      roomInfo: {}
+      roomInfo: {},
+      uuid: ''
     }
   },
   methods: {
     create() {
-      http.get('room',{name:this.room}).then(res=>{
+
+      http.get('roomName',{name:this.room}).then(res=>{
         console.log('res',res.data)
-        this.roomInfo = res.data
+        let {herewhite, agora  } = res.data
+        this.roomInfo = {
+          uuid: herewhite.uuid,
+          roomName: agora.name
+        }
+
         this.$store.commit('SET_roomInfo', this.roomInfo)
         this.$router.push({
           path: 'home',
           query: {
             uuid: this.roomInfo.uuid,
-            roomName: this.roomInfo.name
+            roomName: this.roomInfo.roomName
           }
         })
       })
@@ -47,6 +50,32 @@ export default {
     join() {
       // this.$store.commit('SET_roomInfo', this.roomJoin)
       // this.$router.push('/home')
+    },
+    replay() {
+      http.get('roomInfo',{name:this.room}).then(res=>{
+        // console.log('res',res.data)
+        let {roomToken, uuid  } = res.data
+        // this.roomInfo = {
+        //   uuid: herewhite.uuid,
+        //   roomName: agora.name
+        // }
+
+        this.$store.commit('SET_roomInfo', this.roomInfo)
+        this.$router.push({
+          path: 'replay',
+          query: {
+            uuid,roomToken
+            // roomName: this.roomInfo.name,
+            // roomToken: 
+          }
+        })
+      })
+      // this.$router.push({
+      //   path: '/replay',
+      //   query: {
+      //     uuid: this.uuid,
+      //   }
+      // })
     }
   },
 }

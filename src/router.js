@@ -16,5 +16,10 @@ export default new Router({
       name: 'home',
       component: () => import('@/views/home')
     },
+    {
+      path: '/replay',
+      name: 'replay',
+      component: () => import('@/views/replay')
+    }
   ]
 })

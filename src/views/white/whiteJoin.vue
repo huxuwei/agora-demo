@@ -2,12 +2,15 @@
     <div class="white-wrap">
       <div class="wrap" ref="whiteWrap"></div>
       <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
+      <el-button @click="ended">下课</el-button>
     </div>
 </template>
 
 <script>
 import {whiteConfig} from '@/utils/config.js'
 import WhiteTool from './tools'
+import http from '@/utils/request'
+import axios from 'axios'
 export default {
   components: {WhiteTool},
   data() {
@@ -77,6 +80,19 @@ export default {
       this.room.setMemberState({
         currentApplianceName: val,
     });
+    },
+    ended() {
+      // http.get('roomStop',{uuid: this.$route.query.uuid}).then(res=>{
+
+      // })
+      axios({
+        url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
+        method: 'POST',
+        data: {
+          ban: true,
+          uuid: this.uuid
+        }
+      })
     }
   },
 }
@@ -88,7 +104,7 @@ export default {
   height: 100%;
   .wrap{
     width: 100%;
-    height: 100%;
+    height: 90%;
     background-color: rgb(241, 243, 244);
   }
   .white-tools{

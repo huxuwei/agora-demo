@@ -83,7 +83,7 @@ export default {
 <style lang="less" scoped>
 .wrap{
   width: 100%;
-  height: 300px;
+  height: 100%;
   background-color: rgb(241, 243, 244);
 }
 </style>
