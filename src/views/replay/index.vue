@@ -11,7 +11,9 @@ import videojs from 'video.js'
 import "video.js/dist/video-js.css";
 export default {
   mounted() {
-    this.replay()
+    this.$nextTick(()=>{
+      this.replay()
+    })
   },
   methods: {
     replay() {
@@ -31,7 +33,16 @@ export default {
       //     // 使用该 API 后，服务器截屏时，会使用原始图片地址
       });
       
-         
+      var playerOptions = {controls: {
+        "play": "playToggle",
+        "volume": "volumePanel",
+        "seekbar": "progressControl",
+        "timer": "remainingTimeDisplay",
+        "playbackrates": "playbackRateMenuButton",
+        "fullscreen": "fullscreenToggle",
+      }, preload: "auto"};
+    
+
       whiteWebSdk.replayRoom({
           room: roomUUID,
           roomToken: roomToken,
@@ -41,9 +52,7 @@ export default {
       }).then((player)=> {
           // 获取到 player 实例
           // 与 room 调用类似，与获取到 player 实例后，你需要将 player 绑定到 HTML 的 div 上。
-          var playerOptions = {controls: false, preload: "auto"};
-          var video = videojs(this.$refs.videoPlayer, playerOptions);
-
+          videojs(this.$refs.videoPlayer, playerOptions);
           player.bindHtmlElement(this.$refs.whiteboard);
           player.play()
       })
