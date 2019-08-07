@@ -3,6 +3,7 @@
       <div class="wrap" ref="whiteWrap"></div>
       <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
       <el-button @click="ended">下课</el-button>
+      <!-- <el-button @click="pptShow">ppt</el-button> -->
     </div>
 </template>
 
@@ -15,7 +16,8 @@ export default {
   components: {WhiteTool},
   data() {
     return {
-      room: {}
+      room: {},
+      whiteWebSdk: {}
     }
   },
   mounted() {
@@ -70,8 +72,8 @@ export default {
     },
     initAndJoinRoom (json) {
       // 初始化 SDK，并且调用其成员方法 joinRoom
-      var whiteWebSdk = new WhiteWebSdk();
-      return whiteWebSdk.joinRoom({
+      this.whiteWebSdk = new WhiteWebSdk();
+      return this.whiteWebSdk.joinRoom({
           uuid: this.uuid,
           roomToken: json.msg.roomToken,
       });
@@ -82,9 +84,6 @@ export default {
     });
     },
     ended() {
-      // http.get('roomStop',{uuid: this.$route.query.uuid}).then(res=>{
-
-      // })
       axios({
         url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
         method: 'POST',
@@ -93,6 +92,18 @@ export default {
           uuid: this.uuid
         }
       })
+    },
+    pptShow() {
+      //之前初始化的 sdk 实例，roomToken 创建房间时，具体房间的 roomToken，此处作为鉴权使用。
+      console.log('wqwe',this.whiteWebSdk.pptConverter)
+      var pptConverter = this.whiteWebSdk.pptConverter(this.$store.state.roomInfo.roomToken);
+      pptConverter.convert({
+        url: 'staticConvert/b4b22aae53894153b4b5406040ab458d/2.png',
+        kind: "dynamic",
+      }).then(function(result) {
+        // scenes 就是用来创建 pptx 对应的场景的描述信息
+        var scenes = result.scenes;
+      });
     }
   },
 }

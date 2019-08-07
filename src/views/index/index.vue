@@ -33,7 +33,8 @@ export default {
         let {herewhite, agora  } = res.data
         this.roomInfo = {
           uuid: herewhite.uuid,
-          roomName: agora.name
+          roomName: agora.name,
+          roomToken: herewhite.roomToken
         }
 
         this.$store.commit('SET_roomInfo', this.roomInfo)
