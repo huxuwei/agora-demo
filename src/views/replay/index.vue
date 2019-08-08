@@ -42,12 +42,12 @@ export default {
         "fullscreen": "fullscreenToggle",
       }, preload: "auto"};
     
-
+      // videojs(this.$refs.videoPlayer, playerOptions);
       whiteWebSdk.replayRoom({
           room: roomUUID,
           roomToken: roomToken,
           // beginTimestamp: 1564996102002,
-          mediaURL: 'http://101.132.242.122:8097/20190806/qwe_081256_434037099/0_20190806081256675.mp4',
+          // mediaURL: 'http://101.132.242.122:8097/20190806/qwe_081256_434037099/0_20190806081256675.mp4',
           // duration: duration,
       }).then((player)=> {
           // 获取到 player 实例

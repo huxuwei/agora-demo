@@ -6,6 +6,7 @@ module.exports = {
     // port: 8080,
     proxy: {
       '/room': {//代理api
+        
         // target: "http://192.168.3.79:8091",//服务器api地址
         target: "http://101.132.242.122:8091",//服务器api地址
         changeOrigin: true,//是否跨域

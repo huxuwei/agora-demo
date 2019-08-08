@@ -1,129 +1,219 @@
 <template>
-    <div class="white-wrap">
-      <div class="wrap" ref="whiteWrap"></div>
-      <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
+  <div class="white-wrap">
+    <div class="wrap" ref="whiteWrap"></div>
+    <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
+    <template v-if="teachRole">
+      <el-button @click="start">上课</el-button>
       <el-button @click="ended">下课</el-button>
-      <!-- <el-button @click="pptShow">ppt</el-button> -->
-    </div>
+      <el-button @click="pptShow">ppt</el-button>
+      <el-button @click="pptPre">上一页</el-button>
+      <el-button @click="pptNext">下一页</el-button>
+      <el-button @click="createWhite">新建白板</el-button>
+      <el-button @click="whiteListVisible = !whiteListVisible">当前场景信息</el-button>
+    </template>
+    <!-- <el-button @click="setViewMode">设置成老师</el-button>
+    <el-button @click="readOnly">设置成学生</el-button> -->
+    
+    <white-list v-if="whiteListVisible"></white-list>
+  </div>
 </template>
 
 <script>
-import {whiteConfig} from '@/utils/config.js'
-import WhiteTool from './tools'
-import http from '@/utils/request'
-import axios from 'axios'
+import { whiteConfig } from "@/utils/config.js";
+import WhiteTool from "./tools";
+import http from "@/utils/request";
+import axios from "axios";
+import { ViewMode } from "white-web-sdk";
+import WhiteList from "./whiteList";
+var n = 0;
 export default {
-  components: {WhiteTool},
+  components: { WhiteTool, WhiteList },
   data() {
     return {
       room: {},
-      whiteWebSdk: {}
-    }
+      whiteWebSdk: {},
+      // uuid: "",
+      whiteListVisible: false
+    };
   },
   mounted() {
     document.body.style.overflow = "hidden";
-    window.addEventListener('resize', ()=>{
-      if(this.room){
-        console.log('resize',this.room.refreshViewSize)
-        this.room.refreshViewSize()
+    window.addEventListener("resize", () => {
+      if (this.room) {
+        console.log("resize", this.room.refreshViewSize);
+        this.room.refreshViewSize();
       }
-    })
-    this.init()
+    });
+    this.init();
   },
   computed: {
     uuid() {
-      return  this.$route.query.uuid
+      return localStorage.getItem("uuid");
+    },
+    name() {
+      return localStorage.getItem("room");
+    },
+    role() {
+      return localStorage.getItem("role");
+    },
+    roomToken() {
+      return localStorage.getItem("roomToken");
+    },
+    teachRole() {
+      return this.role == 1;
     }
   },
+  provide() {
+    return {
+      whiteJoin: this
+    };
+  },
   methods: {
+    getRoomInfo() {
+      http.get("roomInfo", { name: this.name }).then(res => {
+        let { status } = res.data;
+        if (status == 1) {
+        }
+      });
+    },
     init() {
-      const that = this
+      const that = this;
       var sdkToken = whiteConfig.token;
       var url = `https://cloudcapiv4.herewhite.com/room/join?token=${sdkToken}&uuid=${this.uuid}`;
       var requestInit = {
-          method: 'POST',
-          headers: {
-              "content-type": "application/json",
-          },
-          body: JSON.stringify({
-              name: '我的第一个 White 房间',
-              limit: 4, // 房间人数限制
-          }),
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          name: "我的第一个 White 房间",
+          limit: 4 // 房间人数限制
+        })
       };
 
       // 请求加入房间
-        // 请求创建房间（网络请求部分逻辑，请在服务器实现）
-        fetch(url, requestInit).then(function(response) {
-            // Step1: 服务器返回进入房间的秘钥 roomToken
-            return response.json();
-        }).then(function(json) {
-            // Step2: 加入房间
-            return that.initAndJoinRoom(json);
-        }).then(function(room) {
-            // Step3: 加入成功后想白板绑定到指定的 dom 中
-          room.bindHtmlElement(that.$refs.whiteWrap)
-          room.refreshViewSize()
-          that.room = room
-        }).catch(function(err) {
-            console.log(err);
+      // 请求创建房间（网络请求部分逻辑，请在服务器实现）
+      fetch(url, requestInit)
+        .then(function(response) {
+          // Step1: 服务器返回进入房间的秘钥 roomToken
+          return response.json();
+        })
+        .then(function(json) {
+          // Step2: 加入房间
+          return that.initAndJoinRoom(json);
+        })
+        .then(function(room) {
+          // Step3: 加入成功后想白板绑定到指定的 dom 中
+          room.bindHtmlElement(that.$refs.whiteWrap);
+          room.refreshViewSize();
+          that.room = room;
+          console.log('that.readOnly',that.readOnly)
+          that.readOnly();
+        })
+        .catch(function(err) {
+          console.log(err);
         });
-
-     
     },
-    initAndJoinRoom (json) {
+    initAndJoinRoom(json) {
       // 初始化 SDK，并且调用其成员方法 joinRoom
       this.whiteWebSdk = new WhiteWebSdk();
       return this.whiteWebSdk.joinRoom({
-          uuid: this.uuid,
-          roomToken: json.msg.roomToken,
+        uuid: this.uuid,
+        roomToken: json.msg.roomToken
       });
     },
     changeTool(val) {
       this.room.setMemberState({
-        currentApplianceName: val,
-    });
+        currentApplianceName: val
+      });
+    },
+    start() {
+      let startTime = new Date().getTime();
+      http.get("roomStart", { name: this.name, startTime }).then(res => {
+      });
     },
     ended() {
       axios({
         url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
-        method: 'POST',
+        method: "POST",
         data: {
           ban: true,
           uuid: this.uuid
         }
-      })
+      });
     },
     pptShow() {
       //之前初始化的 sdk 实例，roomToken 创建房间时，具体房间的 roomToken，此处作为鉴权使用。
-      console.log('wqwe',this.whiteWebSdk.pptConverter)
-      var pptConverter = this.whiteWebSdk.pptConverter(this.$store.state.roomInfo.roomToken);
+      console.log("wqwe", this.whiteWebSdk.pptConverter);
+      var pptConverter = this.whiteWebSdk.pptConverter(this.roomToken);
       pptConverter.convert({
-        url: 'staticConvert/b4b22aae53894153b4b5406040ab458d/2.png',
-        kind: "dynamic",
-      }).then(function(result) {
-        // scenes 就是用来创建 pptx 对应的场景的描述信息
-        var scenes = result.scenes;
-      });
+          url: "https://live.boluozaixian.net/ppt.ppt",
+          kind: "static"
+        })
+        .then(result => {
+          // scenes 就是用来创建 pptx 对应的场景的描述信息
+          var scenes = result.scenes;
+
+          // 为这个 ppt 文件起一个独一无二的名字。
+          // 如果你的白板中可能出现多个 ppt，这样有助于管理它们。
+          var pptName = "dynamic";
+
+          // // 将 ppt 对应的场景插入白板
+          this.room.putScenes("/" + pptName, scenes);
+          console.log("pppp:", "/" + pptName, scenes);
+          // 切换当前场景到 ppt 的第一页，这样才能显示出来
+          this.room.setScenePath("/" + pptName + "/" + scenes[0].name);
+        });
+    },
+    pptPre() {
+      console.log("上一页");
+      this.room.pptPreviousStep(); // 上一页（上一步）
+    },
+    pptNext() {
+      console.log("下一页");
+      this.room.pptNextStep(); // 下一页（下一步）
+    },
+    createWhite() {
+      n++;
+      var name = n;
+      // 创建场景
+      this.room.putScenes("/phy", [{ name }]);
+      // 切换场景
+      this.room.setScenePath("/phy/" + name);
+      // 当前场景的状态
+      let scenceState = this.room.state.sceneState;
+      console.log("scenceState", scenceState);
+    },
+    setViewMode() {
+      // console.log('111', this.whiteWebSdk.ViewMode, this.whiteWebSdk)
+      console.log(111, ViewMode);
+      this.room.setViewMode(ViewMode.Broadcaster);
+    },
+    readOnly() {
+      //只读，再设置为跟随
+      if (this.role == 2) {
+        this.room.disableOperations = true;
+        this.room.setViewMode(ViewMode.Follower);
+      }
     }
-  },
-}
+  }
+};
 </script>
 
 <style lang="less" scoped>
-.white-wrap{
+.white-wrap {
   position: relative;
   height: 100%;
-  .wrap{
+  .wrap {
     width: 100%;
     height: 90%;
     background-color: rgb(241, 243, 244);
   }
-  .white-tools{
+  .white-tools {
     position: absolute;
     top: 20px;
-    left:50%;
+    left: 50%;
     transform: translateX(-50%);
   }
 }
-
 </style>

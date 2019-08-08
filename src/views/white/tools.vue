@@ -1,7 +1,10 @@
 <template>
   <div class="tools-wrap">
+     <el-button size='small' type='text'  @click="changeTool('selector')">
+      <g-icon class="icon" color='rgb(236, 52, 85)' icon="selector"></g-icon>
+    </el-button>
     <el-button size='small' type='text'  @click="changeTool('pencil')">
-      <g-icon class="icon" icon="iconpencil"></g-icon>
+      <g-icon class="icon" color='rgb(236, 52, 85)' icon="iconpencil"></g-icon>
     </el-button>
     <el-button size='small' type="text"  @click="changeTool('rectangle')">
       <g-icon class="icon" icon="iconrectangle"></g-icon>
@@ -37,6 +40,8 @@ export default {
   background-color: #ffffff;
   border-radius: 10px;
   width: 400px;
-
+  .active{
+    color: rgb(236, 52, 85);
+  }
 }
 </style>

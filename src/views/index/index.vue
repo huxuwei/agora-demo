@@ -5,8 +5,12 @@
         <div>
           <el-input class="room-input" 
             placeholder="房间号" v-model="room"></el-input>
+          <div class="role">
+            <el-radio v-model="role" :label="1">老师</el-radio>
+            <el-radio v-model="role" :label="2">学生</el-radio>
+          </div>
           <el-button class="room-join" @click="create">加入房间</el-button>
-          <el-button class="room-join" @click="replay">回放</el-button>
+          <el-button class="room-join" @click="replay">回放视频</el-button>
         </div>
       </div>
     </div>
@@ -22,35 +26,19 @@ export default {
       room: '',
       roomJoin: '',
       roomInfo: {},
-      uuid: ''
+      uuid: '',
+      role: 1
     }
   },
   methods: {
     create() {
-
-      http.get('roomName',{name:this.room}).then(res=>{
-        console.log('res',res.data)
-        let {herewhite, agora  } = res.data
-        this.roomInfo = {
-          uuid: herewhite.uuid,
-          roomName: agora.name,
-          roomToken: herewhite.roomToken
+      this.$router.push({
+        path: 'home',
+        query: {
+          room: this.room,
+          role: this.role
         }
-
-        this.$store.commit('SET_roomInfo', this.roomInfo)
-        this.$router.push({
-          path: 'home',
-          query: {
-            uuid: this.roomInfo.uuid,
-            roomName: this.roomInfo.roomName
-          }
-        })
       })
-      
-    },
-    join() {
-      // this.$store.commit('SET_roomInfo', this.roomJoin)
-      // this.$router.push('/home')
     },
     replay() {
       http.get('roomInfo',{name:this.room}).then(res=>{
@@ -65,7 +53,7 @@ export default {
         this.$router.push({
           path: 'replay',
           query: {
-            uuid,roomToken
+            uuid,roomToken,
             // roomName: this.roomInfo.name,
             // roomToken: 
           }
@@ -104,9 +92,9 @@ export default {
       box-shadow: 0 0 16px #e7eaee;
       >div{
         display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
       }
       .room-input{
         width: 200px;
@@ -116,6 +104,7 @@ export default {
         margin-top:20px;
         background-color: #5b908e;
         color: #fff;
+        margin-left: 0;
       }
     }
   }
@@ -131,6 +120,9 @@ export default {
     text-align: center;
     background-image: none;
     border: 1px solid transparent;
+  }
+  .role{
+    margin-top: 10px;
   }
 }
 </style>
