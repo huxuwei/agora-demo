@@ -14,7 +14,7 @@
     <!-- <el-button @click="setViewMode">设置成老师</el-button>
     <el-button @click="readOnly">设置成学生</el-button> -->
     
-    <white-list v-if="whiteListVisible"></white-list>
+    <FileList v-if="whiteListVisible"></FileList>
   </div>
 </template>
 
@@ -24,10 +24,10 @@ import WhiteTool from "./tools";
 import http from "@/utils/request";
 import axios from "axios";
 import { ViewMode } from "white-web-sdk";
-import WhiteList from "./whiteList";
+import FileList from "./fileList";
 var n = 0;
 export default {
-  components: { WhiteTool, WhiteList },
+  components: { WhiteTool, FileList },
   data() {
     return {
       room: {},
@@ -107,7 +107,6 @@ export default {
           room.bindHtmlElement(that.$refs.whiteWrap);
           room.refreshViewSize();
           that.room = room;
-          console.log('that.readOnly',that.readOnly)
           that.readOnly();
         })
         .catch(function(err) {

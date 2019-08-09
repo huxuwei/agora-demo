@@ -28,7 +28,7 @@ export default {
   },
   computed: {
     channel() {
-      return this.$route.query.roomName
+      return this.$route.query.room
     },
   },
   methods: {
@@ -36,9 +36,10 @@ export default {
     init() {
       let {appID, mode, codec} = videoConfig
       this.client = AgoraRTC.createClient({mode, codec});
-
+      
       this.client.init( appID,  ()=> {
         console.log("AgoraRTC client 初始化成功");
+        this.$store.commit('SET_client',this.client)
         this.join()
       }, function (err) {
         console.log("AgoraRTC client 初始化失败:", err);
@@ -60,6 +61,17 @@ export default {
         console.log('client:',this.client)
 
 
+        //设置 role（用户角色）。role 分为 “host”（主播）和 “audience”（观众）。
+          this.client.setClientRole("host", function() {
+            console.log("setHost success:设置Host成功");
+          }, function(e) {
+            console.log("setHost failed: 设置Host失败", e);
+          })
+
+          //角色变化的回调
+          this.client.on("client-role-changed", function(evt) {
+            console.log("client-role-changed:完成角色变化", evt.role);
+          });
          /**
            * 订阅远端音视频
            * 监听 client.on('stream-added') 事件, 当有人发布音视频流到频道里时，会收到该事件。
@@ -114,11 +126,13 @@ export default {
           screen: false}
       );
       this.localStream = localStream
+      
       localStream.setVideoProfile("1080p");
       localStream.init(function() {
           console.log("初始化流成功,播放本地流");
           localStream.play('agora_local');
-
+          _this.$store.commit('SET_stream',localStream)
+          
           // 发布本地音视频流
           _this.client.publish(localStream, function (err) {
             console.log("Publish local stream error:发布本地音视频流错误 " + err);

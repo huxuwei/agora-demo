@@ -38,7 +38,7 @@ export default {
     init() {
       http.get("roomName", { name: this.room }).then(res => {
         console.log("res", res.data);
-        let { herewhite, agora } = res.data;
+        let { herewhite, agora , file} = res.data;
         this.roomInfo = {
           uuid: herewhite.uuid,
           name: agora.name,
@@ -48,6 +48,7 @@ export default {
         for (const key in this.roomInfo) {
           localStorage.setItem(key, this.roomInfo[key])
         }
+        this.$store.commit('SET_fileList', file)
         this.initFinish = true
       });
     }
