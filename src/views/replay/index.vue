@@ -47,7 +47,7 @@ export default {
           room: roomUUID,
           roomToken: roomToken,
           // beginTimestamp: 1564996102002,
-          mediaURL: 'http://pvsytwo44.bkt.clouddn.com/732f37103d48dda3852bd59e6896bc27_666.m3u8',
+          mediaURL: 'http://pvsytwo44.bkt.clouddn.com/flv.flv',
           // duration: duration,
       }).then((player)=> {
           // 获取到 player 实例

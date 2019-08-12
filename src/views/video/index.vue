@@ -8,7 +8,7 @@
       v-for="(item, i) in videoDivListSet"
       :key="i"
       :id="item"></div>
-    <div class="video666" :id="remoteStreamDoMID666"></div>
+    <div class="video666" ref="video666" :id="remoteStreamDoMID666"></div>
     <!-- <div class="video666"> -->
       <!-- <div class="video666" 
         v-for="(item, i) in videoDivListSet666"
@@ -123,7 +123,7 @@ export default {
             console.log("订阅远程流成功: " + remoteStream.getId());
             let id = 'agora_remote' + remoteStream.getId()
 
-            if(remoteStream.getId() == 666) {
+            // if(remoteStream.getId() == 666) {
               // _this.$nextTick(()=>{
               //   _this.videoDivList.push(id)
               // })
@@ -131,11 +131,8 @@ export default {
               // _this.$nextTick(()=>{
               //   remoteStream.play(id);
               // })
-              _this.remoteStreamDoMID666 =  'agora_remote' + remoteStream.getId()
-              remoteStream.play(_this.remoteStreamDoMID666);
-              
-              return
-            }
+            //   return
+            // }
             _this.$nextTick(()=>{
               _this.videoDivList.push(id)
             })
