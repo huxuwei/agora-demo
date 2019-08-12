@@ -1,10 +1,12 @@
 <template>
   <div class="file-list-item-wrap">
-    <div class="file-list-item" 
+    <div
+      class="file-list-item"
       v-for="(item,i) in list"
       :key="i"
       :class="{active: i==activeIndex}"
-      @click="choose(item,i)">
+      @click="choose(item,i)"
+    >
       <span>{{item.name}}</span>
     </div>
   </div>
@@ -15,106 +17,107 @@ export default {
   data() {
     return {
       activeIndex: 0,
-      activeURL :'',
-      activeItem: {}
-    }
+      activeURL: "flv.flv",
+      activeItem: {},
+      tempItem: {},
+      tempIndex: -1,
+      firstLoad: true
+    };
   },
-  computed:{
+  computed: {
     client() {
-      return this.$store.state.client
+      return this.$store.state.client;
     },
     stream() {
-      return this.$store.state.stream
+      return this.$store.state.stream;
     },
     list() {
-      return this.$store.getters.fileListMedia
+      return this.$store.getters.fileListMedia;
     }
   },
   mounted() {
-    this.client.on("peer-leave",function () {
-      console.log('停止视频播放')
+
+    this.client.on("peer-leave", ()=> {
+    // this.client.on("liveStreamingStopped", ()=> {
+
+        console.log("停止视频播放");
+
+        this.stream.stopAudioMixing(() => {
+          console.log("停止音频播放");
+          this.stopCallback()
+        })
     })
   },
   methods: {
-    stopMediaPlay() {
-      return new Promise((reslove, reject)=>{
-        this.client.on("peer-leave",function () {
-          reslove()
-          console.log('停止视频播放')
-        })
-      })
-    },
-    stopAudioMixing(){
-      return new Promise((resolve, reject)=>{
-        this.stream.stopAudioMixing(()=>{
-          resolve()
-          console.log('停止音频播放')
-        })
-      })
-    },
-    async choose(item,i) {
-      
-      // this.stream.stopAudioMixing(()=>{
-      //   console.log('停止音频播放')
-      // })
-      
-      if(item.suffix == 'mp3') {
-        await this.stopAudioMixing()
-      }else{
-        this.activeURL && this.client.removeInjectStreamUrl(this.activeURL);
-      }
-      
-      await this.stopMediaPlay()
-      
-      this.activeIndex = i
-      this.activeItem = item
-      this.activeURL = item.url
-      if(item.suffix == 'mp3') {
-        console.log('item.url ',item.url)
-        this.stream.startAudioMixing({
-          playTime: 0,
-          filePath: item.url
-        }, function(error) {
+    stopCallback() {
+      this.activeIndex = this.tempIndex;
+      this.activeItem = this.tempItem;
+      this.activeURL = this.tempItem.url;
+      if (this.tempItem.suffix == "mp3") {
+        console.log("item.url ", this.tempItem.url);
+        this.stream.startAudioMixing(
+          {
+            playTime: 0,
+            filePath: this.tempItem.url
+          },
+          function(error) {
             if (error) {
-                // 错误处理
-                console.log('音频播放错误:'+error)
-                return;
+              // 错误处理
+              console.log("音频播放错误:" + error);
+              return;
             }
-            // 播放成功后的流程
-        });
-      }else{
+          }
+        );
+      } else {
         var InjectStreamConfig = {
-          width: 300,
-          height: 300,
+          width: 0,
+          height: 10,
           videoGop: 30,
           videoFramerate: 15,
           videoBitrate: 400,
           audioSampleRate: 44100,
-          audioChannels: 1,
+          audioChannels: 1
         };
-        this.client.addInjectStreamUrl(item.url, InjectStreamConfig);
+        this.client.addInjectStreamUrl(this.tempItem.url, InjectStreamConfig);
       }
-      
+    },
+    choose(item, i) {
+      this.tempItem = item
+      this.tempIndex = i
+      console.log(item,i)
+      if(this.firstLoad) {
+        this.stopCallback()
+        this.firstLoad = false
+        return
+      }
+      if(this.activeItem.suffix == "mp3"){
+         this.stream.stopAudioMixing(() => {
+          console.log("停止音频播放");
+          this.stopCallback()
+        })
+      }else{
+        this.client.removeInjectStreamUrl(this.activeURL);
+        // this.client.stopLiveStreaming(this.activeURL)
+      }
     }
-  },
-}
+  }
+};
 </script>
 
 <style lang="less" scoped>
-.file-list-item-wrap{
-  .file-list-item{
+.file-list-item-wrap {
+  .file-list-item {
     margin-top: 14px;
     cursor: pointer;
-    >span{
+    > span {
       color: white;
     }
   }
-  .active{
-    >span{
+  .active {
+    > span {
       color: red;
     }
   }
 }
-
 </style>
 

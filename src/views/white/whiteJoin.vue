@@ -5,15 +5,13 @@
     <template v-if="teachRole">
       <el-button @click="start">上课</el-button>
       <el-button @click="ended">下课</el-button>
-      <el-button @click="pptShow">ppt</el-button>
+      <!-- <el-button @click="pptShow">ppt</el-button> -->
       <el-button @click="pptPre">上一页</el-button>
       <el-button @click="pptNext">下一页</el-button>
       <el-button @click="createWhite">新建白板</el-button>
-      <el-button @click="whiteListVisible = !whiteListVisible">当前场景信息</el-button>
+      <el-button @click="showSceneState">当前场景信息</el-button>
+      <el-button @click="whiteListVisible = !whiteListVisible">课件库</el-button>
     </template>
-    <!-- <el-button @click="setViewMode">设置成老师</el-button>
-    <el-button @click="readOnly">设置成学生</el-button> -->
-    
     <FileList v-if="whiteListVisible"></FileList>
   </div>
 </template>
@@ -87,7 +85,7 @@ export default {
         },
         body: JSON.stringify({
           name: "我的第一个 White 房间",
-          limit: 4 // 房间人数限制
+          limit: 6 // 房间人数限制
         })
       };
 
@@ -108,6 +106,10 @@ export default {
           room.refreshViewSize();
           that.room = room;
           that.readOnly();
+          that.$store.commit('SET_whiteRoom', room)
+          that.room.setMemberState({
+            currentApplianceName: 'selector'
+          });
         })
         .catch(function(err) {
           console.log(err);
@@ -116,6 +118,7 @@ export default {
     initAndJoinRoom(json) {
       // 初始化 SDK，并且调用其成员方法 joinRoom
       this.whiteWebSdk = new WhiteWebSdk();
+      this.$store.commit('SET_whiteWebSdk', this.whiteWebSdk)
       return this.whiteWebSdk.joinRoom({
         uuid: this.uuid,
         roomToken: json.msg.roomToken
@@ -146,7 +149,8 @@ export default {
       console.log("wqwe", this.whiteWebSdk.pptConverter);
       var pptConverter = this.whiteWebSdk.pptConverter(this.roomToken);
       pptConverter.convert({
-          url: "https://live.boluozaixian.net/ppt.ppt",
+          // url: "https://live.boluozaixian.net/ppt.ppt",
+          url: 'http://pvsytwo44.bkt.clouddn.com/ppt.ppt',
           kind: "static"
         })
         .then(result => {
@@ -194,6 +198,10 @@ export default {
         this.room.disableOperations = true;
         this.room.setViewMode(ViewMode.Follower);
       }
+    },
+    showSceneState() {
+      let scenceState = this.room.state.sceneState;
+      console.log('scenceState',scenceState)
     }
   }
 };

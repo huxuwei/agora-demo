@@ -8,15 +8,18 @@
         ><span>{{item}}</span></div>
     </header>
     <main class="file-list-main">
-      <file-item ></file-item>
+      <file-item-static v-show="activeIndex == 0"></file-item-static>
+      <file-item v-show="activeIndex == 1"></file-item>
+    
     </main>
   </div>
 </template>
 
 <script>
 import FileItem from './item'
+import FileItemStatic from './fileItem'
 export default {
-  components:{FileItem},
+  components:{FileItem, FileItemStatic},
   inject: ['whiteJoin'],
   data() {
     return {

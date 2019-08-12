@@ -1,10 +1,13 @@
 <template>
   <div>
     <div>
-      <el-button @click="getVideoInfo">视频信息</el-button>
+      <!-- <el-button @click="getVideoInfo">视频信息</el-button> -->
     </div>
     <div id="agora_local"></div>
     <div class="video" :id="remoteStreamDoMID"></div>
+    <div class="video666">
+      <div :id="remoteStreamDoMID666"></div>
+    </div>
   </div>
 </template>
 
@@ -20,6 +23,7 @@ export default {
       client: {},
       uid: 0,
       remoteStreamDoMID : '',
+      remoteStreamDoMID666:'',
       localStream: {}
     }
   },
@@ -102,6 +106,12 @@ export default {
           _this.client.on('stream-subscribed', function (evt) {
             var remoteStream = evt.stream;
             console.log("订阅远程流成功: " + remoteStream.getId());
+            
+            if(remoteStream.getId() == 666) {
+              _this.remoteStreamDoMID666= 'agora_remote' + remoteStream.getId()
+              remoteStream.play(_this.remoteStreamDoMID666);
+              return
+            }
             _this.remoteStreamDoMID = 'agora_remote' + remoteStream.getId()
             remoteStream.play(_this.remoteStreamDoMID);
           
@@ -186,6 +196,19 @@ export default {
   width: 200px;
   height: 100px;
   // background: yellowgreen;
+}
+.video666{
+  width: 100%;
+  height: 100vh;
+  // background: red;
+  position: fixed;
+  top:0vh;
+  left: 0px;
+  z-index: -1;
+  >div{
+    width: 100%;
+    height: 90%;
+  }
 }
 </style>
 
