@@ -4,10 +4,13 @@
       <!-- <el-button @click="getVideoInfo">视频信息</el-button> -->
     </div>
     <div id="agora_local"></div>
-    <div class="video" :id="remoteStreamDoMID"></div>
-    <div class="video666">
-      <div :id="remoteStreamDoMID666"></div>
-    </div>
+    <div class="video" 
+      v-for="(item, i) in videoDivListSet"
+      :key="i"
+      :id="item"></div>
+    <!-- <div class="video666"> -->
+      <!-- <div class="video666" :id="remoteStreamDoMID666"></div> -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -24,7 +27,8 @@ export default {
       uid: 0,
       remoteStreamDoMID : '',
       remoteStreamDoMID666:'',
-      localStream: {}
+      localStream: {},
+      videoDivList: []
     }
   },
   created() {
@@ -34,6 +38,9 @@ export default {
     channel() {
       return this.$route.query.room
     },
+    videoDivListSet() {
+      return  [...new Set(this.videoDivList)]
+    }
   },
   methods: {
     // 初始化 Client 对象
@@ -106,14 +113,22 @@ export default {
           _this.client.on('stream-subscribed', function (evt) {
             var remoteStream = evt.stream;
             console.log("订阅远程流成功: " + remoteStream.getId());
-            
+            let id = 'agora_remote' + remoteStream.getId()
+            // let odiv = document.createElement('div')
+           
+            // odiv.id = 'agora_remote' + remoteStream.getId()
+            // document.body.appendChild(odiv)
             if(remoteStream.getId() == 666) {
-              _this.remoteStreamDoMID666= 'agora_remote' + remoteStream.getId()
-              remoteStream.play(_this.remoteStreamDoMID666);
+              // odiv.className = 'video666'
+              // _this.remoteStreamDoMID666= 'agora_remote' + remoteStream.getId()
+              remoteStream.play(odiv.id);
               return
             }
-            _this.remoteStreamDoMID = 'agora_remote' + remoteStream.getId()
-            remoteStream.play(_this.remoteStreamDoMID);
+            //  odiv.className = 'video'
+            // _this.remoteStreamDoMID = 'agora_remote' + remoteStream.getId()
+            _this.videoDivList.push(id)
+            
+            remoteStream.play(id);
           
           // _this.client.unpublish(stream, function(err) {
           //     console.log(err);
@@ -160,9 +175,13 @@ export default {
         _this.client.on("peer-leave", function(evt) {
           // var stream = evt.stream;
             var uid = evt.uid;
-          console.log("离开房间 ", uid);
+          
           let dom = document.getElementById('agora_remote' + uid)
+          console.log("离开房间 ", uid, dom);
           dom&& dom.remove()
+          _this.videoDivList = _this.videoDivList.filter(item=>{
+            return item !== 'agora_remote' + uid
+          })
           //……
       });
 
@@ -197,18 +216,21 @@ export default {
   height: 100px;
   // background: yellowgreen;
 }
-.video666{
-  width: 100%;
-  height: 100vh;
-  // background: red;
-  position: fixed;
-  top:0vh;
-  left: 0px;
-  z-index: -1;
-  >div{
+
+</style>
+
+<style lang="less">
+  .video666{
     width: 100%;
-    height: 90%;
+    height: 100vh;
+    position: fixed;
+    top:0vh;
+    left: 0px;
+    z-index: 999;
+    // >div{
+    //   width: 100%;
+    //   height: 90%;
+    // }
   }
-}
 </style>
 
