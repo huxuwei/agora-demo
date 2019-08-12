@@ -9,7 +9,10 @@
       :key="i"
       :id="item"></div>
     <!-- <div class="video666"> -->
-      <!-- <div class="video666" :id="remoteStreamDoMID666"></div> -->
+      <div class="video666" 
+        v-for="(item, i) in videoDivListSet666"
+        :key="'a1+'+i"
+        :id="item"></div>
     <!-- </div> -->
   </div>
 </template>
@@ -28,7 +31,8 @@ export default {
       remoteStreamDoMID : '',
       remoteStreamDoMID666:'',
       localStream: {},
-      videoDivList: []
+      videoDivList: [],
+      videoDivList666:[]
     }
   },
   created() {
@@ -40,6 +44,9 @@ export default {
     },
     videoDivListSet() {
       return  [...new Set(this.videoDivList)]
+    },
+    videoDivListSet666(){
+      return  [...new Set(this.videoDivList666)]
     }
   },
   methods: {
@@ -114,18 +121,14 @@ export default {
             var remoteStream = evt.stream;
             console.log("订阅远程流成功: " + remoteStream.getId());
             let id = 'agora_remote' + remoteStream.getId()
-            // let odiv = document.createElement('div')
-           
-            // odiv.id = 'agora_remote' + remoteStream.getId()
-            // document.body.appendChild(odiv)
-            if(remoteStream.getId() == 666) {
-              // odiv.className = 'video666'
-              // _this.remoteStreamDoMID666= 'agora_remote' + remoteStream.getId()
-              remoteStream.play(odiv.id);
-              return
-            }
-            //  odiv.className = 'video'
-            // _this.remoteStreamDoMID = 'agora_remote' + remoteStream.getId()
+
+            // if(remoteStream.getId() == 666) {
+            //   _this.videoDivList666.push(id)
+            //   _this.$nextTick(()=>{
+            //     remoteStream.play(id);
+            //   })
+            //   return
+            // }
             _this.videoDivList.push(id)
             
             remoteStream.play(id);
@@ -176,12 +179,20 @@ export default {
           // var stream = evt.stream;
             var uid = evt.uid;
           
-          let dom = document.getElementById('agora_remote' + uid)
-          console.log("离开房间 ", uid, dom);
-          dom&& dom.remove()
+          // let dom = document.getElementById('agora_remote' + uid)
+          console.log("离开房间 ", 'agora_remote' + uid,);
+          if(uid == 666) {
+            _this.videoDivList666  = _this.videoDivList666.filter(item=>{
+              return item !== 'agora_remote' + uid
+            })  
+            return
+          }
           _this.videoDivList = _this.videoDivList.filter(item=>{
             return item !== 'agora_remote' + uid
           })
+          // console.log(_this.videoDivList)
+          // dom&& dom.remove()
+          
           //……
       });
 
@@ -226,7 +237,7 @@ export default {
     position: fixed;
     top:0vh;
     left: 0px;
-    z-index: 999;
+    z-index: -1;
     // >div{
     //   width: 100%;
     //   height: 90%;
