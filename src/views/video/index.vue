@@ -8,11 +8,12 @@
       v-for="(item, i) in videoDivListSet"
       :key="i"
       :id="item"></div>
+    <div class="video666" :id="remoteStreamDoMID666"></div>
     <!-- <div class="video666"> -->
-      <div class="video666" 
+      <!-- <div class="video666" 
         v-for="(item, i) in videoDivListSet666"
         :key="'a1+'+i"
-        :id="item"></div>
+        :id="item"></div> -->
     <!-- </div> -->
   </div>
 </template>
@@ -122,16 +123,27 @@ export default {
             console.log("订阅远程流成功: " + remoteStream.getId());
             let id = 'agora_remote' + remoteStream.getId()
 
-            // if(remoteStream.getId() == 666) {
-            //   _this.videoDivList666.push(id)
-            //   _this.$nextTick(()=>{
-            //     remoteStream.play(id);
-            //   })
-            //   return
-            // }
-            _this.videoDivList.push(id)
+            if(remoteStream.getId() == 666) {
+              // _this.$nextTick(()=>{
+              //   _this.videoDivList.push(id)
+              // })
+              // // _this.videoDivList666.push(id)
+              // _this.$nextTick(()=>{
+              //   remoteStream.play(id);
+              // })
+              _this.remoteStreamDoMID666 =  'agora_remote' + remoteStream.getId()
+              remoteStream.play(_this.remoteStreamDoMID666);
+              
+              return
+            }
+            _this.$nextTick(()=>{
+              _this.videoDivList.push(id)
+            })
             
-            remoteStream.play(id);
+            
+           setTimeout(()=>{
+              remoteStream.play(id);
+           },1000)
           
           // _this.client.unpublish(stream, function(err) {
           //     console.log(err);
@@ -181,12 +193,12 @@ export default {
           
           // let dom = document.getElementById('agora_remote' + uid)
           console.log("离开房间 ", 'agora_remote' + uid,);
-          if(uid == 666) {
-            _this.videoDivList666  = _this.videoDivList666.filter(item=>{
-              return item !== 'agora_remote' + uid
-            })  
-            return
-          }
+          // if(uid == 666) {
+          //   _this.videoDivList666  = _this.videoDivList666.filter(item=>{
+          //     return item !== 'agora_remote' + uid
+          //   })  
+          //   return
+          // }
           _this.videoDivList = _this.videoDivList.filter(item=>{
             return item !== 'agora_remote' + uid
           })
