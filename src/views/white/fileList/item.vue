@@ -9,6 +9,7 @@
     >
       <span>{{item.name}}</span>
     </div>
+    <!-- <div class="video666" ref="video666" id="agora_remote666"></div> -->
   </div>
 </template>
 
@@ -36,7 +37,25 @@ export default {
     }
   },
   mounted() {
-
+    this.client.on('peer-online', (evt)=>{
+      console.log("peer-online", evt);
+    })
+    this.client.on('first-audio-frame-decode', (evt)=>{
+      // var remoteStream = evt.stream;
+      // console.log("first-audio-frame-decode", remoteStream, remoteStream.getId());
+      // var id = 'agora_remote' + remoteStream.getId()
+      // if(remoteStream.getId() == 666) {
+      //   // _this.$nextTick(()=>{
+      //   //   _this.videoDivList.push(id)
+      //   // })
+      //   // _this.videoDivList666.push(id)
+      //   this.$nextTick(()=>{
+      //     remoteStream.play(id);
+      //   })
+      //     return
+      //   }
+    })
+    
     this.client.on("peer-leave", ()=> {
     // this.client.on("liveStreamingStopped", ()=> {
 
@@ -51,9 +70,9 @@ export default {
   methods: {
     stopCallback() {
       this.activeIndex = this.tempIndex;
-      this.activeItem = this.tempItem;
+      this.activeItem = Object.assign({},this.tempItem)
       this.activeURL = this.tempItem.url;
-      if (this.tempItem.suffix == "mp3") {
+      if (this.activeItem.suffix == "mp3") {
         console.log("item.url ", this.tempItem.url);
         this.stream.startAudioMixing(
           {
@@ -78,14 +97,16 @@ export default {
           audioSampleRate: 44100,
           audioChannels: 1
         };
-        this.client.addInjectStreamUrl(this.tempItem.url, InjectStreamConfig);
+        console.log('进入第一次播放视频',this.firstLoad)
+        this.client.addInjectStreamUrl(this.activeURL, InjectStreamConfig);
       }
     },
     choose(item, i) {
-      this.tempItem = item
+      this.tempItem = Object.assign({},item)
       this.tempIndex = i
-      console.log(item,i)
+      
       if(this.firstLoad) {
+        console.log('进入第一次播放')
         this.stopCallback()
         this.firstLoad = false
         return
@@ -97,7 +118,6 @@ export default {
         })
       }else{
         this.client.removeInjectStreamUrl(this.activeURL);
-        // this.client.stopLiveStreaming(this.activeURL)
       }
     }
   }
