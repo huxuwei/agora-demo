@@ -9,7 +9,6 @@
     >
       <span>{{item.name}}</span>
     </div>
-    <!-- <div class="video666" ref="video666" id="agora_remote666"></div> -->
   </div>
 </template>
 
@@ -18,7 +17,7 @@ export default {
   data() {
     return {
       activeIndex: 0,
-      activeURL: "flv.flv",
+      activeURL: "",
       activeItem: {},
       tempItem: {},
       tempIndex: -1,
@@ -37,28 +36,7 @@ export default {
     }
   },
   mounted() {
-    this.client.on('peer-online', (evt)=>{
-      console.log("peer-online", evt);
-    })
-    this.client.on('first-audio-frame-decode', (evt)=>{
-      // var remoteStream = evt.stream;
-      // console.log("first-audio-frame-decode", remoteStream, remoteStream.getId());
-      // var id = 'agora_remote' + remoteStream.getId()
-      // if(remoteStream.getId() == 666) {
-      //   // _this.$nextTick(()=>{
-      //   //   _this.videoDivList.push(id)
-      //   // })
-      //   // _this.videoDivList666.push(id)
-      //   this.$nextTick(()=>{
-      //     remoteStream.play(id);
-      //   })
-      //     return
-      //   }
-    })
-    
     this.client.on("peer-leave", ()=> {
-    // this.client.on("liveStreamingStopped", ()=> {
-
         console.log("停止视频播放");
 
         this.stream.stopAudioMixing(() => {
@@ -89,15 +67,14 @@ export default {
         );
       } else {
         var InjectStreamConfig = {
-          width: 0,
-          height: 10,
+          width: 300,
+          height: 300,
           videoGop: 30,
           videoFramerate: 15,
           videoBitrate: 400,
           audioSampleRate: 44100,
           audioChannels: 1
         };
-        console.log('进入第一次播放视频',this.firstLoad)
         this.client.addInjectStreamUrl(this.activeURL, InjectStreamConfig);
       }
     },
@@ -107,8 +84,9 @@ export default {
       
       if(this.firstLoad) {
         console.log('进入第一次播放')
-        this.stopCallback()
         this.firstLoad = false
+        this.stopCallback()
+        
         return
       }
       if(this.activeItem.suffix == "mp3"){
@@ -117,6 +95,7 @@ export default {
           this.stopCallback()
         })
       }else{
+        console.log('开始停止视频')
         this.client.removeInjectStreamUrl(this.activeURL);
       }
     }
