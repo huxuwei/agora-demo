@@ -6,7 +6,11 @@
     <div id="agora_local"></div>
     <div class="video" :id="remoteStreamDoMID"></div>
     <!-- <div class="video" v-for="(item, i) in videoDivListSet" :key="i" :id="item"></div> -->
-    <!-- <div class="video666" ref="video666" :id="remoteStreamDoMID666"></div> -->
+    <div class="video666" ref="video666">
+      <div  :id="remoteStreamDoMID666"></div>
+      <el-button type="primary" size="small" @click="stopClick">暂停</el-button>
+      <el-button type="primary" size="small" @click="playClick">播放</el-button>
+    </div>
     <!-- <div class="video666" 
         v-for="(item, i) in videoDivListSet666"
         :key="'a1+'+i"
@@ -30,7 +34,8 @@ export default {
       remoteStreamDoMID666: "",
       localStream: {},
       videoDivList: [],
-      videoDivList666: []
+      videoDivList666: [],
+      remoteStream: {}
     };
   },
   created() {
@@ -45,6 +50,9 @@ export default {
     },
     videoDivListSet666() {
       return [...new Set(this.videoDivList666)];
+    },
+    room() {
+      return this.$store.state.whiteRoom
     }
   },
   methods: {
@@ -130,30 +138,29 @@ export default {
             console.log("订阅远程流成功: " + remoteStream.getId());
             let id = "agora_remote" + remoteStream.getId();
 
-            // if(remoteStream.getId() == 666) {
-            // // _this.$nextTick(()=>{
-            // //   _this.videoDivList.push(id)
-            // // })
-            // // // _this.videoDivList666.push(id)
-            // // _this.$nextTick(()=>{
-            // //   remoteStream.play(id);
-            // // })
-            //   return
-            // }
+            if(remoteStream.getId() == 666) {
+              // _this.$nextTick(()=>{
+              //   _this.videoDivList.push(id)
+              // })
+              // _this.videoDivList666.push(id)
+              _this.remoteStreamDoMID666 = id
+              _this.$nextTick(()=>{
+                _this.$refs.video666.style.zIndex =10
+                remoteStream.play(_this.remoteStreamDoMID666);
+                 _this.remoteStream = remoteStream
+              })
+             
+              return
+            }
             // _this.$nextTick(() => {
             //   _this.videoDivList.push(id);
             // });
-          _this.remoteStreamDoMID = id
+            _this.remoteStreamDoMID = id
             setTimeout(() => {
               
               // remoteStream.play(id);
               remoteStream.play(_this.remoteStreamDoMID);
             }, 1000);
-
-            // _this.client.unpublish(stream, function(err) {
-            //     console.log(err);
-            //     //……
-            // })
           });
         },
         function(err) {
@@ -202,7 +209,7 @@ export default {
         // var stream = evt.stream;
         var uid = evt.uid;
 
-        // let dom = document.getElementById('agora_remote' + uid)
+        let dom = document.getElementById('agora_remote' + uid)
         console.log("离开房间 ", "agora_remote" + uid);
         // if(uid == 666) {
         //   _this.videoDivList666  = _this.videoDivList666.filter(item=>{
@@ -210,13 +217,11 @@ export default {
         //   })
         //   return
         // }
-        _this.videoDivList = _this.videoDivList.filter(item => {
-          return item !== "agora_remote" + uid;
-        });
+        // _this.videoDivList = _this.videoDivList.filter(item => {
+        //   return item !== "agora_remote" + uid;
+        // });
         // console.log(_this.videoDivList)
-        // dom&& dom.remove()
-
-        //……
+        dom&& dom.remove()
       });
     },
     leaveRoom() {
@@ -234,7 +239,17 @@ export default {
       console.log("getStats", this.localStream.getStats());
       //  console.log('setVideoProfile', this.localStream.setVideoProfile())
       console.log("getSystemStats", this.client, this.client.getSystemStats());
-    }
+    },
+
+    // 利用白板的自定义事件,进行播放暂停
+    stopClick(){
+      this.room.dispatchMagixEvent('stop', {});
+      console.log('触发自定义事件: stop')
+    },
+    playClick() {
+      this.room.dispatchMagixEvent('play', {});
+      console.log('触发自定义事件: play')
+    },
   }
 };
 </script>
@@ -250,15 +265,17 @@ export default {
   // background: yellowgreen;
 }
 .video666 {
-  width: 100%;
-  height: 100vh;
-  position: fixed;
-  top: 0vh;
-  left: 0px;
-  z-index: -1;
+    width: 90%;
+    height: 60vh;
+    position: fixed;
+    top: 20vh;
+    left: 0px;
+    z-index: -1;
+    margin: 10px;
   > div {
     width: 100%;
     height: 90%;
+    margin-bottom: 20px;
   }
 }
 </style>

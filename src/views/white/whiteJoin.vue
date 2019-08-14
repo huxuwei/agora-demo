@@ -110,6 +110,7 @@ export default {
           that.room.setMemberState({
             currentApplianceName: 'selector'
           });
+          that.addRoomEvent()
         })
         .catch(function(err) {
           console.log(err);
@@ -202,6 +203,26 @@ export default {
     showSceneState() {
       let scenceState = this.room.state.sceneState;
       console.log('scenceState',scenceState)
+    },
+
+    addRoomEvent() {
+      this.room.addMagixEventListener('stop', this.stop);
+      this.room.addMagixEventListener('play', this.play);
+    },
+    stop() {
+      console.log('接收远程自定义事件: stop')
+      var video666 =  document.getElementById('video666')
+      var audio666 =  document.getElementById('audio666')
+      
+      video666.pause()
+      audio666.pause()
+    },
+    play() {
+      console.log('接收远程自定义事件: play')
+      var video666 =  document.getElementById('video666')
+      var audio666 =  document.getElementById('audio666')
+      video666.play()
+      audio666.play()
     }
   }
 };
