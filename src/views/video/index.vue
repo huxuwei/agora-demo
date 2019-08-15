@@ -6,16 +6,11 @@
     <div id="agora_local"></div>
     <div class="video" :id="remoteStreamDoMID"></div>
     <!-- <div class="video" v-for="(item, i) in videoDivListSet" :key="i" :id="item"></div> -->
-    <div class="video666" ref="video666">
-      <div  :id="remoteStreamDoMID666"></div>
+    <div class="video666Wrap" ref="video666">
+      <div id="agora_remote666"></div>
       <el-button type="primary" size="small" @click="stopClick">暂停</el-button>
       <el-button type="primary" size="small" @click="playClick">播放</el-button>
     </div>
-    <!-- <div class="video666" 
-        v-for="(item, i) in videoDivListSet666"
-        :key="'a1+'+i"
-    :id="item"></div>-->
-    <!-- </div> -->
   </div>
 </template>
 
@@ -27,7 +22,6 @@ export default {
   name: "home",
   data() {
     return {
-      // channel: '333',
       client: {},
       uid: 0,
       remoteStreamDoMID: "",
@@ -136,13 +130,10 @@ export default {
           _this.client.on("stream-subscribed", function(evt) {
             var remoteStream = evt.stream;
             console.log("订阅远程流成功: " + remoteStream.getId());
+            // _this.$store.commit("SET_stream", remoteStream);
             let id = "agora_remote" + remoteStream.getId();
 
             if(remoteStream.getId() == 666) {
-              // _this.$nextTick(()=>{
-              //   _this.videoDivList.push(id)
-              // })
-              // _this.videoDivList666.push(id)
               _this.remoteStreamDoMID666 = id
               _this.$nextTick(()=>{
                 _this.$refs.video666.style.zIndex =10
@@ -152,13 +143,8 @@ export default {
              
               return
             }
-            // _this.$nextTick(() => {
-            //   _this.videoDivList.push(id);
-            // });
             _this.remoteStreamDoMID = id
             setTimeout(() => {
-              
-              // remoteStream.play(id);
               remoteStream.play(_this.remoteStreamDoMID);
             }, 1000);
           });
@@ -206,21 +192,14 @@ export default {
       );
       //
       _this.client.on("peer-leave", function(evt) {
-        // var stream = evt.stream;
         var uid = evt.uid;
 
         let dom = document.getElementById('agora_remote' + uid)
         console.log("离开房间 ", "agora_remote" + uid);
-        // if(uid == 666) {
-        //   _this.videoDivList666  = _this.videoDivList666.filter(item=>{
-        //     return item !== 'agora_remote' + uid
-        //   })
-        //   return
-        // }
-        // _this.videoDivList = _this.videoDivList.filter(item => {
-        //   return item !== "agora_remote" + uid;
-        // });
-        // console.log(_this.videoDivList)
+        if(uid == 666) {
+          _this.$refs.video666.style.zIndex = -1
+          return
+        }
         dom&& dom.remove()
       });
     },
@@ -264,14 +243,16 @@ export default {
   height: 100px;
   // background: yellowgreen;
 }
-.video666 {
-    width: 90%;
-    height: 60vh;
+.video666Wrap {
+    width: 80%;
+    max-width: 1200px;
+    height: 90%;
     position: fixed;
-    top: 20vh;
+    top: 0;
     left: 0px;
     z-index: -1;
-    margin: 10px;
+    background-color: #ffffff;
+    margin-left: 10px;
   > div {
     width: 100%;
     height: 90%;
@@ -281,5 +262,14 @@ export default {
 </style>
 
 <style lang="less">
+#player_666{
+  display: flex;
+  justify-content: center;
+}
+#video666{
+  // width: auto!important;
+  max-width: 1000px;
+  height: auto!important;
+}
 </style>
 

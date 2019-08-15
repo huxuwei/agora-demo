@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import http from '@/utils/request'
 export default {
   data() {
     return {
@@ -41,30 +40,12 @@ export default {
       })
     },
     replay() {
-      http.get('roomInfo',{name:this.room}).then(res=>{
-        // console.log('res',res.data)
-        let {roomToken, uuid  } = res.data
-        // this.roomInfo = {
-        //   uuid: herewhite.uuid,
-        //   roomName: agora.name
-        // }
-
-        this.$store.commit('SET_roomInfo', this.roomInfo)
-        this.$router.push({
-          path: 'replay',
-          query: {
-            uuid,roomToken,
-            // roomName: this.roomInfo.name,
-            // roomToken: 
-          }
-        })
+      this.$router.push({
+        path: 'replay',
+        query: {
+          room: this.room
+        }
       })
-      // this.$router.push({
-      //   path: '/replay',
-      //   query: {
-      //     uuid: this.uuid,
-      //   }
-      // })
     }
   },
 }

@@ -12,7 +12,7 @@
       <el-button @click="showSceneState">当前场景信息</el-button>
       <el-button @click="whiteListVisible = !whiteListVisible">课件库</el-button>
     </template>
-    <FileList v-if="whiteListVisible"></FileList>
+    <FileList v-show="whiteListVisible"></FileList>
   </div>
 </template>
 
@@ -49,7 +49,7 @@ export default {
       return localStorage.getItem("uuid");
     },
     name() {
-      return localStorage.getItem("room");
+      return localStorage.getItem("name");
     },
     role() {
       return localStorage.getItem("role");
@@ -136,14 +136,18 @@ export default {
       });
     },
     ended() {
-      axios({
-        url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
-        method: "POST",
-        data: {
-          ban: true,
-          uuid: this.uuid
-        }
+      let endTime = new Date().getTime();
+      http.get("roomStop", { name: this.name, endTime }).then(res => {
+
       });
+      // axios({
+      //   url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
+      //   method: "POST",
+      //   data: {
+      //     ban: true,
+      //     uuid: this.uuid
+      //   }
+      // });
     },
     pptShow() {
       //之前初始化的 sdk 实例，roomToken 创建房间时，具体房间的 roomToken，此处作为鉴权使用。
