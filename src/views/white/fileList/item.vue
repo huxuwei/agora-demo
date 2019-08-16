@@ -44,7 +44,11 @@ export default {
       if(this.stream.stopAudioMixing  instanceof Function) {
         this.stream.stopAudioMixing(() => {
           console.log("停止音频播放");
-          this.stopCallback()
+          try {
+            this.stopCallback()
+          } catch (error) {
+            
+          }
         })
       }else{
         this.stopCallback()

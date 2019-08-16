@@ -8,6 +8,9 @@ const apis = {
     // 下课
     roomStop: '/room/stop',
     // 获取房间信息
-    roomInfo: '/room/info'
+    roomInfo: '/room/info',
+    // 媒体文件播放
+    roomUpdateLayout: '/room/updateLayout',
+
 }
 export const getApi = key => apis[key];

@@ -1,5 +1,8 @@
 <template>
   <div class="replay-page">
+    <div>
+      <el-button @click="play">播放</el-button>
+    </div>
     <div class="replay-player" ref="whiteboard"></div>
     <div>
       <video class="video-js video-layout"  id="white-sdk-video-js"></video>
@@ -14,9 +17,12 @@ import {whiteConfig} from '@/utils/config.js'
 import "video.js/dist/video-js.css";
 export default {
   mounted() {
-    this.init()
+    // this.init()
   },
   methods: {
+    play(){
+      this.init()
+    },
     init() {
       http.get('roomInfo',{name:this.$route.query.room}).then(res=>{
         
@@ -31,12 +37,12 @@ export default {
       // var duration = ...; // 回放片段持续时长（毫秒）
       // var mediaURL = "https://example.com/media.m3u8"; // 由白板接管的媒体文件(可选)，如果需要显示视频，需要提前做一些操作
       var whiteWebSdk = new WhiteWebSdk();
-      console.log()
+      console.log('data',data)
       whiteWebSdk.replayRoom({
         room: uuid,
         roomToken: roomToken,
         mediaURL: videoPath,
-        // beginTimestamp: String(startTime)
+        // beginTimestamp: startTime
       }).then((player)=> {
         // 获取到 player 实例
         // 与 room 调用类似，与获取到 player 实例后，你需要将 player 绑定到 HTML 的 div 上。
@@ -68,7 +74,7 @@ export default {
 
     .video-layout {
         width: 300px;
-        height: 300px;
+        // height: 300px;
     }
 }
 </style>

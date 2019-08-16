@@ -8,8 +8,10 @@
     <!-- <div class="video" v-for="(item, i) in videoDivListSet" :key="i" :id="item"></div> -->
     <div class="video666Wrap" ref="video666">
       <div id="agora_remote666"></div>
-      <el-button type="primary" size="small" @click="stopClick">暂停</el-button>
-      <el-button type="primary" size="small" @click="playClick">播放</el-button>
+      <template v-if="role == 1">
+        <el-button type="primary" size="small" @click="stopClick">暂停</el-button>
+        <el-button type="primary" size="small" @click="playClick">播放</el-button>
+      </template>
     </div>
   </div>
 </template>
@@ -47,7 +49,10 @@ export default {
     },
     room() {
       return this.$store.state.whiteRoom
-    }
+    },
+    role() {
+      return localStorage.getItem("role");
+    },
   },
   methods: {
     // 初始化 Client 对象
@@ -131,10 +136,14 @@ export default {
             var remoteStream = evt.stream;
             console.log("订阅远程流成功: " + remoteStream.getId());
             // _this.$store.commit("SET_stream", remoteStream);
+            let uid = remoteStream.getId()
             let id = "agora_remote" + remoteStream.getId();
 
             if(remoteStream.getId() == 666) {
               _this.remoteStreamDoMID666 = id
+              http.get('roomUpdateLayout', {name:_this.channel, uid}).then(res=>{
+                console.log('通知后台播放旁路推流:', uid)
+              })
               _this.$nextTick(()=>{
                 _this.$refs.video666.style.zIndex =10
                 remoteStream.play(_this.remoteStreamDoMID666);
@@ -197,7 +206,9 @@ export default {
         let dom = document.getElementById('agora_remote' + uid)
         console.log("离开房间 ", "agora_remote" + uid);
         if(uid == 666) {
-          _this.$refs.video666.style.zIndex = -1
+          let domPlayer = document.getElementById('player_666')
+          _this.$refs.video666.style.zIndex = -99
+          domPlayer&& domPlayer.remove()
           return
         }
         dom&& dom.remove()
@@ -245,7 +256,7 @@ export default {
 }
 .video666Wrap {
     width: 80%;
-    max-width: 1200px;
+    // max-width: 1200px;
     height: 90%;
     position: fixed;
     top: 0;

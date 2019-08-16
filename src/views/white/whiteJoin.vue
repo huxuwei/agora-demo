@@ -59,7 +59,10 @@ export default {
     },
     teachRole() {
       return this.role == 1;
-    }
+    },
+    client() {
+      return this.$store.state.client;
+    },
   },
   provide() {
     return {
@@ -133,12 +136,16 @@ export default {
     start() {
       let startTime = new Date().getTime();
       http.get("roomStart", { name: this.name, startTime }).then(res => {
+        // this.$message.success('开始上课')
+        this.room.dispatchMagixEvent('claaStart', {});
       });
     },
     ended() {
       let endTime = new Date().getTime();
+       this.room.dispatchMagixEvent('claaStop', {});
       http.get("roomStop", { name: this.name, endTime }).then(res => {
-
+       
+        // this.$message.success('课程结束')
       });
       // axios({
       //   url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
@@ -210,9 +217,25 @@ export default {
     },
 
     addRoomEvent() {
+      this.room.addMagixEventListener('claaStart',this.message('开始上课啦')) ;
+      this.room.addMagixEventListener('claaStop', this.classStop);
       this.room.addMagixEventListener('stop', this.stop);
       this.room.addMagixEventListener('play', this.play);
     },
+    classStop() {
+      this.client.leave(function () {
+        console.log("离开房间成功");
+      }, function (err) {
+        console.log("Leave channel failed");
+      });
+      this.message('下课啦')
+    },
+    message(val){
+      return ()=> {
+        this.$message.success(val)
+      }
+    },
+
     stop() {
       console.log('接收远程自定义事件: stop')
       var video666 =  document.getElementById('video666')
