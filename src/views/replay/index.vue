@@ -43,6 +43,21 @@ export default {
         roomToken: roomToken,
         mediaURL: videoPath,
         // beginTimestamp: startTime
+      }, {
+          onPhaseChanged: phase => {
+              console.log(phase);
+          },
+          onLoadFirstFrame: () => {
+          },
+          onPlayerStateChanged: modifyState => {
+              console.log(modifyState);
+          },
+          onStoppedWithError: error => {
+              console.log(error);
+          },
+          onScheduleTimeChanged: scheduleTime => {
+              // console.log(scheduleTime);
+          },
       }).then((player)=> {
         // 获取到 player 实例
         // 与 room 调用类似，与获取到 player 实例后，你需要将 player 绑定到 HTML 的 div 上。
