@@ -10,7 +10,8 @@ export default new Vuex.Store({
     stream: {},
     fileList: [],
     whiteWebSdk: {},
-    whiteRoom: {}
+    whiteRoom: {},
+    ws: {}
   },
   mutations: {
     SET_roomInfo: (state, roomInfo) =>{
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     SET_whiteRoom: (state, whiteRoom) =>{
       state.whiteRoom = whiteRoom
     },
+    SET_ws: (state, ws) =>{
+      state.ws = ws
+    }
   },
   actions: {
 

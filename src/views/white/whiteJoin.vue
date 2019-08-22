@@ -9,7 +9,7 @@
       <el-button @click="pptPre">上一页</el-button>
       <el-button @click="pptNext">下一页</el-button>
       <el-button @click="createWhite">新建白板</el-button>
-      <el-button @click="showSceneState">当前场景信息</el-button>
+      <!-- <el-button @click="showSceneState">当前场景信息</el-button> -->
       <el-button @click="whiteListVisible = !whiteListVisible">课件库</el-button>
     </template>
     <FileList v-show="whiteListVisible"></FileList>
@@ -42,7 +42,7 @@ export default {
         this.room.refreshViewSize();
       }
     });
-    this.init();
+   
   },
   computed: {
     uuid() {
@@ -58,10 +58,13 @@ export default {
       return localStorage.getItem("roomToken");
     },
     teachRole() {
-      return this.role == 1;
+      return this.$route.query.role == 1;
     },
     client() {
       return this.$store.state.client;
+    },
+    ws() {
+      return this.$store.state.ws;
     },
   },
   provide() {
@@ -110,9 +113,9 @@ export default {
           that.room = room;
           that.readOnly();
           that.$store.commit('SET_whiteRoom', room)
-          that.room.setMemberState({
-            currentApplianceName: 'selector'
-          });
+          // that.room.setMemberState({
+          //   currentApplianceName: 'selector'
+          // });
           that.addRoomEvent()
         })
         .catch(function(err) {
@@ -134,18 +137,23 @@ export default {
       });
     },
     start() {
-      let startTime = new Date().getTime();
-      http.get("roomStart", { name: this.name, startTime }).then(res => {
-        // this.$message.success('开始上课')
-        this.room.dispatchMagixEvent('claaStart', {});
-      });
+      // let startTime = new Date().getTime();
+      // http.get("roomStart", { name: this.name, startTime }).then(res => {
+      //   // this.$message.success('开始上课')
+      //   this.room.dispatchMagixEvent('claaStart', {});
+      // });
+      let  msg= {
+        classStart: 1
+      }
+      this.ws.send(JSON.stringify(msg))
+      
     },
     ended() {
       let endTime = new Date().getTime();
        this.room.dispatchMagixEvent('claaStop', {});
       http.get("roomStop", { name: this.name, endTime }).then(res => {
        
-        // this.$message.success('课程结束')
+        this.$message.success('课程结束')
       });
       // axios({
       //   url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
@@ -217,7 +225,7 @@ export default {
     },
 
     addRoomEvent() {
-      this.room.addMagixEventListener('claaStart',this.message('开始上课啦')) ;
+      // this.room.addMagixEventListener('claaStart',this.message('开始上课啦')) ;
       this.room.addMagixEventListener('claaStop', this.classStop);
       this.room.addMagixEventListener('stop', this.stop);
       this.room.addMagixEventListener('play', this.play);

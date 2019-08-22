@@ -36,7 +36,7 @@ export default {
     }
   },
   mounted() {
-    this.client.on("peer-leave", ()=> {
+     this.client.on &&this.client.on("peer-leave", ()=> {
       console.log("停止视频播放");
       if(this.activeURL == this.tempItem.url){
         return 

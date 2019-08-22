@@ -7,10 +7,27 @@ import { Message, MessageBox } from 'element-ui';
 // 修改全局默认值
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
+var path = ''
+/*第一层if判断生产环境和开发环境*/
+if (process.env.NODE_ENV === 'production') {
+  /*第二层if，根据.env文件中的VUE_APP_FLAG判断是生产环境还是测试环境*/
+  console.log(process.env.VUE_APP_FLAG)
+  if (process.env.VUE_APP_FLAG === 'pro') {
+      //production 生产环境
+      path = 'http://api.xinggeyun.com';//路径
+
+  } else {
+      //test 测试环境
+      path = 'http://192.168.0.152:8102';//路径
+} } else { //dev 开发环境 axios.defaults.baseURL = 'http://192.168.0.152:8102';//路径
+
+}
+
 // 创建axios实例
 const service = axios.create({
   // baseURL: "http://192.168.0.106:8094/boluo-crm/",
   baseURL: process.env.BASE_API, // api 的 base_url
+  // baseURL:path,
   timeout: 120000 // 请求超时时间
   // withCredentials: true
 });
