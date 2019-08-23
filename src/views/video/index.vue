@@ -22,6 +22,7 @@ import { videoConfig } from "@/utils/config.js";
 import http from "@/utils/request";
 export default {
   name: "home",
+  props:['uidID'],
   data() {
     return {
       client: {},
@@ -81,11 +82,7 @@ export default {
        * @param uid 用户的 ID， 整数，需保证唯一性, 如果不指定，即用户 ID 设置为 null，回调会返回一个服务器分配的 uid。
        */
       let _this = this;
-      this.client.join(
-        videoConfig.token,
-        this.channel,
-        null,
-        uid => {
+      this.client.join(videoConfig.token, this.channel,this.uidID,uid => {
           console.log("用户 " + uid + " 加入直播间成功:" + this.channel);
           this.uid = uid;
           this.createSteam();

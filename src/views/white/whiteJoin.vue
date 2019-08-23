@@ -1,28 +1,34 @@
 <template>
   <div class="white-wrap">
     <div class="wrap" ref="whiteWrap"></div>
-    <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
+    
     <template v-if="teachRole">
-      <el-button @click="start">上课</el-button>
-      <el-button @click="ended">下课</el-button>
-      <!-- <el-button @click="pptShow">ppt</el-button> -->
-      <el-button @click="pptPre">上一页</el-button>
-      <el-button @click="pptNext">下一页</el-button>
-      <el-button @click="createWhite">新建白板</el-button>
+      
+      <el-button @click="start" :loading="classStartLoading" v-if="classStatus == 0">上课</el-button>
+      <template v-if="classStatus == 1">
+        <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
+        <el-button @click="ended">下课</el-button>
+        <!-- <el-button @click="pptShow">ppt</el-button> -->
+        <el-button @click="pptPre">上一页</el-button>
+        <el-button @click="pptNext">下一页</el-button>
+        <el-button @click="createWhite">新建白板</el-button>
+        <el-button @click="whiteListVisible = !whiteListVisible">课件库</el-button>
+      </template>
       <!-- <el-button @click="showSceneState">当前场景信息</el-button> -->
-      <el-button @click="whiteListVisible = !whiteListVisible">课件库</el-button>
+      
     </template>
     <FileList v-show="whiteListVisible"></FileList>
   </div>
 </template>
 
 <script>
-import { whiteConfig } from "@/utils/config.js";
+import { whiteConfig, classStatus } from "@/utils/config.js";
 import WhiteTool from "./tools";
 import http from "@/utils/request";
 import axios from "axios";
 import { ViewMode } from "white-web-sdk";
 import FileList from "./fileList";
+
 var n = 0;
 export default {
   components: { WhiteTool, FileList },
@@ -31,15 +37,16 @@ export default {
       room: {},
       whiteWebSdk: {},
       // uuid: "",
-      whiteListVisible: false
+      whiteListVisible: false,
+      classStatus: classStatus.noClass,
+      classStartLoading: false
     };
   },
   mounted() {
     document.body.style.overflow = "hidden";
     window.addEventListener("resize", () => {
       if (this.room) {
-        console.log("resize", this.room.refreshViewSize);
-        this.room.refreshViewSize();
+        this.room.refreshViewSize &&this.room.refreshViewSize();
       }
     });
    
@@ -110,6 +117,10 @@ export default {
           // Step3: 加入成功后想白板绑定到指定的 dom 中
           room.bindHtmlElement(that.$refs.whiteWrap);
           room.refreshViewSize();
+          that.$message.success('通知： 上课了')
+          that.classStartLoading = false
+          that.classStatus = classStatus.inClass
+          console.log(33333333333,that.classStatus , classStatus.inClass)
           that.room = room;
           that.readOnly();
           that.$store.commit('SET_whiteRoom', room)
@@ -137,15 +148,20 @@ export default {
       });
     },
     start() {
-      // let startTime = new Date().getTime();
-      // http.get("roomStart", { name: this.name, startTime }).then(res => {
-      //   // this.$message.success('开始上课')
-      //   this.room.dispatchMagixEvent('claaStart', {});
-      // });
+     
       let  msg= {
         classStart: 1
       }
-      this.ws.send(JSON.stringify(msg))
+      this.classStartLoading = true
+      if(this.ws){
+        this.ws.send(JSON.stringify(msg))
+      }else{
+         let startTime = new Date().getTime();
+        http.get("roomStart", { name: this.name, startTime }).then(res => {
+          // this.$message.success('开始上课')
+          this.room.dispatchMagixEvent('claaStart', {});
+        });
+      }
       
     },
     ended() {

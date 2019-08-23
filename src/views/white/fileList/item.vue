@@ -7,13 +7,20 @@
       :class="{active: i==activeIndex}"
       @click="choose(item,i)"
     >
-      <span>{{item.name}}</span>
+      <span class="name">{{item.name}}</span>
+      <span class="control" @click.stop="statusChange">
+        <g-icon class="icon" 
+          :color="i===activeIndex?'rgb(236, 52, 85)':'#ffffff'"  
+          icon="iconbofang"></g-icon>
+      </span>
     </div>
   </div>
 </template>
 
 <script>
+import GIcon from '@/components/icon'
 export default {
+  components: {GIcon},
   data() {
     return {
       activeIndex: 0,
@@ -21,7 +28,8 @@ export default {
       activeItem: {},
       tempItem: {},
       tempIndex: -1,
-      firstLoad: true
+      firstLoad: true,
+      playStatus: ''
     };
   },
   computed: {
@@ -77,9 +85,6 @@ export default {
           }
         );
       } else {
-        // var video666 = document.getElementById('agora_remote666')
-        // var width = parseInt(getComputedStyle(video666).width)
-        // var height = parseInt(getComputedStyle(video666).height)
         var InjectStreamConfig = {
           width: 0,
           height: 0,
@@ -115,6 +120,9 @@ export default {
         console.log('开始停止视频')
         this.client.removeInjectStreamUrl(this.activeURL);
       }
+    },
+    statusChange() {
+
     }
   }
 };
@@ -128,11 +136,21 @@ export default {
     > span {
       color: white;
     }
+    .name{
+      display: inline-block;
+      width: 120px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
   }
   .active {
     > span {
       color: red;
     }
+  }
+  .control{
+    margin-left: 40px;
   }
 }
 </style>

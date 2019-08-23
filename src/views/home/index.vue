@@ -5,7 +5,7 @@
         <white-room  ref="whiteRoom"></white-room>
       </div>
       <div class="videoWrap">
-        <video-room ></video-room>
+        <video-room :uidID='uid'></video-room>
       </div>
     </div>
   </div>
@@ -20,13 +20,16 @@ export default {
   data() {
     return {
       roomInfo: {},
+      uid:0,
       initFinish: false
     }
   },
   created() {
     // this.init()
-    this.local()
     this.websocketInit()
+    this.uid = parseInt(Math.random()*100000000)
+    this.local()
+    
   },
   computed: {
     role() {
@@ -73,9 +76,7 @@ export default {
         this.$store.commit('SET_fileList', file)
     },  
     websocketInit() {
-       
-      let uid = parseInt(Math.random()*1000000)
-      let url = `wss://activate.navicat.com/websocket/onlineRoom?roomName=${this.room}&uid=${uid}&role=${this.role}`
+      let url = `wss://activate.navicat.com/websocket/onlineRoom?roomName=${this.room}&uid=${this.uid}&role=${this.role}`
       var ws
       if ("WebSocket" in window){
                // 打开一个 web socket
@@ -94,12 +95,8 @@ export default {
           }else if(data.herewhite){
             this.setLocalStrong(data)
             if(data.herewhite.status ){
-              
-              
               this.$refs.whiteRoom.init()
-              this.$message.success('通知： 上课了')
             }
-            
           }
           
           console.log("数据已接收...:", received_msg);

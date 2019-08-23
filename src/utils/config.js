@@ -1,4 +1,5 @@
 
+// 视频配置项
 export const videoConfig= {
   appID: '802aaeb154c74cbfa70a2fe393fb6df7',
   mode: 'live',
@@ -9,7 +10,14 @@ export const videoConfig= {
   // acquireURL: 'https://api.agora.io/v1/apps/<yourappid>/cloud_recording/acquire'
 }
 
-
+// 白板配置项
 export const whiteConfig= {
   token: 'WHITEcGFydG5lcl9pZD1OazZwcWdwRUEyRlk0cWNyM01tRGMwZm9MdG96UUpoMXdaQjImc2lnPTllNjQzOWM3ZTI1MTYyNWNlODc0Yjk5NTJmMjcwODhkM2MxZDIxOTU6YWRtaW5JZD0zNTgmcm9sZT1taW5pJmV4cGlyZV90aW1lPTE1OTYyODE5ODMmYWs9Tms2cHFncEVBMkZZNHFjcjNNbURjMGZvTHRvelFKaDF3WkIyJmNyZWF0ZV90aW1lPTE1NjQ3MjUwMzEmbm9uY2U9MTU2NDcyNTAzMDUzMjAw',
+}
+
+// 教室状态
+export const classStatus = {
+  noClass: 0,
+  inClass: 1,
+  stopClass: 2
 }
