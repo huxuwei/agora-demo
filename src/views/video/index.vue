@@ -2,8 +2,10 @@
   <div>
     <div>
       <!-- <el-button @click="getVideoInfo">视频信息</el-button> -->
+      <el-button @click="shareSreen">屏幕共享</el-button>
     </div>
     <div id="agora_local"></div>
+    <div id="screen"></div>
     <div class="video" :id="remoteStreamDoMID"></div>
     <!-- <div class="video" v-for="(item, i) in videoDivListSet" :key="i" :id="item"></div> -->
     <div class="video666Wrap" ref="video666">
@@ -132,6 +134,7 @@ export default {
           _this.client.on("stream-subscribed", function(evt) {
             var remoteStream = evt.stream;
             console.log("订阅远程流成功: " + remoteStream.getId());
+            console.log('screen',remoteStream.getId())
             // _this.$store.commit("SET_stream", remoteStream);
             let uid = remoteStream.getId()
             let id = "agora_remote" + remoteStream.getId();
@@ -148,6 +151,8 @@ export default {
               })
              
               return
+            }else if(remoteStream.getId() == 777) {
+                remoteStream.play('screen');
             }
             _this.remoteStreamDoMID = id
             setTimeout(() => {
@@ -237,12 +242,65 @@ export default {
       this.room.dispatchMagixEvent('play', {});
       console.log('触发自定义事件: play')
     },
+    shareSreen() {
+      let { appID, mode, codec } = videoConfig;
+      let channel = this.channel
+      let screenStream
+
+      var localStreams = [];
+
+      var screenClient = AgoraRTC.createClient({mode: 'rtc', codec: 'vp8'});
+      screenClient.init(appID, function() {
+      screenClient.join(videoConfig.token, channel, 777, function(uid) {
+      // 保存本地流的uid
+      localStreams.push(uid);
+      console.log('screen',uid)
+      // 创建屏幕共享流
+      screenStream = AgoraRTC.createStream({
+      streamID: uid,
+      audio: false, // 设置屏幕共享不带音频，避免订阅端收到的两路流中都有音频，导致回声
+      video: false,
+      screen: true,
+      // Chrome
+      // extensionId: 'minllpmhdgpndnkomcoccfekfegnlikg',
+      // Firefox
+      mediaSource: 'window' // 'screen', 'application', 'window'
+      });
+      // 初始化流
+      screenStream.init(function() {
+      // 播放流
+      screenStream.play('screen');
+      // 推流
+      screenClient.publish(screenStream);
+
+      // 监听流（用户）加入频道事件
+      screenClient.on('stream-added', function(evt) {
+      var stream = evt.stream;
+      var uid = stream.getId()
+
+      // 收到流加入频道的事件后，先判定是不是本地的uid
+      if(!localStreams.includes(uid)) {
+        console.log('subscribe stream:' + uid);
+        // 拉流
+        screenClient.subscribe(stream);
+        }
+        })
+
+      }, function (err) {
+        console.log(err);
+      });
+
+      }, function (err) {
+        console.log(err);
+      })
+      });
+    }
   }
 };
 </script>
 <style lang="less" scoped>
 #agora_local {
-  width: 400px;
+  // width: 400px;
   height: 300px;
   // background: red;
 }
@@ -278,6 +336,16 @@ export default {
   // width: auto!important;
   max-width: 1000px;
   height: auto!important;
+}
+#screen{
+  position: fixed;
+  top: 20px;
+  left: 0;
+  z-index: 10;
+  width: 80%;
+  height: 88vh;
+  // border: 1px solid #333;
+
 }
 </style>
 
