@@ -25,8 +25,8 @@ export default {
     }
   },
   created() {
-    // this.init()
-    this.websocketInit()
+    this.init()
+    // this.websocketInit()
     this.uid = parseInt(Math.random()*100000000)
     this.local()
     

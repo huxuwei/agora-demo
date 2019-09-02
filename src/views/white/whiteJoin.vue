@@ -153,20 +153,21 @@ export default {
         classStart: 1
       }
       this.classStartLoading = true
-      if(this.ws){
-        this.ws.send(JSON.stringify(msg))
-      }else{
+      let teacherUserId = parseInt(Math.random()*100000000)
+      // if(this.ws){
+      //   this.ws.send(JSON.stringify(msg))
+      // }else{
          let startTime = new Date().getTime();
-        http.get("roomStart", { name: this.name, startTime }).then(res => {
-          // this.$message.success('开始上课')
-          this.room.dispatchMagixEvent('claaStart', {});
+        http.get("roomStart", { name: this.name, startTime,teacherUserId }).then(res => {
+          this.$message.success('开始上课')
+          // this.room.dispatchMagixEvent('claaStart', {});
         });
-      }
+      // }
       
     },
     ended() {
       let endTime = new Date().getTime();
-       this.room.dispatchMagixEvent('claaStop', {});
+      this.room.dispatchMagixEvent('claaStop', {});
       http.get("roomStop", { name: this.name, endTime }).then(res => {
        
         this.$message.success('课程结束')
