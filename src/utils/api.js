@@ -11,6 +11,8 @@ const apis = {
     roomInfo: '/room/info',
     // 媒体文件播放
     roomUpdateLayout: '/room/updateLayout',
+    // 加入屏幕分享
+    addInjectStream: 'room/addInjectStream'
 
 }
 export const getApi = key => apis[key];

@@ -128,4 +128,7 @@ export default {
     }
   }
 }
+.videoWrap{
+  width: 20%
+}
 </style>

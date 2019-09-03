@@ -3,11 +3,13 @@
     <div class="wrap" ref="whiteWrap"></div>
     
     <template v-if="teachRole">
-      
+     
       <el-button @click="start" :loading="classStartLoading" v-if="classStatus == 0">上课</el-button>
       <template v-if="classStatus == 1">
         <!-- <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool> -->
+         
         <el-button @click="ended">下课</el-button>
+        <el-button @click="shareSreen">屏幕共享</el-button>
         <!-- <el-button @click="pptShow">ppt</el-button> -->
         <!-- <el-button @click="pptPre">上一页</el-button>
         <el-button @click="pptNext">下一页</el-button>
@@ -154,24 +156,18 @@ export default {
       }
       this.classStartLoading = true
       let teacherUserId = parseInt(Math.random()*100000000)
-      // if(this.ws){
-      //   this.ws.send(JSON.stringify(msg))
-      // }else{
-         let startTime = new Date().getTime();
-          http.get("roomStart", { name: this.name, startTime,teacherUserId }).then(res => {
-          this.$message.success('开始上课')
-          this.classStartLoading = false
-          this.classStatus = classStatus.inClass
-          // this.room.dispatchMagixEvent('claaStart', {});
-        });
-      // }
+      let startTime = new Date().getTime();
+      http.get("roomStart", { name: this.name, startTime,teacherUserId }).then(res => {
+      this.$message.success('开始上课')
+      this.classStartLoading = false
+      this.classStatus = classStatus.inClass
+    });
       
     },
     ended() {
       let endTime = new Date().getTime();
-      this.room.dispatchMagixEvent('claaStop', {});
+      // this.room.dispatchMagixEvent('claaStop', {});
       http.get("roomStop", { name: this.name, endTime }).then(res => {
-       
         this.$message.success('课程结束')
       });
       // axios({
@@ -277,6 +273,10 @@ export default {
       var audio666 =  document.getElementById('audio666')
       video666.play()
       audio666.play()
+    },
+    shareSreen() {
+      console.log(this.$parent.$children[1])
+      this.$parent.$children[1].shareSreen()
     }
   }
 };

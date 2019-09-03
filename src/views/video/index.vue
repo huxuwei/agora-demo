@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <div>
+  <div style="width:100%">
+    <div v-if="teachRole">
       <!-- <el-button @click="getVideoInfo">视频信息</el-button> -->
-      <el-button @click="shareSreen">屏幕共享</el-button>
+      <!-- <el-button @click="shareSreen">屏幕共享</el-button> -->
+      <!-- <el-button @click="unShare">取消共享</el-button> -->
     </div>
     <div id="agora_local"></div>
     <div id="screen"></div>
@@ -24,7 +25,7 @@ import { videoConfig } from "@/utils/config.js";
 import http from "@/utils/request";
 export default {
   name: "home",
-  props:['uidID'],
+  props: ["uidID"],
   data() {
     return {
       client: {},
@@ -51,11 +52,22 @@ export default {
       return [...new Set(this.videoDivList666)];
     },
     room() {
-      return this.$store.state.whiteRoom
+      return this.$store.state.whiteRoom;
     },
     role() {
       return localStorage.getItem("role");
     },
+    teachRole() {
+      return this.$route.query.role == 1;
+    },
+    localStreams() {
+      let arr = localStorage.getItem('localStreams')
+      if(arr){
+        return JSON.parse(localStorage.getItem('localStreams'))
+      }
+      return []
+    }
+    
   },
   methods: {
     // 初始化 Client 对象
@@ -84,7 +96,11 @@ export default {
        * @param uid 用户的 ID， 整数，需保证唯一性, 如果不指定，即用户 ID 设置为 null，回调会返回一个服务器分配的 uid。
        */
       let _this = this;
-      this.client.join(videoConfig.token, this.channel,this.uidID,uid => {
+      this.client.join(
+        videoConfig.token,
+        this.channel,
+        this.uidID,
+        uid => {
           console.log("用户 " + uid + " 加入直播间成功:" + this.channel);
           this.uid = uid;
           this.createSteam();
@@ -116,7 +132,9 @@ export default {
 
           _this.client.on("stream-added", function(evt) {
             var stream = evt.stream;
-            console.log("New stream added:创建流1111111111111 " + stream.getId());
+            console.log(
+              "New stream added:创建流1111111111111 " + stream.getId()
+            );
             // 设置小流
             // _this.client.setRemoteVideoStreamType(stream, videoConfig.streamType)
             // _this.client.setLowStreamParameter({
@@ -134,27 +152,47 @@ export default {
           _this.client.on("stream-subscribed", function(evt) {
             var remoteStream = evt.stream;
             console.log("订阅远程流成功: " + remoteStream.getId());
-            console.log('screen',remoteStream.getId())
+            console.log("screen", remoteStream.getId());
             // _this.$store.commit("SET_stream", remoteStream);
-            let uid = remoteStream.getId()
-            let id = "agora_remote" + remoteStream.getId();
 
-            if(remoteStream.getId() == 666) {
-              _this.remoteStreamDoMID666 = id
-              http.get('roomUpdateLayout', {name:_this.channel, uid}).then(res=>{
-                console.log('通知后台播放旁路推流:', uid)
-              })
-              _this.$nextTick(()=>{
-                _this.$refs.video666.style.zIndex =10
-                remoteStream.play(_this.remoteStreamDoMID666);
-                 _this.remoteStream = remoteStream
-              })
+               let arr = localStorage.getItem('localStreams')
+              if(arr){
+                arr = JSON.parse(localStorage.getItem('localStreams'))
+              }else{
+                arr=  []
+              }
+              
+
              
+
+            let uid = remoteStream.getId();
+            let id = "agora_remote" + remoteStream.getId();
+            console.log('this.localStreams',this.localStreams)
+
+
+
+            if (remoteStream.getId() == 666) {
+              _this.remoteStreamDoMID666 = id;
+              http
+                .get("roomUpdateLayout", { name: _this.channel, uid })
+                .then(res => {
+                  console.log("通知后台播放旁路推流:", uid);
+                });
+              _this.$nextTick(() => {
+                _this.$refs.video666.style.zIndex = 10;
+                remoteStream.play(_this.remoteStreamDoMID666);
+                _this.remoteStream = remoteStream;
+              });
+
+              return;
+            } else if (remoteStream.getId() == 777 ) {
+              if(!arr.includes(uid)){
+                remoteStream.play("screen");
+                return
+              }
               return
-            }else if(remoteStream.getId() == 777) {
-                remoteStream.play('screen');
             }
-            _this.remoteStreamDoMID = id
+            _this.remoteStreamDoMID = id;
             setTimeout(() => {
               remoteStream.play(_this.remoteStreamDoMID);
             }, 1000);
@@ -205,15 +243,28 @@ export default {
       _this.client.on("peer-leave", function(evt) {
         var uid = evt.uid;
 
-        let dom = document.getElementById('agora_remote' + uid)
-        console.log("离开房间 ", "agora_remote" + uid);
-        if(uid == 666) {
-          let domPlayer = document.getElementById('player_666')
-          _this.$refs.video666.style.zIndex = -99
-          domPlayer&& domPlayer.remove()
-          return
-        }
-        dom&& dom.remove()
+        // let dom = document.getElementById("agora_remote" + uid);
+        // console.log("离开房间 ", "agora_remote" + uid);
+        // if (uid == 666) {
+        //   let domPlayer = document.getElementById("player_666");
+        //   _this.$refs.video666.style.zIndex = -99;
+        //   domPlayer && domPlayer.remove();
+        //   return;
+        // }
+        // dom && dom.remove();
+          
+        let domPlayer = document.getElementById("player_"+uid);
+        console.log('player_',domPlayer,uid)
+        domPlayer && domPlayer.remove();
+      });
+      // 删除流后删除dom,(结束屏幕分享触发)
+       _this.client.on("stream-removed", function(evt) {
+        var stream = evt.stream;
+        let domPlayer = document.getElementById("player_"+stream.getId());
+        console.log('player_',domPlayer,stream.getId())
+        domPlayer && domPlayer.remove();
+        // 
+        _this.unShare()
       });
     },
     leaveRoom() {
@@ -234,73 +285,109 @@ export default {
     },
 
     // 利用白板的自定义事件,进行播放暂停
-    stopClick(){
-      this.room.dispatchMagixEvent('stop', {});
-      console.log('触发自定义事件: stop')
+    stopClick() {
+      this.room.dispatchMagixEvent("stop", {});
+      console.log("触发自定义事件: stop");
     },
     playClick() {
-      this.room.dispatchMagixEvent('play', {});
-      console.log('触发自定义事件: play')
+      this.room.dispatchMagixEvent("play", {});
+      console.log("触发自定义事件: play");
     },
     shareSreen() {
       let { appID, mode, codec } = videoConfig;
-      let channel = this.channel
-      let screenStream
+      let channel = this.channel;
+      let screenStream;
+      const _this =this
 
       var localStreams = [];
 
-      var screenClient = AgoraRTC.createClient({mode: 'rtc', codec: 'vp8'});
+      var screenClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      
       screenClient.init(appID, function() {
-      screenClient.join(videoConfig.token, channel, 777, function(uid) {
-      // 保存本地流的uid
-      localStreams.push(uid);
-      console.log('screen',uid)
-      // 创建屏幕共享流
-      screenStream = AgoraRTC.createStream({
-      streamID: uid,
-      audio: false, // 设置屏幕共享不带音频，避免订阅端收到的两路流中都有音频，导致回声
-      video: false,
-      screen: true,
-      // Chrome
-      // extensionId: 'minllpmhdgpndnkomcoccfekfegnlikg',
-      // Firefox
-      mediaSource: 'window' // 'screen', 'application', 'window'
+        screenClient.join(
+          videoConfig.token,
+          channel,
+          777,
+          function(uid) {
+            // 保存本地流的uid
+            localStreams.push(uid);
+            console.log("screen", uid);
+            localStorage.setItem('localStreams',JSON.stringify(localStreams))
+            // 创建屏幕共享流
+            screenStream = AgoraRTC.createStream({
+              streamID: uid,
+              audio: false, // 设置屏幕共享不带音频，避免订阅端收到的两路流中都有音频，导致回声
+              video: false,
+              screen: true,
+              // Chrome
+              // extensionId: 'minllpmhdgpndnkomcoccfekfegnlikg',
+              // Firefox
+              mediaSource: "window" // 'screen', 'application', 'window'
+            });
+            // 初始化流
+            screenStream.init(
+              function() {
+                // 播放流
+                screenStream.play("screen");
+                // 推流
+                screenClient.publish(screenStream);
+                screenClient.on("stream-published", function(evt) {
+                  console.log(
+                    "屏幕分享流成功!!!!!!!"
+                  );
+                });
+
+                // 监听流（用户）加入频道事件
+                screenClient.on("stream-added", function(evt) {
+                  var stream = evt.stream;
+                  var uid = stream.getId();
+
+                  // 收到流加入频道的事件后，先判定是不是本地的uid
+                  if (!localStreams.includes(uid)) {
+                    console.log("subscribe stream:" + uid);
+                    // 拉流
+                    screenClient.subscribe(stream);
+                  }
+                });
+                // screenClient.on("stream-subscribed", function(evt) {
+                //     var remoteStream = evt.stream;
+                //     console.log('本地订阅了')
+                //     if (remoteStream.getId() == 777) {
+                //       remoteStream.play("screen");
+                //       return
+                //     }
+                //   })
+              },
+              (err)=> {
+                console.log(1111, err);
+                _this.unShare()
+              }
+            );
+          },
+          function(err) {
+            console.log(222,err);
+            
+          }
+        );
       });
-      // 初始化流
-      screenStream.init(function() {
-      // 播放流
-      screenStream.play('screen');
-      // 推流
-      screenClient.publish(screenStream);
-
-      // 监听流（用户）加入频道事件
-      screenClient.on('stream-added', function(evt) {
-      var stream = evt.stream;
-      var uid = stream.getId()
-
-      // 收到流加入频道的事件后，先判定是不是本地的uid
-      if(!localStreams.includes(uid)) {
-        console.log('subscribe stream:' + uid);
-        // 拉流
-        screenClient.subscribe(stream);
-        }
-        })
-
-      }, function (err) {
-        console.log(err);
-      });
-
-      }, function (err) {
-        console.log(err);
-      })
-      });
+      this.screenClient = screenClient
+    },
+    unShare() {
+       this.screenClient.leave(
+          function() {
+            console.log("Leave channel successfully");
+          },
+          function(err) {
+            console.log("Leave channel failed");
+          }
+        );
     }
   }
 };
 </script>
 <style lang="less" scoped>
 #agora_local {
-  // width: 400px;
+  width: 100%;
   height: 300px;
   // background: red;
 }
@@ -310,15 +397,15 @@ export default {
   // background: yellowgreen;
 }
 .video666Wrap {
-    width: 80%;
-    // max-width: 1200px;
-    height: 90%;
-    position: fixed;
-    top: 0;
-    left: 0px;
-    z-index: -1;
-    background-color: #ffffff;
-    margin-left: 10px;
+  width: 80%;
+  // max-width: 1200px;
+  height: 90%;
+  position: fixed;
+  top: 0;
+  left: 0px;
+  z-index: -1;
+  background-color: #ffffff;
+  margin-left: 10px;
   > div {
     width: 100%;
     height: 90%;
@@ -328,24 +415,23 @@ export default {
 </style>
 
 <style lang="less">
-#player_666{
+#player_666 {
   display: flex;
   justify-content: center;
 }
-#video666{
+#video666 {
   // width: auto!important;
   max-width: 1000px;
-  height: auto!important;
+  height: auto !important;
 }
-#screen{
+#screen {
   position: fixed;
-  top: 20px;
+  top: 0px;
   left: 0;
   z-index: 10;
   width: 80%;
   height: 88vh;
   // border: 1px solid #333;
-
 }
 </style>
 

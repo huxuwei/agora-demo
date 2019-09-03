@@ -8,7 +8,7 @@
         ><span>{{item}}</span></div>
     </header>
     <main class="file-list-main">
-      <file-item-static v-show="activeIndex == 0"></file-item-static>
+      <!-- <file-item-static v-show="activeIndex == 0"></file-item-static> -->
       <file-item v-show="activeIndex == 1"></file-item>
     
     </main>
@@ -23,7 +23,7 @@ export default {
   inject: ['whiteJoin'],
   data() {
     return {
-      headerList: ['课件库','媒体库'],
+      headerList: ['媒体库'],
       activeIndex: 0,
       list: []
     }
