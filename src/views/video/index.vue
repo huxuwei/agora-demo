@@ -96,6 +96,7 @@ export default {
        * @param uid 用户的 ID， 整数，需保证唯一性, 如果不指定，即用户 ID 设置为 null，回调会返回一个服务器分配的 uid。
        */
       let _this = this;
+      console.log('this.uidID',this.uidID)
       this.client.join(
         videoConfig.token,
         this.channel,

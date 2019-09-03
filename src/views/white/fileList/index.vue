@@ -9,7 +9,7 @@
     </header>
     <main class="file-list-main">
       <!-- <file-item-static v-show="activeIndex == 0"></file-item-static> -->
-      <file-item v-show="activeIndex == 1"></file-item>
+      <file-item v-show="activeIndex == 0"></file-item>
     
     </main>
   </div>

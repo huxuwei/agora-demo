@@ -157,11 +157,11 @@ export default {
       this.classStartLoading = true
       let teacherUserId = parseInt(Math.random()*100000000)
       let startTime = new Date().getTime();
-      http.get("roomStart", { name: this.name, startTime,teacherUserId }).then(res => {
-      this.$message.success('开始上课')
-      this.classStartLoading = false
-      this.classStatus = classStatus.inClass
-    });
+      http.get("roomStart", { name: this.name, startTime, }).then(res => {
+        this.$message.success('开始上课')
+        this.classStartLoading = false
+        this.classStatus = classStatus.inClass
+      });
       
     },
     ended() {
@@ -169,6 +169,12 @@ export default {
       // this.room.dispatchMagixEvent('claaStop', {});
       http.get("roomStop", { name: this.name, endTime }).then(res => {
         this.$message.success('课程结束')
+        this.client.leave(function () {
+        console.log("离开房间成功");
+      }, function (err) {
+        console.log("Leave channel failed");
+      });
+       
       });
       // axios({
       //   url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,

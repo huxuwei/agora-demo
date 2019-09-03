@@ -5,7 +5,7 @@
         <white-room  ref="whiteRoom"></white-room>
       </div>
       <div class="videoWrap">
-        <video-room :uidID='uid'></video-room>
+        <video-room :uidID='uid' v-if="uid"></video-room>
       </div>
     </div>
   </div>
@@ -27,7 +27,7 @@ export default {
   created() {
     this.init()
     // this.websocketInit()
-    this.uid = parseInt(Math.random()*100000000)
+    // this.uid = parseInt(Math.random()*100000000)
     this.local()
     
   },
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     init() {
-      http.get("roomName", { name: this.room }).then(res => {
+      http.get("roomName", { name: this.room,role: this.role }).then(res => {
         console.log("res", res.data);
         let { herewhite, agora , file} = res.data;
         this.roomInfo = {
@@ -50,6 +50,7 @@ export default {
           role: this.role,
           roomToken: herewhite.roomToken
         };
+        this.uid  = agora.uid
         for (const key in this.roomInfo) {
           localStorage.setItem(key, this.roomInfo[key])
         }
