@@ -6,12 +6,12 @@
       
       <el-button @click="start" :loading="classStartLoading" v-if="classStatus == 0">上课</el-button>
       <template v-if="classStatus == 1">
-        <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool>
+        <!-- <WhiteTool class="white-tools" @changeTool="changeTool"></WhiteTool> -->
         <el-button @click="ended">下课</el-button>
         <!-- <el-button @click="pptShow">ppt</el-button> -->
-        <el-button @click="pptPre">上一页</el-button>
+        <!-- <el-button @click="pptPre">上一页</el-button>
         <el-button @click="pptNext">下一页</el-button>
-        <el-button @click="createWhite">新建白板</el-button>
+        <el-button @click="createWhite">新建白板</el-button> -->
         <el-button @click="whiteListVisible = !whiteListVisible">课件库</el-button>
       </template>
       <!-- <el-button @click="showSceneState">当前场景信息</el-button> -->
@@ -158,8 +158,10 @@ export default {
       //   this.ws.send(JSON.stringify(msg))
       // }else{
          let startTime = new Date().getTime();
-        http.get("roomStart", { name: this.name, startTime,teacherUserId }).then(res => {
+          http.get("roomStart", { name: this.name, startTime,teacherUserId }).then(res => {
           this.$message.success('开始上课')
+          this.classStartLoading = false
+          this.classStatus = classStatus.inClass
           // this.room.dispatchMagixEvent('claaStart', {});
         });
       // }
