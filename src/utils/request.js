@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'production') {
   console.log(process.env.VUE_APP_FLAG)
   if (process.env.VUE_APP_FLAG === 'pro') {
       //production 生产环境
-      path = 'http://api.xinggeyun.com';//路径
+      // path = 'http://api.xinggeyun.com';//路径
 
   } else {
       //test 测试环境

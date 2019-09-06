@@ -24,16 +24,18 @@
 </template>
 
 <script>
-import { whiteConfig, classStatus } from "@/utils/config.js";
+import { whiteConfig, classStatus, videoConfig } from "@/utils/config.js";
 import WhiteTool from "./tools";
 import http from "@/utils/request";
 import axios from "axios";
 import { ViewMode } from "white-web-sdk";
 import FileList from "./fileList";
-
+import {info, createChannel, sendMessage} from '@/utils/info.js'
+import AgoraRTM from 'agora-rtm-sdk'
 var n = 0;
 export default {
   components: { WhiteTool, FileList },
+  props:['uidID'],
   data() {
     return {
       room: {},
@@ -45,6 +47,8 @@ export default {
     };
   },
   mounted() {
+    this.initInfo()
+    this.init()
     document.body.style.overflow = "hidden";
     window.addEventListener("resize", () => {
       if (this.room) {
@@ -74,6 +78,9 @@ export default {
     },
     ws() {
       return this.$store.state.ws;
+    },
+    channel() {
+      return this.$route.query.room;
     },
   },
   provide() {
@@ -120,6 +127,9 @@ export default {
           room.bindHtmlElement(that.$refs.whiteWrap);
           room.refreshViewSize();
           that.$message.success('通知： 上课了')
+          // room.setMemberState({
+          //     strokeColor: [104, 33, 197],
+          // });
           that.classStartLoading = false
           that.classStatus = classStatus.inClass
           console.log(33333333333,that.classStatus , classStatus.inClass)
@@ -149,42 +159,7 @@ export default {
         currentApplianceName: val
       });
     },
-    start() {
-     
-      let  msg= {
-        classStart: 1
-      }
-      this.classStartLoading = true
-      let teacherUserId = parseInt(Math.random()*100000000)
-      let startTime = new Date().getTime();
-      http.get("roomStart", { name: this.name, startTime, }).then(res => {
-        this.$message.success('开始上课')
-        this.classStartLoading = false
-        this.classStatus = classStatus.inClass
-      });
-      
-    },
-    ended() {
-      let endTime = new Date().getTime();
-      // this.room.dispatchMagixEvent('claaStop', {});
-      http.get("roomStop", { name: this.name, endTime }).then(res => {
-        this.$message.success('课程结束')
-        this.client.leave(function () {
-        console.log("离开房间成功");
-      }, function (err) {
-        console.log("Leave channel failed");
-      });
-       
-      });
-      // axios({
-      //   url: `https://cloudcapiv4.herewhite.com/banRoom?token=${whiteConfig.token}`,
-      //   method: "POST",
-      //   data: {
-      //     ban: true,
-      //     uuid: this.uuid
-      //   }
-      // });
-    },
+    
     pptShow() {
       //之前初始化的 sdk 实例，roomToken 创建房间时，具体房间的 roomToken，此处作为鉴权使用。
       console.log("wqwe", this.whiteWebSdk.pptConverter);
@@ -280,9 +255,63 @@ export default {
       video666.play()
       audio666.play()
     },
+    /** */
+    start() {
+     
+      let  msg= {
+        classStart: 1
+      }
+      this.classStartLoading = true
+      let teacherUserId = parseInt(Math.random()*100000000)
+      let startTime = new Date().getTime();
+      http.get("roomStart", { name: this.name, startTime, }).then(res => {
+        this.$message.success('开始上课')
+        this.classStartLoading = false
+        this.classStatus = classStatus.inClass
+        this.whiteListVisible = true
+        sendMessage('start')
+      });
+      
+    },
+    ended() {
+      let endTime = new Date().getTime();
+      // this.room.dispatchMagixEvent('claaStop', {});
+      http.get("roomStop", { name: this.name, endTime }).then(res => {
+        this.$message.success('课程结束')
+        sendMessage('end')
+        setTimeout(() => {
+          this.$parent.$children[1].unShare()
+          this.$parent.$children[1].leaveRoom()
+          
+        }, 5000);
+        
+      });
+    },
     shareSreen() {
       console.log(this.$parent.$children[1])
       this.$parent.$children[1].shareSreen()
+    },
+    initInfo(){
+      console.log('this.uidID',this.uidID)
+      let { appID, mode, codec } = videoConfig;
+      let infoClient = info({
+        appID,
+        token: undefined,
+        uid: this.uidID+'1'
+      },(text)=>{
+        console.log('回调成功',text,typeof text)
+        if(text == 'start'){
+          // this.$message.success()
+          this.$message.success('开始上课!')
+        }else if(text == 'end'){
+          this.$message.success('下课啦!')
+          setTimeout(() => {
+            this.$parent.$children[1].unshare()
+            this.$parent.$children[1].leaveRoom()
+           
+          }, 5000);
+        }
+      })
     }
   }
 };

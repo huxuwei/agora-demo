@@ -23,6 +23,7 @@
 import AgoraRTC from "agora-rtc-sdk";
 import { videoConfig } from "@/utils/config.js";
 import http from "@/utils/request";
+import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
 export default {
   name: "home",
   props: ["uidID"],
@@ -39,6 +40,7 @@ export default {
     };
   },
   created() {
+    localStorage.removeItem('localStreams')
     this.init();
   },
   computed: {
@@ -187,7 +189,9 @@ export default {
 
               return;
             } else if (remoteStream.getId() == 777 ) {
+              console.log(999999,!arr.includes(uid))
               if(!arr.includes(uid)){
+                
                 remoteStream.play("screen");
                 return
               }
@@ -201,6 +205,7 @@ export default {
         },
         function(err) {
           console.log("加入直播间失败:", err);
+          _this.$message.error(`加入直播间失败:${errorInfo[err]}`)
         }
       );
     },
@@ -237,7 +242,8 @@ export default {
           });
         },
         function(err) {
-          console.log("getUserMedia failed", err);
+          console.log("getUserMedia failed", err,`初始化本地流发送错误:${streamInitInfo[err.msg]}`);
+          _this.$message.error(`初始化本地流发送错误:${streamInitInfo[err.msg]}`)
         }
       );
       //

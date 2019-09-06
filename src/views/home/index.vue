@@ -2,7 +2,7 @@
   <div class="room-page">
     <div class="room-page-main">
       <div class="room-page-left">
-        <white-room  ref="whiteRoom"></white-room>
+        <white-room :uidID='uid' v-if="uid" ref="whiteRoom"></white-room>
       </div>
       <div class="videoWrap">
         <video-room :uidID='uid' v-if="uid"></video-room>

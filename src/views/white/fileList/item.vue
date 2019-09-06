@@ -14,6 +14,9 @@
           icon="iconbofang"></g-icon>
       </span>
     </div>
+    <el-button v-if='activeItem.suffix == "mp3"' @click="playMp3" size="mini">
+      {{playStatus ? '暂停':'播放'}}
+    </el-button>
   </div>
 </template>
 
@@ -23,13 +26,13 @@ export default {
   components: {GIcon},
   data() {
     return {
-      activeIndex: 0,
+      activeIndex: -1,
       activeURL: "",
       activeItem: {},
       tempItem: {},
       tempIndex: -1,
       firstLoad: true,
-      playStatus: ''
+      playStatus: false
     };
   },
   computed: {
@@ -76,11 +79,13 @@ export default {
             playTime: 0,
             filePath: this.tempItem.url
           },
-          function(error) {
+          (error)=> {
             if (error) {
               // 错误处理
               console.log("音频播放错误:" + error);
               return;
+            }else{
+              this.playStatus = true
             }
           }
         );
@@ -107,6 +112,7 @@ export default {
       if(this.firstLoad) {
         console.log('进入第一次播放')
         this.firstLoad = false
+        this.playStatus = true
         this.stopCallback()
         
         return
@@ -123,6 +129,25 @@ export default {
     },
     statusChange() {
 
+    },
+    playMp3() {
+      if(this.playStatus){
+        this.stream.pauseAudioMixing((err)=>{
+          if(err){
+            console.log("音频暂停错误:",err)
+          }else{
+            this.playStatus = false
+          }
+        })
+      }else{
+        this.stream.resumeAudioMixing((err)=>{
+          if(err){
+            console.log("音频恢复失败:",err)
+          }else{
+            this.playStatus = true
+          }
+        })
+      }
     }
   }
 };
