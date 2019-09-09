@@ -1643,6 +1643,11 @@ agora-rtc-sdk@^2.8.0:
   resolved "https://registry.npm.taobao.org/agora-rtc-sdk/download/agora-rtc-sdk-2.8.0.tgz#720ee16fc1b063c8168c0b2594cc0f6ec634d621"
   integrity sha1-cg7hb8GwY8gWjAsllMwPbsY01iE=
 
+agora-rtm-sdk@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/agora-rtm-sdk/download/agora-rtm-sdk-1.0.1.tgz#26c62477bf0205dfb4e70aa982528d436a33b9c2"
+  integrity sha1-JsYkd78CBd+05wqpglKNQ2ozucI=
+
 ajv-errors@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-1.0.1.tgz#f35986aceb91afadec4102fbd85014950cefa64d"

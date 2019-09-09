@@ -70,7 +70,7 @@ function RoomHeader(props) {
           visible={drawVisible}
         >
           {/* <FileList></FileList> */}
-          <Chatting></Chatting>
+          {/* <Chatting></Chatting> */}
         </Drawer>
     </React.Fragment>
   )
