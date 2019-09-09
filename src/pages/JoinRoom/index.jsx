@@ -1,41 +1,28 @@
 /* eslint-disable no-useless-constructor */
 import * as React from 'react'
 import './index.less'
-import { Input, Button } from 'antd'
-import http from '@/utils/request'
-import { HashRouter} from 'react-router-dom'
-import PropTypes from 'prop-types'
+import { Input, Button, Radio  } from 'antd'
 
 class JoinHome extends React.Component{
   constructor(props) {
     super(props)
     this.state = {
       room: '',
-      roomInfo: {}
+      role: 1
     }
   }
-  roomChange = e=>{
-    // console.log(this.props)
+  roomChange = (item, value)=>{
     this.setState({
-      room:e.target.value
+      [item]:value.target.value
     })
   }
 
   joinRoom = () =>{
-    let {room} = this.state
-    http.get('roomName',{name: room }).then(res=>{
-      console.log('res',res.data)
-      let {herewhite, agora  } = res.data
-      this.setState({
-        roomInfo: {
-          uuid: herewhite.uuid,
-          roomName: agora.name
-        }
-      })
-      this.props.history.push({
-        pathname: '/room',
-        search: `uuid=${herewhite.uuid}&roomName=${agora.name}`
-      })
+    let {room, role} = this.state
+   
+    this.props.history.push({
+      pathname: '/room',
+      search: `room=${room}&role=${role}`
     })
   }
 
@@ -47,14 +34,14 @@ class JoinHome extends React.Component{
             <div>
               <Input  className="room-input" 
                 value={this.state.room}
-                onChange={this.roomChange}
+                onChange={(v)=>this.roomChange('room',v)}
                 placeholder="房间号"  ></Input>
+              <Radio.Group value={this.state.role} onChange={(v)=>this.roomChange('role',v)}>
+                <Radio value={1}>老师</Radio>
+                <Radio value={2}>学生</Radio>
+              </Radio.Group>
               <Button className="room-join" onClick={this.joinRoom}>加入房间</Button>
               <Button className="room-join">查看回放</Button>
-              {/* <el-input className="room-input" 
-                placeholder="房间号" v-model="room"></el-input>
-              <el-button className="room-join" >加入房间</el-button>
-              <el-button className="room-join">回放</el-button> */}
             </div>
           </div>
         </div>

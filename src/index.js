@@ -2,9 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Routers from './pages/AppRouters'
 import * as serviceWorker from './serviceWorker';
+import {createStore} from 'redux'
+import { Provider } from "react-redux";
+
+import reducer from "./redux/store";
+
+const store = createStore(reducer)
 
 ReactDOM.render(
-  <Routers />,
+  <Provider store={store}>
+    <Routers />
+  </Provider>,
   document.getElementById('root')
 );
 

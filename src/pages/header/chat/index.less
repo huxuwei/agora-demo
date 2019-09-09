@@ -1,0 +1,32 @@
+.chat-wrap{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(31,32,39,.96);
+  .chat-header{
+    height: 60px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid hsla(0,0%,100%,.251);
+  }
+  .chat-main{
+    flex: 1;
+    border-bottom: 1px solid hsla(0,0%,100%,.251);
+  }
+  .chat-footer{
+    height: 100px;
+    position: relative;
+    >div{
+      color: white;
+      padding: 10px;
+      height: 100%;
+    }
+    .chat-send{
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+    }
+  }
+}
