@@ -14,6 +14,48 @@
   .chat-main{
     flex: 1;
     border-bottom: 1px solid hsla(0,0%,100%,.251);
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    .user-msg-box{
+      width: 100%;
+      span{
+        color: white;
+      }
+      .user-message{
+        border-radius: 0 6px 6px;
+        padding:2px 4px;
+        span{
+          // display: inline-block;
+          // width: 100%;
+        }
+      }
+    }
+    .right{
+      align-self: flex-end;
+      display: flex;
+      flex-direction: column;
+      
+      padding: 10px;
+      .user-title{
+        align-self: flex-end;
+      }
+      .user-message{
+        align-self: flex-end;
+        background: rgba(0,119,255,.9);
+      }
+    }
+    .left{
+      align-self: flex-start;
+      display: flex;
+      flex-direction: column;
+      .user-message{
+        align-self: flex-start;
+        background: rgba(70,70,73,.9);
+      }
+     
+    }
+    
   }
   .chat-footer{
     height: 100px;

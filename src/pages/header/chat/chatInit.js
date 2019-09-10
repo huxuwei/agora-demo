@@ -4,7 +4,7 @@ import AgoraRTM from 'agora-rtm-sdk'
 let channelA 
 let  clientA
 
-export function info(options,fn) {
+export function info(options={},fn) {
   console.log('options',options)
   const {appID, token, uid} = options
   const client = AgoraRTM.createInstance(appID);
