@@ -3,7 +3,7 @@ import {Button } from 'antd'
 import GIcon from '@/components/GIcon'
 
 export default function WhiteTools(props) {
-  let [activeIndex, setActiveIndex] = useState(0)
+  let [activeIndex, setActiveIndex] = useState(1)
   const list= [
     {text: 'selector',icon: 'iconxuanze' },
     {text: 'pencil',icon: 'iconpencil' },

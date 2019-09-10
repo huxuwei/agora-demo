@@ -1,10 +1,11 @@
 import React from 'react'
 import './index.less'
+import {Message} from 'antd'
 import AgoraRTC from 'agora-rtc-sdk'
 import {videoConfig} from '@/utils/config.js'
-import http from '@/utils/request'
 import queryString from 'query-string'
 import { connect } from "react-redux";
+import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
 
  class Video extends React.Component{
   constructor(props){
@@ -14,21 +15,26 @@ import { connect } from "react-redux";
       client: {},
       remoteStreamDoMID: ''
     }
-    
+    this.first = true
   }
-  componentDidMount() {
-    this.init()
+  componentDidMount(nextProps){
+    if(this.first){
+      this.init(this.props)
+      this.first = false
+    }
+   
   }
-   init(){
-    let { appID, mode, codec } = videoConfig;
-    let {client} = this.state
+  init(nextProps){
+    let { mode, codec } = videoConfig;
+    let {appId } = nextProps.roomInfo.agora
+    // let {client} = this.state
     
-    client = AgoraRTC.createClient({ mode, codec });
-
-    client.init( appID,() => {
+    this.client = AgoraRTC.createClient({ mode, codec });
+    console.log(appId,this.client)
+    this.client.init( appId,() => {
         console.log("AgoraRTC client 初始化成功");
-        this.props.Set_client(client)
-        this.join();
+        this.props.Set_client(this.client)
+        this.join(nextProps);
       },
       function(err) {
         console.log("AgoraRTC client 初始化失败:", err);
@@ -36,20 +42,21 @@ import { connect } from "react-redux";
     );
   }
   // 加入
-  join() {
-    const {client} = this.state
+  join(nextProps) {
+    const {client} = this
+    const {channel, rtcToken, uid} = nextProps.roomInfo.agora
     // 加入直播间
     /**
      * @param token
      * @param channel：频道名称。
      * @param uid 用户的 ID， 整数，需保证唯一性, 如果不指定，即用户 ID 设置为 null，回调会返回一个服务器分配的 uid。
      */
-    // let _this = this;
+    let _this = this;
     // console.log('this.uidID',uidID)
     client.join(
-      videoConfig.token,
+      rtcToken,
       channel,
-      this.uidID,
+      uid,
       uid => {
         console.log("用户 " + uid + " 加入直播间成功:" + channel);
         this.uid = uid;
@@ -75,7 +82,7 @@ import { connect } from "react-redux";
         //   console.log("Subscribe stream failed222222222", err);
         // });
 
-        _client.on("stream-added", function(evt) {
+        client.on("stream-added", function(evt) {
           var stream = evt.stream;
           console.log(
             "New stream added:创建流1111111111111 " + stream.getId()
@@ -89,65 +96,60 @@ import { connect } from "react-redux";
           //   bitrate: 120,
           // })
 
-          _client.subscribe(stream, function(err) {
+          client.subscribe(stream, function(err) {
             console.log("Subscribe stream failed", err);
           });
         });
 
-        _client.on("stream-subscribed", function(evt) {
+        client.on("stream-subscribed", function(evt) {
           var remoteStream = evt.stream;
           console.log("订阅远程流成功: " + remoteStream.getId());
           console.log("screen", remoteStream.getId());
-          // _this.$store.commit("SET_stream", remoteStream);
-
-             let arr = localStorage.getItem('localStreams')
-            if(arr){
-              arr = JSON.parse(localStorage.getItem('localStreams'))
-            }else{
-              arr=  []
-            }
+          // shareScreen
+          // let arr = localStorage.getItem('localStreams')
+          // if(arr){
+          //   arr = JSON.parse(localStorage.getItem('localStreams'))
+          // }else{
+          //   arr=  []
+          // }
             
-
-           
-
           let uid = remoteStream.getId();
           let id = "agora_remote" + remoteStream.getId();
-          console.log('this.localStreams',this.localStreams)
 
+          // if (remoteStream.getId() == 666) {
+          //   _this.remoteStreamDoMID666 = id;
+          //   http
+          //     .get("roomUpdateLayout", { name: channel, uid })
+          //     .then(res => {
+          //       console.log("通知后台播放旁路推流:", uid);
+          //     });
+          //   _this.$nextTick(() => {
+          //     _this.$refs.video666.style.zIndex = 10;
+          //     remoteStream.play(_this.remoteStreamDoMID666);
+          //     _this.remoteStream = remoteStream;
+          //   });
 
-
-          if (remoteStream.getId() == 666) {
-            _this.remoteStreamDoMID666 = id;
-            http
-              .get("roomUpdateLayout", { name: channel, uid })
-              .then(res => {
-                console.log("通知后台播放旁路推流:", uid);
-              });
-            _this.$nextTick(() => {
-              _this.$refs.video666.style.zIndex = 10;
-              remoteStream.play(_this.remoteStreamDoMID666);
-              _this.remoteStream = remoteStream;
-            });
-
-            return;
-          } else if (remoteStream.getId() == 777 ) {
-            console.log(999999,!arr.includes(uid))
-            if(!arr.includes(uid)){
+          //   return;
+          // } else if (remoteStream.getId() == 777 ) {
+          //   console.log(999999,!arr.includes(uid))
+          //   if(!arr.includes(uid)){
               
-              remoteStream.play("screen");
-              return
-            }
-            return
-          }
-          _this.remoteStreamDoMID = id;
+          //     remoteStream.play("screen");
+          //     return
+          //   }
+          //   return
+          // }
+          _this.setState({
+            remoteStreamDoMID: id
+          })
           setTimeout(() => {
-            remoteStream.play(_this.remoteStreamDoMID);
+            remoteStream.play(_this.state.remoteStreamDoMID);
           }, 1000);
         });
       },
       function(err) {
         console.log("加入直播间失败:", err);
-        _this.$message.error(`加入直播间失败:${errorInfo[err]}`)
+        Message.error(`加入直播间失败:${errorInfo[err]}`)
       }
     );
   }
@@ -155,7 +157,7 @@ import { connect } from "react-redux";
    // 创建音视频流
     // 初始化音视频流
   createSteam() {
-    const {client} = this.state
+    const {client} = this
     let _this = this;
     var localStream = AgoraRTC.createStream({
       streamID: _this.uid,
@@ -169,7 +171,7 @@ import { connect } from "react-redux";
     localStream.init(function() {
         console.log("初始化流成功,播放本地流");
         localStream.play("agora_local");
-        this.props.SET_stream(localStream)
+        _this.props.SET_stream(localStream)
 
         // 发布本地音视频流
         client.publish(localStream, function(err) {
@@ -194,12 +196,12 @@ import { connect } from "react-redux";
 
       let dom = document.getElementById('agora_remote' + uid)
       console.log("离开房间 ", "agora_remote" + uid);
-      if(uid == 666) {
-        let domPlayer = document.getElementById('player_666')
-        _this.$refs.video666.style.zIndex = -99
-        domPlayer&& domPlayer.remove()
-        return
-      }
+      // if(uid == 666) {
+      //   let domPlayer = document.getElementById('player_666')
+      //   _this.$refs.video666.style.zIndex = -99
+      //   domPlayer&& domPlayer.remove()
+      //   return
+      // }
       dom&& dom.remove()
     });
   }
@@ -214,7 +216,7 @@ import { connect } from "react-redux";
         <div id="screen"></div>
         <div className="video" id={remoteStreamDoMID}></div>
         
-        <button onClick={this.props.add1}>{this.props.n}</button>
+        {/* <button onClick={this.props.add1}>{this.props.n}</button> */}
       </div>
     )
   }
