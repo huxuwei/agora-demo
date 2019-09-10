@@ -26,7 +26,6 @@ function login(token, uid,fn) {
     createChannel(clientA,fn)
   }).catch(err => {
     console.log('AgoraRTM client login failure', err);
-    // login()
   });
 }
 
