@@ -9,14 +9,17 @@ const store = (state, action) => {
   //     return state
   //   }
   // }
+  console.log('action111111',action)
   if (state === undefined) {
     return {
       client: {},
       stream: {},
-      whiteRoom: {}
+      whiteRoom: {},
+      roomInfo: {}
     }
   }
   let newState = {}
+  console.log('action',action)
   switch (action.type) {
     case 'Set_client':
       newState = {
@@ -24,22 +27,28 @@ const store = (state, action) => {
         client: action.payload
       }
       break;
-    case 'SET_stream':
+    case 'Set_stream':
       newState = {
         ...state,
         stream: action.payload
       }
       break;
-    case 'SET_whiteRoom':
+    case 'Set_whiteRoom':
       newState = {
         ...state,
         whiteRoom: action.payload
       }
       break;
-      
+    case 'Set_roomInfo':
+      newState = {
+        ...state,
+        roomInfo: action.payload
+      }
+      break;
     default:
       break;
   }
+  console.log('newState',newState)
   return newState
 }
 export default store

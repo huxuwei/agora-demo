@@ -171,7 +171,7 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
     localStream.init(function() {
         console.log("初始化流成功,播放本地流");
         localStream.play("agora_local");
-        _this.props.SET_stream(localStream)
+        _this.props.Set_stream(localStream)
 
         // 发布本地音视频流
         client.publish(localStream, function(err) {
@@ -231,7 +231,7 @@ function mapDispatchToProps(dispatch) {
   return {
     add1: ()=> dispatch({type:'add', payload: 1}),
     Set_client: (client)=> dispatch({type:'Set_client', payload: client}),
-    SET_stream: (stream)=> dispatch({type:'SET_stream', payload: stream}) 
+    Set_stream: (stream)=> dispatch({type:'Set_stream', payload: stream}) 
   }
 }
 

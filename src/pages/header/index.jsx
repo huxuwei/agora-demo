@@ -13,9 +13,8 @@ function RoomHeader(props) {
   const [classStatus, setClassStatus] = useState(false)
   const [classStartLoading, setclassStartLoading] = useState(false)
   const [drawVisible, setDrawVisible] = useState(true)
-  const [active, setActive] = useState({})
+  const [active, setActive] = useState({type:'chat'})
   const [roomName, setroomName] = useState('')
-  const [msg, setMsg] = useState('')
   const buttonList = [
     {type: 'file',icon:'iconziyuan'},
     {type: 'chat',icon:'iconliaotian'},
@@ -30,14 +29,15 @@ function RoomHeader(props) {
   function start() {
     setclassStartLoading(true)
     const api =  classStatus ? 'roomStop':'roomStart'
-    // const 
-    http.get(api, { name: room, startTime: 1 }).then(res => {
-      message.success('开始上课')
+    const { id: roomId, userInfo: { id:userId}} = props.roomInfo
+    http.get(api, { roomId, userId }).then(res => {
+      // message.success('开始上课')
       setclassStartLoading(false)
       setClassStatus(!classStatus)
       // sendMessage('start')
     }).catch(err=>{
       setclassStartLoading(false)
+      setClassStatus(!classStatus)
     })
     
   }
@@ -49,13 +49,16 @@ function RoomHeader(props) {
     setDrawVisible(false)
   }
   function chooseShow(val){
-    // switch(active.type){
-    //   case 'file': return <FileList ></FileList>;
-    //   case 'chat': return <Chatting msg={msg}></Chatting>;
-    //   default : return null
-    // }
     if(active.type === val){
-      return 'visibility:hidden'
+      return {
+        display:'block',
+        height: '100%'
+      }
+    }else{
+      return {
+        display:'none',
+        height: '100%'
+      }
     }
     switch(active.type){
       case 'file': return <FileList ></FileList>;
@@ -89,8 +92,12 @@ function RoomHeader(props) {
           onClose={drawClose}
           visible={drawVisible}
         >
-          
-          <Chatting className={chooseShow('chat')} comDidMouted={drawClose} agora={props.roomInfo.agora}></Chatting>;
+          <div style={chooseShow('chat')}>
+            <Chatting  comDidMouted={drawClose} agora={props.roomInfo.agora}></Chatting>;
+          </div>
+          <div style={chooseShow('file')}>
+            <FileList roomInfo={props.roomInfo}></FileList>;
+          </div>
           {/* {chooseShow()} */}
         </Drawer>
     </React.Fragment>

@@ -1,7 +1,7 @@
 
 import React from 'react'
 import {connect} from 'react-redux'
-
+import http from '@/utils/request'
 
 class FileItem extends React.Component{
   constructor(props){
@@ -10,7 +10,16 @@ class FileItem extends React.Component{
       activeIndex: -1,
       list: []
     }
-    
+  }
+  componentDidMount() {
+    console.log('this.props.roomInfo',this.props.roomInfo)
+    const { id: roomId, userInfo: { id:userId}} = this.props.roomInfo
+    const params ={roomId, userId}
+    http.get('getCourseware',params).then(res=>{
+      this.setState({
+        list: res.data.ordinary
+      })
+    })
   }
   choose(item, i) {
     this.setState({
@@ -18,18 +27,28 @@ class FileItem extends React.Component{
     })
     this.pptShow(item,i)
   }
+
   pptShow(item,i) {
-    const {room} = this.state
+    const {whiteRoom: room } = this.props
     // scenes 就是用来创建 pptx 对应的场景的描述信息
-    var scenes = result.scenes;
+    var scenes = item.coursewares.map((item, i)=>{
+      return {
+        name: i,
+        ppt: {
+          ...item,
+          src:'https://live.boluozaixian.net/'+ item.conversionFileUrl
+        }
+      }
+    });
     console.log('scenes',scenes)
+
     // 为这个 ppt 文件起一个独一无二的名字。
     // 如果你的白板中可能出现多个 ppt，这样有助于管理它们。
-    var pptName = i;
-
+    var pptName = item.name.split('.')[0];
+    console.log("pppp:", "/" + pptName, scenes);
     // // 将 ppt 对应的场景插入白板
     room.putScenes("/" + pptName, scenes);
-    console.log("pppp:", "/" + pptName, scenes);
+    
     // 切换当前场景到 ppt 的第一页，这样才能显示出来
     room.setScenePath("/" + pptName + "/" + scenes[0].name);
   }
@@ -54,7 +73,8 @@ class FileItem extends React.Component{
 
 function mapStateToProps(state){
   return {
-    room: state.whiteRoom
+    whiteRoom: state.whiteRoom,
+    roomInfo: state.roomInfo
   }
 }
 

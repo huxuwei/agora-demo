@@ -6,7 +6,8 @@ import http from '@/utils/request'
 import queryString from 'query-string'
 import { connect } from "react-redux";
 import WhiteTools from './whiteTools'
-
+import {WhiteWebSdk} from 'white-react-sdk'
+import "white-web-sdk/style/index.css";
 class White extends React.Component{
   constructor(props){
     super(props)
