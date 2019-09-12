@@ -6,6 +6,7 @@ import http from '@/utils/request'
 import queryString from 'query-string'
 import { connect } from "react-redux";
 import WhiteTools from './whiteTools'
+import WhiteAction from './whiteAction'
 import {WhiteWebSdk} from 'white-react-sdk'
 import "white-web-sdk/style/index.css";
 class White extends React.Component{
@@ -13,7 +14,7 @@ class White extends React.Component{
     super(props)
     this.channel = queryString.parse(window.location.hash.split('?')[1]).room
     this.state = {
-
+      loaded: false
     }
     this.first = true
   }
@@ -54,6 +55,19 @@ class White extends React.Component{
      this.addRoomEvent()
      
      this.props.Set_whiteRoom(room)
+     this.setState({
+      loaded: true
+     })
+
+    //  let pptConverter = whiteWebSdk.pptConverter(roomToken);
+    //   pptConverter.convert({
+    //     url: 'http://pw83lvz3f.bkt.clouddn.com/ppt.ppt',
+    //     kind: "static",
+    //   }).then(function(result) {
+    //     // scenes 就是用来创建 pptx 对应的场景的描述信息
+    //     var scenes = result.scenes;
+    //     console.log('scenesscenesscenesscenesscenesscenesscenesscenes',scenes)
+    //   });
   }
   readOnly() {
     //只读，再设置为跟随
@@ -81,6 +95,7 @@ class White extends React.Component{
       <div className="white-wrap">
         <div className="wrap" ref="whiteWrap"></div>
         <WhiteTools changeTool={changeTool}></WhiteTools>
+        {this.state.loaded && <WhiteAction></WhiteAction>}
       </div>
     )
   }

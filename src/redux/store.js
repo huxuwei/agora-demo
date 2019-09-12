@@ -15,7 +15,8 @@ const store = (state, action) => {
       client: {},
       stream: {},
       whiteRoom: {},
-      roomInfo: {}
+      roomInfo: {},
+      fileInfo: {}
     }
   }
   let newState = {}
@@ -43,6 +44,12 @@ const store = (state, action) => {
       newState = {
         ...state,
         roomInfo: action.payload
+      }
+      break;
+    case 'Set_fileInfo':
+      newState = {
+        ...state,
+        fileInfo: action.payload
       }
       break;
     default:
