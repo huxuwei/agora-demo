@@ -22,7 +22,13 @@ class JoinHome extends React.Component{
    
     this.props.history.push({
       pathname: '/room',
-      search: `room=${room}&role=${role}`
+      search: `scheduleStr=3faf065f28b249ef&&crmUserStr=10da4dcba07b32ca&&roleStr=425413fcd9ab7f73`
+    })
+  }
+  replay = () =>{
+    this.props.history.push({
+      pathname: '/room',
+      search: `scheduleStr=3faf065f28b249ef&&crmUserStr=0ee4782a261c3659&&roleStr=425413fcd9ab7f73`
     })
   }
 
@@ -41,7 +47,7 @@ class JoinHome extends React.Component{
                 <Radio value={2}>学生</Radio>
               </Radio.Group>
               <Button className="room-join" onClick={this.joinRoom}>加入房间</Button>
-              <Button className="room-join">查看回放</Button>
+              <Button className="room-join"  onClick={this.replay}>查看回放</Button>
             </div>
           </div>
         </div>

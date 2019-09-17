@@ -19,8 +19,11 @@ export function info(options={},fn) {
   return client
 }
 
-
-function login(token, uid,fn) {
+// 登陆
+async function login(token, uid,fn) {
+  // const res = await clientA.login({ token, uid })
+  // console.log('AgoraRTM client login success: info登陆成功');
+  // createChannel(clientA,fn)
   clientA.login({ token, uid }).then(() => {
     console.log('AgoraRTM client login success: info登陆成功');
     createChannel(clientA,fn)
@@ -29,8 +32,9 @@ function login(token, uid,fn) {
   });
 }
 
-export function createChannel (client, fn) {
-  const channel = client.createChannel('8888'); // 
+// 创建并加入频道
+export function createChannel (client, fn, channelNum='8888') {
+  const channel = client.createChannel(channelNum); // 
 
   channel.join().then(() => {
     /* 加入频道成功的处理逻辑 */
@@ -44,6 +48,7 @@ export function createChannel (client, fn) {
     typeof fn ==='function' && fn(text)
   });
   channelA = channel
+  return channel
 }
 
 

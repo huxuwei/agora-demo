@@ -6,16 +6,17 @@ import {videoConfig} from '@/utils/config.js'
 import queryString from 'query-string'
 import { connect } from "react-redux";
 import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
-
+import VideoTools from './videoTools'
  class Video extends React.Component{
   constructor(props){
     super(props)
     this.channel = queryString.parse(window.location.hash.split('?')[1]).room
     this.state = {
       client: {},
-      remoteStreamDoMID: ''
+      remoteStreamList: []
     }
     this.first = true
+    this.remoteStreamList = []
   }
   componentDidMount(nextProps){
     if(this.first){
@@ -102,7 +103,7 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
         });
 
         client.on("stream-subscribed", function(evt) {
-          var remoteStream = evt.stream;
+          let remoteStream = evt.stream;
           console.log("订阅远程流成功: " + remoteStream.getId());
           console.log("screen", remoteStream.getId());
           // shareScreen
@@ -112,10 +113,19 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
           // }else{
           //   arr=  []
           // }
+          
             
           let uid = remoteStream.getId();
           let id = "agora_remote" + remoteStream.getId();
-
+          
+          _this.setState((state)=>{
+            return {
+              remoteStreamList: [...state.remoteStreamList, {
+                id,
+                stream: remoteStream
+              }]
+            }
+          })
           // if (remoteStream.getId() == 666) {
           //   _this.remoteStreamDoMID666 = id;
           //   http
@@ -139,11 +149,9 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
           //   }
           //   return
           // }
-          _this.setState({
-            remoteStreamDoMID: id
-          })
+          
           setTimeout(() => {
-            remoteStream.play(_this.state.remoteStreamDoMID);
+            remoteStream.play(id);
           }, 1000);
         });
       },
@@ -158,7 +166,7 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
     // 初始化音视频流
   createSteam() {
     const {client} = this
-    let _this = this;
+    const _this = this;
     var localStream = AgoraRTC.createStream({
       streamID: _this.uid,
       audio: true,
@@ -193,9 +201,15 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
     //
     client.on("peer-leave", function(evt) {
       var uid = evt.uid;
-
-      let dom = document.getElementById('agora_remote' + uid)
-      console.log("离开房间 ", "agora_remote" + uid);
+      _this.setState((state)=>{
+        return {
+          remoteStreamList: state.remoteStreamList.filter(item=>{
+            return item.id !== uid
+          })
+        }
+      })
+      let dom = document.getElementById('player_' + uid)
+      console.log("离开房间 ", "player_" + uid);
       // if(uid == 666) {
       //   let domPlayer = document.getElementById('player_666')
       //   _this.$refs.video666.style.zIndex = -99
@@ -207,16 +221,23 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
   }
 
   render() {
-    // console.log(this.state)
-    let {remoteStreamDoMID} = this.state
+    let { remoteStreamList} = this.state
     
     return (
       <div>
         <div id="agora_local"></div>
         <div id="screen"></div>
-        <div className="video" id={remoteStreamDoMID}></div>
+        {
+          remoteStreamList.map(item=>(
+            <div className="video" id={item.id} key={item.id}>
+              <VideoTools remoteStream={item.stream}></VideoTools>
+            </div>
+          ))
+        }
         
-        {/* <button onClick={this.props.add1}>{this.props.n}</button> */}
+        <button onClick={()=>this.props.stream.close()}>close</button>
+        <button onClick={()=>this.props.stream.muteAudio()}>close</button>
+        <button onClick={()=>this.props.stream.disableVideo()}>disableVideo</button>
       </div>
     )
   }
@@ -224,7 +245,8 @@ import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
 function mapStateToProps(state){
   return {
     n: state.n,
-    videoClient: state.client
+    videoClient: state.client,
+    stream: state.stream
   }
 }
 function mapDispatchToProps(dispatch) {

@@ -15,7 +15,9 @@ const apis = {
     // 加入屏幕分享
     addInjectStream: room + '/addInjectStream',
     // 获取文件
-    getCourseware: room + '/getCourseware'
+    getCourseware: room + '/getCourseware',
+    // 回放
+    getPlayBackInfo: room +'/getPlayBackInfo'
 
 }
 export const getApi = key => apis[key];
