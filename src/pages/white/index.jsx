@@ -28,9 +28,10 @@ class White extends React.Component{
       }
     });
   }
+
   async initAndJoinRoom(nextProps) {
     
-    const {roomToken, uuid} = nextProps.roomInfo.hereWhite
+    const {hereWhite:{roomToken, uuid}, userInfo:{role}} = nextProps.roomInfo
     // 初始化 SDK，并且调用其成员方法 joinRoom
     const whiteWebSdk = new WhiteWebSdk();
     // this.$store.commit('SET_whiteWebSdk', this.whiteWebSdk)
@@ -44,15 +45,15 @@ class White extends React.Component{
     // 白板自适应
     room.refreshViewSize();
      // 设置成主播
-     this.role === 1 && room.setViewMode("broadcaster");
+     role === 1 && room.setViewMode("broadcaster");
      // 禁止缩放
      room.disableCameraTransform='YES'
      // 设置初始颜色
      room.setMemberState({
        strokeColor: [255, 0, 0],
      });
-     this.readOnly()
-     this.addRoomEvent()
+     this.readOnly(room)
+     this.addRoomEvent(room)
      
      this.props.Set_whiteRoom(room)
      this.setState({
@@ -69,33 +70,35 @@ class White extends React.Component{
     //     console.log('scenesscenesscenesscenesscenesscenesscenesscenes',scenes)
     //   });
   }
-  readOnly() {
+  readOnly(room) {
     //只读，再设置为跟随
-    if (this.role == 2) {
-      this.room.disableOperations = true;
-      this.room.setViewMode(ViewMode.Follower);
+    if (this.props.roomInfo.userInfo.role !== 1) {
+      room.disableOperations = true;
+      room.setViewMode(ViewMode.Follower);
     }
   }
-  addRoomEvent() {
-    // this.room.addMagixEventListener('claaStart',this.message('开始上课啦')) ;
-
-    this.room.addMagixEventListener('claaStop', this.classStop);
-    this.room.addMagixEventListener('stop', this.stop);
-    this.room.addMagixEventListener('play', this.play);
+  addRoomEvent(room) {
+    room.addMagixEventListener('claaStop', this.classStop);
+    room.addMagixEventListener('stop', this.stop);
+    room.addMagixEventListener('play', this.play);
   }
   changeTool = (val)=>{
     this.room.setMemberState({
       currentApplianceName: val
     });
   }
-
   render() {
     const {changeTool} = this
     return (
       <div className="white-wrap">
         <div className="wrap" ref="whiteWrap"></div>
-        <WhiteTools changeTool={changeTool}></WhiteTools>
-        {this.state.loaded && <WhiteAction></WhiteAction>}
+        {
+          (this.props.roomInfo && this.props.roomInfo.userInfo && this.props.roomInfo.userInfo.role === 1 )  ? 
+          <React.Fragment>
+            <WhiteTools changeTool={changeTool}></WhiteTools>
+            {this.state.loaded && <WhiteAction></WhiteAction>}
+          </React.Fragment>: null
+        }
       </div>
     )
   }

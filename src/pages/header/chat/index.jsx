@@ -24,6 +24,7 @@ class Chat extends React.Component{
     },(text)=>{
       console.log('回调成功',text,typeof text)
       this.setMessageContent(text, false)
+      this.props.getMessage(text)
     })
   }
 
@@ -41,7 +42,8 @@ class Chat extends React.Component{
     this.setState({
       chatList: [...this.state.chatList,{msg, pos}]
     })
-    this.refs.chatMainInner.scrollTop = this.refs.chatMainInner.scrollHeight
+    this.refs.chatMainInner.scrollTop = 30000
+    // this.refs.chatMainInner.scrollHeight
   }
   onKeyDown(e){
     if(e.keyCode === 13) {

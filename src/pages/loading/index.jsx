@@ -14,6 +14,7 @@ class LoadingStart extends React.Component {
     }
   }
   componentDidMount(){
+    localStorage.clear();
     this.init()
   }
   init() {

@@ -40,7 +40,7 @@ export function createChannel (client, fn) {
   });
   channel.on('ChannelMessage', ({ text }, senderId) => { // text 为收到的频道消息文本，senderId 为发送方的 User ID
     /* 收到频道消息的处理逻辑 */
-    console.log('消息接收成功:', text,senderId )
+    console.log('消息接收成功:', text,senderId ,typeof fn ==='function')
     typeof fn ==='function' && fn(text)
   });
   channelA = channel

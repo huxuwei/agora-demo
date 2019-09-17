@@ -1,7 +1,7 @@
 
 import React from 'react'
 import {connect} from 'react-redux'
-import http from '@/utils/request'
+
 
 class FileItem extends React.Component{
   constructor(props){
@@ -10,39 +10,33 @@ class FileItem extends React.Component{
       activeIndex: -1,
       list: [
         {
-          name: 'init',
+          name: '白板',
           coursewares: Array(20).fill(0).map(item=>{
             return {
               ppt: undefined,
             }
           }),
-          url: 'init',
+          key: 'init',
         }
       ]
     }
   }
   componentDidMount() {
-    console.log('this.props.roomInfo',this.props.roomInfo)
-    const { id: roomId, userInfo: { id:userId}} = this.props.roomInfo
-    const params ={roomId, userId}
-    http.get('getCourseware',params).then(res=>{
-      this.setState({
-        list: [...this.state.list, ...res.data.ordinary],
-      })
-      this.state.list.forEach((item,i)=>{
 
-        if(i === 0){
-          localStorage.setItem(item.name, 2)
-        }
-        if(localStorage.getItem(item.name)){
-          localStorage.setItem(item.name, 1)
-        }
-        
-      })
+    this.setState({
+      list: [...this.state.list, ...this.props.fileList],
+    })
+    this.state.list.forEach((item,i)=>{
+      if(i === 0){
+        localStorage.setItem(item.name, 2)
+      }
+      if(localStorage.getItem(item.name)){
+        localStorage.setItem(item.name, 1)
+      }
       
     })
   }
-  componentDidUpdate(){
+  componentDidUpdate(val){
     // console.log('this.props.whiteRoom',this.props.whiteRoom)
     // if(this.props.whiteRoom.uuid){
     //   this.pptShow(this.state.list[0],0)
@@ -65,31 +59,27 @@ class FileItem extends React.Component{
    }
 
    
-    var scenes = item.coursewares.map((item, i)=>{
-      return {
-        name: (i+1)+'',
-        ppt: {
-          ...item,
-          src:'https://live.boluozaixian.net/'+ item.conversionFileUrl
-        },
-        fisrt: true
-      }
-    });
-
-    if(index === 0) {
-      scenes = scenes.map(item=>{
-        return {name: item.name}
-      })
+  let scenes = item.coursewares.map((item, i)=>{
+    return {
+      name: (i+1)+'',
+      ppt: {
+        ...item,
+        src: item.conversionFileUrl
+      },
+      fisrt: true
     }
+  });
+
     // 为这个 ppt 文件起一个独一无二的名字。
     // 如果你的白板中可能出现多个 ppt，这样有助于管理它们。
     // var pptName = item.name.split('.')[0];
-    var pptName = item.url
+    var pptName = item.key
 
     console.log("pppp:", "/" + pptName, scenes);
-    if(localStorage.getItem(item.name) == 1 ){
+    let first = localStorage.getItem(item.key)
+    if(first == 1  || !first){
       room.putScenes("/" + pptName, scenes,0);
-      localStorage.setItem(item.name, 2)
+      localStorage.setItem(item.key, 2)
     }
     room.setScenePath("/" + pptName + "/" + scenes[0].name);
     // // 将 ppt 对应的场景插入白板
@@ -121,8 +111,8 @@ class FileItem extends React.Component{
 
 function mapStateToProps(state){
   return {
-    whiteRoom: state.whiteRoom,
-    roomInfo: state.roomInfo
+    roomInfo: state.roomInfo,
+    whiteRoom: state.whiteRoom
   }
 }
 function maoDispathToProps(dispath) {

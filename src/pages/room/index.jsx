@@ -12,7 +12,7 @@ export default function Room(props) {
   return (
     <div className="room-page">
       <div className='room-page-header'>
-        <RoomHeader roomInfo={roomInfo}></RoomHeader>
+        <RoomHeader roomInfo={roomInfo} ></RoomHeader>
       </div>
       <div className="room-page-main">
         <div className="room-page-left">

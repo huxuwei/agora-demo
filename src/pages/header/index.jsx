@@ -1,12 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {Button, message, Drawer } from 'antd'
+import {Button, message, Drawer, Badge  } from 'antd'
 import http from '@/utils/request'
 import GIcon from '@/components/GIcon'
 import './index.less'
 import FileList from './fileList'
 import Chatting from './chat'
-import {info, createChannel, sendMessage} from './chat/chatInit'
-import {  videoConfig } from "@/utils/config.js";
 
 function RoomHeader(props) {
 
@@ -15,15 +13,18 @@ function RoomHeader(props) {
   const [drawVisible, setDrawVisible] = useState(true)
   const [active, setActive] = useState({type:'chat'})
   const [roomName, setroomName] = useState('')
+  let [msgNum, setMsgNum] = useState(0)
+
+
   const buttonList = [
     {type: 'file',icon:'iconziyuan'},
     {type: 'chat',icon:'iconliaotian'},
-    {type: 'dashed'},
-    {type: 'danger'},
-    {type: 'primary'},
+    // {type: 'dashed'},
+    // {type: 'danger'},
+    // {type: 'primary'},
   ]
   useEffect(()=>{
-    const {channel } = props.roomInfo.agora
+    const {channel,  } = props.roomInfo.agora
     setroomName(channel)
   },[])
   function start() {
@@ -44,6 +45,9 @@ function RoomHeader(props) {
   function showDraw(item, i) {
     setDrawVisible(!drawVisible)
     setActive(item)
+    if(item.type ==='chat'){
+      setMsgNum(0)
+    }
   }
   function drawClose() {
     setDrawVisible(false)
@@ -66,6 +70,9 @@ function RoomHeader(props) {
       default : return null
     }
   }
+  function getMessage(val) {
+    setMsgNum(++msgNum)
+  }
   return (
     <React.Fragment>
       <div className="room-info">
@@ -74,13 +81,26 @@ function RoomHeader(props) {
       <div className="room-action">
         {buttonList.map((item, i)=>(
           <div className='action-wrap' onClick={ ()=>showDraw(item,i) } key={i+1}>
-            <Button type='default' shape="circle">
-              <GIcon icon={item.icon}></GIcon>
-            </Button>
+            
+              {
+                item.type === 'chat' ?
+                <Badge count={msgNum}>
+                  <Button type='default' shape="circle">
+                  <GIcon icon={item.icon}></GIcon>
+                  </Button>
+                </Badge> :
+                <Button type='default' shape="circle">
+                  <GIcon icon={item.icon}></GIcon>
+                </Button>
+              }
           </div>
         ))}
-
-        <Button type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课':'上课'}</Button>
+        {
+          props.roomInfo.userInfo.role === 1?
+          <Button type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课':'上课'}</Button>:
+          null
+        }
+        
       </div>
       <Drawer
           title="Basic Drawer"
@@ -93,7 +113,7 @@ function RoomHeader(props) {
           visible={drawVisible}
         >
           <div style={chooseShow('chat')}>
-            <Chatting  comDidMouted={drawClose} agora={props.roomInfo.agora}></Chatting>;
+            <Chatting getMessage={getMessage}  comDidMouted={drawClose} agora={props.roomInfo.agora}></Chatting>;
           </div>
           <div style={chooseShow('file')}>
             <FileList roomInfo={props.roomInfo}></FileList>;
