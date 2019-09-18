@@ -24,8 +24,11 @@ function RoomHeader(props) {
     // {type: 'primary'},
   ]
   useEffect(()=>{
-    const {channel,  } = props.roomInfo.agora
+    const {agora:{channel}, status } = props.roomInfo
     setroomName(channel)
+    if(status === 1){
+      setClassStatus(true)
+    }
   },[])
   function start() {
     setclassStartLoading(true)
@@ -38,7 +41,7 @@ function RoomHeader(props) {
       // sendMessage('start')
     }).catch(err=>{
       setclassStartLoading(false)
-      setClassStatus(!classStatus)
+      // setClassStatus(!classStatus)
     })
     
   }

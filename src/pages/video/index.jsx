@@ -7,6 +7,8 @@ import queryString from 'query-string'
 import { connect } from "react-redux";
 import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
 import VideoTools from './videoTools'
+import { createChannel, sendMessage} from '@/utils/chatAction.js'
+
  class Video extends React.Component{
   constructor(props){
     super(props)
@@ -23,7 +25,32 @@ import VideoTools from './videoTools'
       this.init(this.props)
       this.first = false
     }
-   
+   setTimeout(() => {
+    this.joinChaanel()
+   }, 2000);
+  }
+  joinChaanel(){
+    const {remoteStreamList} = this.state
+    this.props.msgClient.then(res=>{
+      createChannel(res, '9999', (text)=>{
+        // 控制消息格式'类型_指令_对象'
+        const msg = text.split('_')
+        if(msg[0] === 'video'){
+          const item = remoteStreamList.find(item=>item.uid ==msg[2])
+          console.log(remoteStreamList,item)
+          switch (msg[1]) {
+            case 'closeAudio': item.stream.disableAudio();break;
+            case 'closeVideo':item.stream.disableVideo();break;
+            case 'resume':item.stream.enableAudio();item.stream.enableVideo();break;
+            default:
+              break;
+          }
+        }
+      }).then(res=>{
+        console.log('channelchannelchannel',res)
+        this.channel = res
+      })
+    })
   }
   init(nextProps){
     let { mode, codec } = videoConfig;
@@ -122,6 +149,7 @@ import VideoTools from './videoTools'
             return {
               remoteStreamList: [...state.remoteStreamList, {
                 id,
+                uid,
                 stream: remoteStream
               }]
             }
@@ -204,7 +232,7 @@ import VideoTools from './videoTools'
       _this.setState((state)=>{
         return {
           remoteStreamList: state.remoteStreamList.filter(item=>{
-            return item.id !== uid
+            return item.uid !== uid
           })
         }
       })
@@ -230,21 +258,17 @@ import VideoTools from './videoTools'
         {
           remoteStreamList.map(item=>(
             <div className="video" id={item.id} key={item.id}>
-              <VideoTools remoteStream={item.stream}></VideoTools>
+              <VideoTools channel={this.channel} remote={item}></VideoTools>
             </div>
           ))
         }
-        
-        <button onClick={()=>this.props.stream.close()}>close</button>
-        <button onClick={()=>this.props.stream.muteAudio()}>close</button>
-        <button onClick={()=>this.props.stream.disableVideo()}>disableVideo</button>
       </div>
     )
   }
 }
 function mapStateToProps(state){
   return {
-    n: state.n,
+    msgClient: state.msgClient,
     videoClient: state.client,
     stream: state.stream
   }

@@ -2,8 +2,9 @@ import React from 'react'
 import queryString from 'query-string'
 import './index.less'
 import { Button } from 'antd';
-import {info, createChannel, sendMessage} from './chatInit'
-import {  videoConfig } from "@/utils/config.js";
+import { createChannel, sendMessage} from '@/utils/chatAction.js'
+import { connect } from "react-redux";
+
 class Chat extends React.Component{
   constructor(props) {
     super(props)
@@ -16,15 +17,18 @@ class Chat extends React.Component{
   }
   componentDidMount(){
     this.props.comDidMouted()
-    const {appId, rtmToken, uid} = this.props.agora
-    info({
-      appID: appId,
-      token: rtmToken,
-      uid: uid+''
-    },(text)=>{
-      console.log('回调成功',text,typeof text)
-      this.setMessageContent(text, false)
-      this.props.getMessage(text)
+
+    this.props.msgClient.then(res=>{
+      console.log('MessageClientMessageClientMessageClient',res)
+
+      createChannel(res, '8888', (text)=>{
+        // console.log('回调成功',text,typeof text)
+        this.setMessageContent(text, false)
+        this.props.getMessage(text)
+      }).then(res=>{
+        console.log('channelchannelchannel',res)
+        this.channel = res
+      })
     })
   }
 
@@ -34,7 +38,7 @@ class Chat extends React.Component{
     this.setState({
       pos: !this.state.pos
     })
-    sendMessage(msg)
+    sendMessage(this.channel, msg)
     this.refs.chatContent.innerHTML = ''
     this.setMessageContent(msg, true)
   }
@@ -91,5 +95,9 @@ class Chat extends React.Component{
     )
   }
 }
-
-export default Chat
+function mapStateToProps(state){
+  return {
+    msgClient: state.msgClient,
+  }
+}
+export default connect(mapStateToProps)(Chat)

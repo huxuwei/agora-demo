@@ -31,6 +31,12 @@ class JoinHome extends React.Component{
       search: `scheduleStr=3faf065f28b249ef&&crmUserStr=0ee4782a261c3659&&roleStr=425413fcd9ab7f73`
     })
   }
+  teach= ()=>{
+    this.props.history.push({
+      pathname: '/room',
+      search: `scheduleStr=3faf065f28b249ef&&crmUserStr=99068348943be0b4&&roleStr=f39e88cf9f175538`
+    })
+  }
 
   render() {
     return (
@@ -46,8 +52,9 @@ class JoinHome extends React.Component{
                 <Radio value={1}>老师</Radio>
                 <Radio value={2}>学生</Radio>
               </Radio.Group>
-              <Button className="room-join" onClick={this.joinRoom}>加入房间</Button>
-              <Button className="room-join"  onClick={this.replay}>查看回放</Button>
+              <Button className="room-join" onClick={this.joinRoom}>学生1</Button>
+              <Button className="room-join"  onClick={this.replay}>学生2</Button>
+              <Button className="room-join"  onClick={this.teach}>老师</Button>
             </div>
           </div>
         </div>
