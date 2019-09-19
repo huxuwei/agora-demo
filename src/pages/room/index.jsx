@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-constructor */
 
-import React, { useState, useEffect  } from 'react'
+import React from 'react'
 import './index.less'
 import VideoRoom from '@/pages/video'
 import WhiteRoom from '@/pages/white'
@@ -16,6 +16,7 @@ class Room extends React.Component {
     }
   }
   componentDidMount() {
+    // 登陆消息模块
     const {agora: {appId, rtmToken, uid},status } = this.props.roomInfo
     const msgClient = msgLogin({
       appID: appId,
@@ -23,6 +24,7 @@ class Room extends React.Component {
       uid: uid+''
     })
     this.props.Set_msgClient(msgClient)
+
     // 判断课程状态
     this.setState({
       classStatus: status !== 1 ? false: true
@@ -42,10 +44,7 @@ class Room extends React.Component {
         </div>
         <div className="room-page-main">
           <div className="room-page-left">
-            {
-              // this.state.classStatus && 
-              <WhiteRoom roomInfo={roomInfo} classStatus={this.state.classStatus}></WhiteRoom>
-            }
+            <WhiteRoom roomInfo={roomInfo} classStatus={this.state.classStatus}></WhiteRoom>
           </div>
           <div className="videoWrap">
             <VideoRoom  roomInfo={roomInfo}></VideoRoom>

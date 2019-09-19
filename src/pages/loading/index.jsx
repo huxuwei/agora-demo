@@ -33,8 +33,6 @@ class LoadingStart extends React.Component {
           loading: false,
           roomInfo: res.data
         })
-        
-        
       }
     })
   }

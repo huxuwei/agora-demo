@@ -1,15 +1,4 @@
 const store = (state, action) => {
-  // if(state === undefined){
-  //   return {n: 0}
-  // }else{
-  //   if(action.type === 'add'){
-  //     var newState = {n: state.n + action.payload}
-  //     return newState
-  //   }else{
-  //     return state
-  //   }
-  // }
-  console.log('action111111',action)
   if (state === undefined) {
     return {
       client: {},
@@ -69,7 +58,6 @@ const store = (state, action) => {
     default:
       break;
   }
-  console.log('newState',newState)
   return newState
 }
 export default store
