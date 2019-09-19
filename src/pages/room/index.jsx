@@ -11,27 +11,41 @@ import { connect } from "react-redux";
 class Room extends React.Component {
   constructor(props){
     super(props)
+    this.state = {
+      classStatus: false
+    }
   }
   componentDidMount() {
-    const {appId, rtmToken, uid} = this.props.roomInfo.agora
+    const {agora: {appId, rtmToken, uid},status } = this.props.roomInfo
     const msgClient = msgLogin({
       appID: appId,
       token: rtmToken,
       uid: uid+''
     })
     this.props.Set_msgClient(msgClient)
+    // 判断课程状态
+    this.setState({
+      classStatus: status !== 1 ? false: true
+    })
   }
-  
+  startClass=(val)=> {
+    this.setState({
+      classStatus: val
+    })
+  }
   render() {
     const {roomInfo} = this.props
     return (
       <div className="room-page">
         <div className='room-page-header'>
-          <RoomHeader roomInfo={roomInfo} ></RoomHeader>
+          <RoomHeader roomInfo={roomInfo} startClass={(val)=>{this.startClass(val)}} ></RoomHeader>
         </div>
         <div className="room-page-main">
           <div className="room-page-left">
-            <WhiteRoom roomInfo={roomInfo}></WhiteRoom>
+            {
+              // this.state.classStatus && 
+              <WhiteRoom roomInfo={roomInfo} classStatus={this.state.classStatus}></WhiteRoom>
+            }
           </div>
           <div className="videoWrap">
             <VideoRoom  roomInfo={roomInfo}></VideoRoom>
@@ -44,7 +58,8 @@ class Room extends React.Component {
 
 function mapDispatchToProps(dispatch){
   return {
-    Set_msgClient: (msgClient)=>dispatch({type:'Set_msgClient', payload:msgClient})
+    Set_msgClient: (msgClient)=>dispatch({type:'Set_msgClient', payload:msgClient}),
+    Set_channel: (payload)=> dispatch({type: 'Set_Channel', payload})
   }
 }
 export default connect(null,mapDispatchToProps)(Room)

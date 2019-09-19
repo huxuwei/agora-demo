@@ -36,20 +36,16 @@ class FileItem extends React.Component{
       
     })
   }
-  componentDidUpdate(val){
-    // console.log('this.props.whiteRoom',this.props.whiteRoom)
-    // if(this.props.whiteRoom.uuid){
-    //   this.pptShow(this.state.list[0],0)
-    // }
-  }
   choose(item, i) {
     this.setState({
       activeIndex: i
     })
     this.pptShow(item,i)
   }
-
   pptShow(item,index) {
+    const whiteWrapW= document.querySelector('#whiteWrap').clientWidth
+    console.log('clientWidth',whiteWrap.clientWidth)
+
     const {whiteRoom: room } = this.props
     // scenes 就是用来创建 pptx 对应的场景的描述信息
     this.props.set_fileInfo(item)
@@ -64,7 +60,8 @@ class FileItem extends React.Component{
       name: (i+1)+'',
       ppt: {
         ...item,
-        src: item.conversionFileUrl
+        src: item.conversionFileUrl,
+        // width: whiteWrapW
       },
       fisrt: true
     }
@@ -77,12 +74,12 @@ class FileItem extends React.Component{
 
     console.log("pppp:", "/" + pptName, scenes);
     let first = localStorage.getItem(item.key)
+    // 第一次点击课件时,将 ppt 对应的场景插入白板
     if(first == 1  || !first){
       room.putScenes("/" + pptName, scenes,0);
       localStorage.setItem(item.key, 2)
     }
     room.setScenePath("/" + pptName + "/" + scenes[0].name);
-    // // 将 ppt 对应的场景插入白板
     
     
     // 切换当前场景到 ppt 的第一页，这样才能显示出来

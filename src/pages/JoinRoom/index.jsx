@@ -2,7 +2,7 @@
 import * as React from 'react'
 import './index.less'
 import { Input, Button, Radio  } from 'antd'
-
+import AFrom from '../from/index'
 class JoinHome extends React.Component{
   constructor(props) {
     super(props)
@@ -10,6 +10,7 @@ class JoinHome extends React.Component{
       room: '',
       role: 1
     }
+    this.myRef=React.createRef();
   }
   roomChange = (item, value)=>{
     this.setState({
@@ -18,6 +19,9 @@ class JoinHome extends React.Component{
   }
 
   joinRoom = () =>{
+    // console.log(1111,this.myRef.current);
+    // // this.form.createaa()
+    // this.myRef.props.createaa()
     let {room, role} = this.state
    
     this.props.history.push({
@@ -35,6 +39,12 @@ class JoinHome extends React.Component{
     this.props.history.push({
       pathname: '/room',
       search: `scheduleStr=3faf065f28b249ef&&crmUserStr=99068348943be0b4&&roleStr=f39e88cf9f175538`
+    })
+  }
+  add= ()=>{
+    this.props.history.push({
+      pathname: '/room',
+      search: `scheduleStr=3faf065f28b249ef&crmUserStr=1efe624482aba94f&roleStr=f39e88cf9f175538`
     })
   }
 
@@ -55,10 +65,12 @@ class JoinHome extends React.Component{
               <Button className="room-join" onClick={this.joinRoom}>学生1</Button>
               <Button className="room-join"  onClick={this.replay}>学生2</Button>
               <Button className="room-join"  onClick={this.teach}>老师</Button>
+              <Button className="room-join"  onClick={this.add}>巡课</Button>
             </div>
           </div>
         </div>
         <div className="page-box-right"></div>
+        {/* <AFrom ref={this.myRef} ></AFrom> */}
       </div>
     )
   }

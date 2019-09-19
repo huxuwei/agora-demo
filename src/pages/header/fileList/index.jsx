@@ -3,6 +3,7 @@ import './index.less'
 import FileItemStatic from './fileItemStatic'
 import FileItemMedia from './fileItemMedia'
 import http from '@/utils/request'
+import { roleConifg} from '@/utils/config.js'
 
 function FileList(props) {
   let [activeIndex, setActiveIndex] = useState(0)
@@ -10,9 +11,9 @@ function FileList(props) {
   const headerList = ['课件库','媒体库']
   
   useEffect(()=>{
-    console.log('this.props.roomInfo',props.roomInfo)
     const { id: roomId, userInfo: { id:userId, role}} = props.roomInfo
-    if(role!== 1)return
+
+    if(role !== roleConifg.teach && role !== roleConifg.assistant)return
     const params ={roomId, userId}
     http.get('getCourseware',params).then(res=>{
       setFileList(res.data)

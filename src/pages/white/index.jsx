@@ -1,8 +1,7 @@
 import React from 'react'
 import './index.less'
 import { ViewMode } from "white-web-sdk";
-import {videoConfig} from '@/utils/config.js'
-import http from '@/utils/request'
+import {roleConifg} from '@/utils/config.js'
 import queryString from 'query-string'
 import { connect } from "react-redux";
 import WhiteTools from './whiteTools'
@@ -28,13 +27,13 @@ class White extends React.Component{
       }
     });
   }
+  
 
   async initAndJoinRoom(nextProps) {
     
     const {hereWhite:{roomToken, uuid}, userInfo:{role}} = nextProps.roomInfo
     // 初始化 SDK，并且调用其成员方法 joinRoom
     const whiteWebSdk = new WhiteWebSdk();
-    // this.$store.commit('SET_whiteWebSdk', this.whiteWebSdk)
     this.room = await  whiteWebSdk.joinRoom({
       uuid,
       roomToken
@@ -52,8 +51,8 @@ class White extends React.Component{
      room.setMemberState({
        strokeColor: [255, 0, 0],
      });
+     this.changeTool('selector')
      this.readOnly(room)
-     this.addRoomEvent(room)
      
      this.props.Set_whiteRoom(room)
      this.setState({
@@ -77,11 +76,6 @@ class White extends React.Component{
       room.setViewMode(ViewMode.Follower);
     }
   }
-  addRoomEvent(room) {
-    room.addMagixEventListener('claaStop', this.classStop);
-    room.addMagixEventListener('stop', this.stop);
-    room.addMagixEventListener('play', this.play);
-  }
   changeTool = (val)=>{
     this.room.setMemberState({
       currentApplianceName: val
@@ -91,9 +85,11 @@ class White extends React.Component{
     const {changeTool} = this
     return (
       <div className="white-wrap">
-        <div className="wrap" ref="whiteWrap"></div>
+        <div className="wrap" ref="whiteWrap" id="whiteWrap"></div>
         {
-          (this.props.roomInfo && this.props.roomInfo.userInfo && this.props.roomInfo.userInfo.role === 1 )  ? 
+          (this.props.roomInfo && this.props.roomInfo.userInfo && 
+            this.props.classStatus && 
+            (this.props.roomInfo.userInfo.role === roleConifg.teach ) )  ? 
           <React.Fragment>
             <WhiteTools changeTool={changeTool}></WhiteTools>
             {this.state.loaded && <WhiteAction></WhiteAction>}

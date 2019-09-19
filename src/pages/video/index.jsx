@@ -2,8 +2,7 @@ import React from 'react'
 import './index.less'
 import {Message} from 'antd'
 import AgoraRTC from 'agora-rtc-sdk'
-import {videoConfig} from '@/utils/config.js'
-import queryString from 'query-string'
+import {videoConfig, roleConifg, channelConfig} from '@/utils/config.js'
 import { connect } from "react-redux";
 import {streamInitInfo, errorInfo } from '@/assets/data/errorInfo.js'
 import VideoTools from './videoTools'
@@ -12,7 +11,6 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
  class Video extends React.Component{
   constructor(props){
     super(props)
-    this.channel = queryString.parse(window.location.hash.split('?')[1]).room
     this.state = {
       client: {},
       remoteStreamList: []
@@ -29,19 +27,22 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
     this.joinChaanel()
    }, 2000);
   }
+  // 加入执行频道处理信道指令
   joinChaanel(){
+    
     const {remoteStreamList} = this.state
     this.props.msgClient.then(res=>{
-      createChannel(res, '9999', (text)=>{
+      createChannel(res, channelConfig.channelOrder , (text)=>{
         // 控制消息格式'类型_指令_对象'
         const msg = text.split('_')
         if(msg[0] === 'video'){
           const item = remoteStreamList.find(item=>item.uid ==msg[2])
-          console.log(remoteStreamList,item)
+          console.log('text',text,this.client)
           switch (msg[1]) {
             case 'closeAudio': item.stream.disableAudio();break;
             case 'closeVideo':item.stream.disableVideo();break;
             case 'resume':item.stream.enableAudio();item.stream.enableVideo();break;
+            case 'leave': this.client.leave();break;
             default:
               break;
           }
@@ -49,6 +50,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
       }).then(res=>{
         console.log('channelchannelchannel',res)
         this.channel = res
+        this.props.Set_channelOrder(res)
       })
     })
   }
@@ -72,7 +74,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
   // 加入
   join(nextProps) {
     const {client} = this
-    const {channel, rtcToken, uid} = nextProps.roomInfo.agora
+    const {agora: {channel, rtcToken, uid},userInfo: {role} } = nextProps.roomInfo
     // 加入直播间
     /**
      * @param token
@@ -88,7 +90,10 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
       uid => {
         console.log("用户 " + uid + " 加入直播间成功:" + channel);
         this.uid = uid;
-        this.createSteam();
+        if(role === roleConifg.teach || role === roleConifg.stu){
+          this.createSteam();
+        }
+        
 
         //设置 role（用户角色）。role 分为 “host”（主播）和 “audience”（观众）。
         client.setClientRole("host",function() {
@@ -250,19 +255,23 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
 
   render() {
     let { remoteStreamList} = this.state
-    
+    const {userInfo: {role}, type} = this.props.roomInfo
     return (
-      <div>
+      <React.Fragment>
         <div id="agora_local"></div>
         <div id="screen"></div>
-        {
-          remoteStreamList.map(item=>(
-            <div className="video" id={item.id} key={item.id}>
-              <VideoTools channel={this.channel} remote={item}></VideoTools>
-            </div>
-          ))
-        }
-      </div>
+        <div className="remoteVideo">
+          {
+            remoteStreamList.map(item=>(
+              <div className={type == 1? 'video':'video videoOneToOne'} id={item.id} key={item.id}>
+                {
+                  role === 1 ? <VideoTools  remote={item}></VideoTools>: null
+                }
+              </div>
+            ))
+          }
+        </div>
+      </React.Fragment>
     )
   }
 }
@@ -275,9 +284,9 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch) {
   return {
-    add1: ()=> dispatch({type:'add', payload: 1}),
     Set_client: (client)=> dispatch({type:'Set_client', payload: client}),
-    Set_stream: (stream)=> dispatch({type:'Set_stream', payload: stream}) 
+    Set_stream: (stream)=> dispatch({type:'Set_stream', payload: stream}),
+    Set_channelOrder: (stream)=> dispatch({type:'Set_channelOrder', payload: stream}),
   }
 }
 

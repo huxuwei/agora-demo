@@ -1,111 +1,164 @@
-import React, {useState, useEffect} from 'react';
-import {Button, message, Drawer, Badge  } from 'antd'
+import React, { useState, useEffect } from 'react';
+import { Button, Modal, Drawer, Badge, Message } from 'antd'
 import http from '@/utils/request'
 import GIcon from '@/components/GIcon'
 import './index.less'
 import FileList from './fileList'
 import Chatting from './chat'
+import { roleConifg, channelConfig } from '@/utils/config.js'
+import { sendMessage } from '@/utils/chatAction.js'
+import {connect} from 'react-redux'
 
-function RoomHeader(props) {
-
-  const [classStatus, setClassStatus] = useState(false)
-  const [classStartLoading, setclassStartLoading] = useState(false)
-  const [drawVisible, setDrawVisible] = useState(true)
-  const [active, setActive] = useState({type:'chat'})
-  const [roomName, setroomName] = useState('')
-  let [msgNum, setMsgNum] = useState(0)
-
-
-  const buttonList = [
-    {type: 'file',icon:'iconziyuan'},
-    {type: 'chat',icon:'iconliaotian'},
-    // {type: 'dashed'},
-    // {type: 'danger'},
-    // {type: 'primary'},
-  ]
-  useEffect(()=>{
-    const {agora:{channel}, status } = props.roomInfo
-    setroomName(channel)
-    if(status === 1){
-      setClassStatus(true)
+const { confirm } = Modal;
+class RoomHeader extends React.Component {
+  constructor(props) {
+    super()
+    this.state = {
+      classStatus: false,
+      classStartLoading: false,
+      drawVisible: true,
+      active: { type: 'chat' },
+      roomName: '',
+      msgNum: 0
     }
-  },[])
-  function start() {
-    setclassStartLoading(true)
-    const api =  classStatus ? 'roomStop':'roomStart'
-    const { id: roomId, userInfo: { id:userId}} = props.roomInfo
-    http.get(api, { roomId, userId }).then(res => {
-      // message.success('开始上课')
-      setclassStartLoading(false)
-      setClassStatus(!classStatus)
-      // sendMessage('start')
-    }).catch(err=>{
-      setclassStartLoading(false)
-      // setClassStatus(!classStatus)
+    this.buttonList = [
+      { type: 'file', icon: 'iconziyuan' },
+      { type: 'chat', icon: 'iconliaotian' },
+    ]
+  }
+  // const [classStatus, setClassStatus] = useState(false)
+  // const [classStartLoading, setclassStartLoading] = useState(false)
+  // const [drawVisible, setDrawVisible] = useState(true)
+  // const [active, setActive] = useState({type:'chat'})
+  // const [roomName, setroomName] = useState('')
+  // let [msgNum, setMsgNum] = useState(0)
+  componentDidMount() {
+    const { agora: { channel }, status } = this.props.roomInfo
+    this.setState({
+      roomName: channel,
+      classStatus: status === 1 ? true : false
+    })
+  }
+  start =()=> {
+    this.setState({
+      classStartLoading: true
+    })
+    const api = this.state.classStatus ? 'roomStop' : 'roomStart'
+    const { id: roomId, userInfo: { id: userId } } = this.props.roomInfo
+
+    if (!this.state.classStatus) {
+      http.get(api, { roomId, userId }).then(res => {
+        this.setState({
+          classStartLoading: false,
+          classStatus: !this.state.classStatus
+        })
+        this.props.startClass(true)
+      }).catch(err => {
+        this.setState({
+          classStartLoading: false
+        })
+      })
+    } else {
+      confirm({
+        title: '确认消息?',
+        content: '确认要下课吗?',
+        onOk : ()=> {
+          http.get(api, { roomId, userId }).then(res => {
+            this.setState({
+              classStartLoading: false,
+              classStatus: !this.state.classStatus
+            })
+            this.props.startClass(false)
+            // console.log('channelchannelchannelthis.props.channelOrder',this.props.channelOrder)
+            //  下课发送离开指令,同时自已也离开
+            sendMessage(this.props.channelOrder, 'video_leave')
+            this.props.client.leave()
+          }).catch(err => {
+            this.setState({
+              classStartLoading: false
+            })
+          })
+        },
+        onCancel: ()=> {
+          console.log('Cancel');
+        },
+      });
+    }
+
+
+
+
+
+  }
+  showDraw =(item, i)=> {
+    // setDrawVisible(!drawVisible)
+    this.setState({
+      drawVisible: !this.state.drawVisible,
+      active: item
     })
     
-  }
-  function showDraw(item, i) {
-    setDrawVisible(!drawVisible)
-    setActive(item)
-    if(item.type ==='chat'){
-      setMsgNum(0)
+    if (item.type === 'chat') {
+      this.setState({
+        msgNum: 0
+      })
     }
   }
-  function drawClose() {
-    setDrawVisible(false)
+  drawClose =()=> {
+    this.setState({
+      drawVisible: false
+    })
   }
-  function chooseShow(val){
-    if(active.type === val){
+  chooseShow=(val)=> {
+    if (this.state.active.type === val) {
       return {
-        display:'block',
+        display: 'block',
         height: '100%'
       }
-    }else{
+    } else {
       return {
-        display:'none',
+        display: 'none',
         height: '100%'
       }
     }
-    switch(active.type){
-      case 'file': return <FileList ></FileList>;
-      case 'chat': return <Chatting msg={msg}></Chatting>;
-      default : return null
-    }
   }
-  function getMessage(val) {
-    setMsgNum(++msgNum)
+  getMessage=(val)=> {
+    this.setState({
+      msgNum:  this.state.msgNum +1
+    })
   }
-  return (
-    <React.Fragment>
-      <div className="room-info">
-        <span>房间号：{roomName}</span>
-      </div>
-      <div className="room-action">
-        {buttonList.map((item, i)=>(
-          <div className='action-wrap' onClick={ ()=>showDraw(item,i) } key={i+1}>
-            
+  render() {
+    const {showDraw,getMessage,chooseShow,drawClose,start, buttonList ,
+      state:{roomName,msgNum,classStartLoading , classStatus ,drawVisible ,active }} = this
+    return (
+      <React.Fragment>
+        <div className="room-info">
+          <span>房间号：{roomName}</span>
+        </div>
+        <div className="room-action">
+          {buttonList.map((item, i) => (
+            <div className='action-wrap' onClick={() => showDraw(item, i)} key={i + 1}>
+    
               {
                 item.type === 'chat' ?
-                <Badge count={msgNum}>
+                  <Badge count={msgNum}>
+                    <Button type='default' shape="circle">
+                      <GIcon icon={item.icon}></GIcon>
+                    </Button>
+                  </Badge> :
                   <Button type='default' shape="circle">
-                  <GIcon icon={item.icon}></GIcon>
+                    <GIcon icon={item.icon}></GIcon>
                   </Button>
-                </Badge> :
-                <Button type='default' shape="circle">
-                  <GIcon icon={item.icon}></GIcon>
-                </Button>
               }
-          </div>
-        ))}
-        {
-          props.roomInfo.userInfo.role === 1?
-          <Button type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课':'上课'}</Button>:
-          null
-        }
-        
-      </div>
-      <Drawer
+            </div>
+          ))}
+          {
+            (this.props.roomInfo.userInfo.role === roleConifg.teach) ?
+              <Button type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课' : '上课'}</Button> :
+              null
+          }
+    
+        </div>
+        <Drawer
           title="Basic Drawer"
           placement="right"
           closable={false}
@@ -116,15 +169,22 @@ function RoomHeader(props) {
           visible={drawVisible}
         >
           <div style={chooseShow('chat')}>
-            <Chatting getMessage={getMessage}  comDidMouted={drawClose} agora={props.roomInfo.agora}></Chatting>;
-          </div>
+            <Chatting getMessage={getMessage} comDidMouted={drawClose} agora={this.props.roomInfo.agora}></Chatting>;
+              </div>
           <div style={chooseShow('file')}>
-            <FileList roomInfo={props.roomInfo}></FileList>;
-          </div>
+            <FileList roomInfo={this.props.roomInfo}></FileList>;
+              </div>
           {/* {chooseShow()} */}
         </Drawer>
-    </React.Fragment>
-  )
+      </React.Fragment>
+    )
+  }
+  
 }
-
-export default RoomHeader
+function mapStateToProps(state) {
+  return {
+    channelOrder: state.channelOrder,
+    client: state.client
+  }
+}
+export default connect(mapStateToProps)(RoomHeader)

@@ -5,9 +5,10 @@ import queryString from 'querystring'
 import http from '@/utils/request'
 import ToolBox from "@netless/react-tool-box";
 import SeekSlider from "@netless/react-seek-slider";
-import {Button} from 'antd'
+import {Button, Spin} from 'antd'
 import {throttle, formatTime } from '@/utils/util'
 import "video.js/dist/video-js.css";
+import GIcon from '@/components/GIcon'
 
 
 export default class Replay extends React.Component{
@@ -19,7 +20,8 @@ export default class Replay extends React.Component{
       progress: 0,
       status: false,
       nowTime: 0,
-      timeAll: 0
+      timeAll: 0,
+      loading: true
     }
   }
   componentDidMount() {
@@ -32,6 +34,13 @@ export default class Replay extends React.Component{
     http.get('getPlayBackInfo',params).then(res=>{
       this.replay(res.data)
     })
+    window.addEventListener("resize", () => {
+      console.log('room', this.state.player)
+      if (this.state.player) {
+        this.state.player.refreshViewSize &&this.state.player.refreshViewSize();
+        
+      }
+    });
     
   }
   replay(data) {
@@ -42,11 +51,12 @@ export default class Replay extends React.Component{
     // var duration = ...; // 回放片段持续时长（毫秒）
     // var mediaURL = "https://pay.boluozaixian.net:8097/e509104a380c00fa8d2cb13d2fa2c1ec.mp4"; // 由白板接管的媒体文件(可选)，如果需要显示视频，需要提前做一些操作
     var whiteWebSdk = new WhiteWebSdk();
-    whiteWebSdk.replayRoom({
+     whiteWebSdk.replayRoom({
       room: uuid,
       roomToken: roomToken,
-      duration: 10000,
-      mediaURL: 'https://pay.boluozaixian.net:8097/e509104a380c00fa8d2cb13d2fa2c1ec.mp4',
+      duration: duration,
+      mediaURL: videoPath,
+      // mediaURL: 'https://pay.boluozaixian.net:8097/e509104a380c00fa8d2cb13d2fa2c1ec.mp4',
       beginTimestamp: startTime
     }, {
         onPhaseChanged: phase => {
@@ -79,9 +89,10 @@ export default class Replay extends React.Component{
       // this.player = player
       this.setState({
         player: player,
-        status: true
-        // currentTime: 
+        status: true,
+        loading: false
       })
+      player.disableCameraTransform='YES'
       console.log('player', player.timeDuration)
      
     })
@@ -108,20 +119,24 @@ export default class Replay extends React.Component{
     
   }
   render() {
-    const {status, timeAll, nowTime } = this.state
+    const {status, timeAll, nowTime, loading } = this.state
+
     return (
       <div>
-        {this.state.player && 
+        { loading ? <Spin tip="正在加载中..."  size="large" spinning={loading}></Spin>:
         <div>
           <div className='player-start-spin' ref='playerStartSpin'>
-            <Button onClick={()=>{this.start()}}>开始</Button>
+            <Button onClick={()=>{this.start()}} shape="round" size='large'>播放</Button>
           </div>
           <div className='player-box-wrap'>
             <PlayerWhiteboard className="player-box" player={this.state.player}/>
             <video className="video-js video-layout"  id="white-sdk-video-js"></video>
           </div>
           <div className='progress'>
-            <Button onClick={()=>{this.play()}}>{status ?'暂停': '播放' }</Button>
+            <Button onClick={()=>{this.play()}} type='link'>
+              <GIcon width='2em' icon={status ? 'iconzanting-': 'iconbofang1'}></GIcon>
+            {/* {status ?'暂停': '播放' } */}
+            </Button>
             <SeekSlider
                 fullTime={this.state.player.timeDuration || 0}
                 thumbColor={"black"}

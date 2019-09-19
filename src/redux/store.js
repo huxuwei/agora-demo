@@ -17,7 +17,8 @@ const store = (state, action) => {
       whiteRoom: {},
       roomInfo: {},
       fileInfo: {},
-      msgClient: {}
+      msgClient: {},
+      channelOrder: {}
     }
   }
   let newState = {}
@@ -57,6 +58,12 @@ const store = (state, action) => {
       newState = {
         ...state,
         msgClient: action.payload
+      }
+      break;
+    case 'Set_channelOrder':
+      newState = {
+        ...state,
+        channelOrder: action.payload
       }
       break;
     default:

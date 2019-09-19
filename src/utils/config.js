@@ -10,3 +10,25 @@ export const videoConfig= {
 
 export const whiteConfig= {}
   
+/**
+ * 角色配置
+ */
+export const roleConifg= {
+  teach: 1,
+  stu: 2,
+  course: 4,
+  assistant: 5
+}
+
+/**
+ * 频道参数
+ */
+const queryString = require('querystring')
+export const channelConfig = (()=>{
+  const scheduleStr = queryString.parse(window.location.hash.split('?')[1]).scheduleStr
+  return {
+    channel: scheduleStr, 
+    channelChat: scheduleStr + '_8888',  //聊天频道
+    channelOrder: scheduleStr + '_9999', //指令频道
+  }
+})()

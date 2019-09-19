@@ -4,11 +4,11 @@ import './index.less'
 import { Button } from 'antd';
 import { createChannel, sendMessage} from '@/utils/chatAction.js'
 import { connect } from "react-redux";
-
+import {videoConfig, roleConifg, channelConfig} from '@/utils/config.js'
 class Chat extends React.Component{
   constructor(props) {
     super(props)
-    this.role = queryString.parse(window.location.hash.split('?')[1]).role
+    this.scheduleStr = queryString.parse(window.location.hash.split('?')[1]).scheduleStr
     this.state = {
       message: '',
       chatList: [],
@@ -16,12 +16,13 @@ class Chat extends React.Component{
     }
   }
   componentDidMount(){
+    
     this.props.comDidMouted()
 
     this.props.msgClient.then(res=>{
       console.log('MessageClientMessageClientMessageClient',res)
 
-      createChannel(res, '8888', (text)=>{
+      createChannel(res, channelConfig.channelChat, (text)=>{
         // console.log('回调成功',text,typeof text)
         this.setMessageContent(text, false)
         this.props.getMessage(text)
@@ -98,6 +99,7 @@ class Chat extends React.Component{
 function mapStateToProps(state){
   return {
     msgClient: state.msgClient,
+    roomInfo: state.roomInfo
   }
 }
 export default connect(mapStateToProps)(Chat)

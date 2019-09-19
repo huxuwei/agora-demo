@@ -7,7 +7,7 @@ import {connect} from 'react-redux'
   constructor(props){
     super(props)
     this.state = {
-      activeIndex: 1
+      activeIndex: 0
     }
     this.list = [
       {text: 'selector',icon: 'iconxuanze' },
