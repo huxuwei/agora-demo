@@ -126,7 +126,6 @@ class RoomHeader extends React.Component {
       <React.Fragment>
         <div className="room-info">
           <span>房间号：{roomName}</span>
-          <a >sdfsdfds</a>
         </div>
         <div className="room-action">
           {buttonList.map((item, i) => (
