@@ -27,6 +27,9 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
     this.joinChaanel()
    }, 2000);
   }
+  componentDidUpdate(val){
+    console.log('valval',val)
+  }
   // 加入执行频道处理信道指令
   joinChaanel(){
     

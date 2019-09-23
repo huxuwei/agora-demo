@@ -15,6 +15,9 @@ class Chat extends React.Component{
       pos: true
     }
   }
+  componentDidUpdate(val){
+    console.log('chatvalval',val)
+  }
   componentDidMount(){
     
     this.props.comDidMouted()
