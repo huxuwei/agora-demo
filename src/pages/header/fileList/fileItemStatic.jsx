@@ -60,7 +60,8 @@ class FileItem extends React.Component{
   }
   pptShow(item,index) {
     const whiteWrapW= document.querySelector('#whiteWrap').clientWidth
-    console.log('clientWidth',whiteWrap.clientWidth)
+    const whiteWrapH= document.querySelector('#whiteWrap').clientHeight
+    console.log('clientWidth',whiteWrap.clientWidth,whiteWrapH)
 
     const {whiteRoom: room } = this.props
     // scenes 就是用来创建 pptx 对应的场景的描述信息
@@ -77,12 +78,12 @@ class FileItem extends React.Component{
       ppt: {
         ...item,
         src: item.conversionFileUrl,
-        // width: whiteWrapW
+        width: whiteWrapW,
+        height:whiteWrapH
       },
       fisrt: true
     }
   });
-
     // 为这个 ppt 文件起一个独一无二的名字。
     // 如果你的白板中可能出现多个 ppt，这样有助于管理它们。
     // var pptName = item.name.split('.')[0];

@@ -23,16 +23,23 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
       this.init(this.props)
       this.first = false
     }
-   setTimeout(() => {
-    this.joinChaanel()
-   }, 2000);
+  //  setTimeout(() => {
+  //   this.joinChaanel()
+  //  }, 2000);
+  }
+  componentWillReceiveProps(nextProps){
+    console.log('Object.keys(nextProps.msgClient).',Object.keys(nextProps.msgClient),this.props.msgClient)
+    if(!this.props.msgClient.then&& nextProps.msgClient.then) {
+      setTimeout(() => {
+        this.joinChaanel()
+       }, 2000);
+    }
   }
   componentDidUpdate(val){
     console.log('valval',val)
   }
   // 加入执行频道处理信道指令
   joinChaanel(){
-    
     const {remoteStreamList} = this.state
     this.props.msgClient.then(res=>{
       createChannel(res, channelConfig.channelOrder , (text)=>{
@@ -40,7 +47,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
         const msg = text.split('_')
         if(msg[0] === 'video'){
           const item = remoteStreamList.find(item=>item.uid ==msg[2])
-          console.log('text',text,this.client)
+          console.log('text',text,item,remoteStreamList)
           switch (msg[1]) {
             case 'closeAudio': item.stream.disableAudio();break;
             case 'closeVideo':item.stream.disableVideo();break;
@@ -232,6 +239,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
       },
       function(err) {
         console.log("getUserMedia failed", err);
+        Message.error('检测不到设备信息!')
       }
     );
     //
@@ -266,7 +274,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
         <div className="remoteVideo">
           {
             remoteStreamList.map(item=>(
-              <div className={type == 1? 'video':'video videoOneToOne'} id={item.id} key={item.id}>
+              <div className={type == 1? 'video videoOneToOne':'video '} id={item.id} key={item.id}>
                 {
                   role === 1 ? <VideoTools  remote={item}></VideoTools>: null
                 }

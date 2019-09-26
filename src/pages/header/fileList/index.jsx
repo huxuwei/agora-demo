@@ -13,8 +13,8 @@ function FileList(props) {
   let [status, setstatus] = useState(false)
   const headerList = ['课件库','媒体库']
   const { id: roomId, userInfo: { id:userId, role}} = props.roomInfo
-  const fileTypeList1 = ['pdf','ppt','pptx','doc','docx']
-  const fileTypeList2 = ['mp3']
+  const fileTypeList1 = ['.pdf','.ppt','.pptx','.doc','.docx']
+  const fileTypeList2 = ['.mp3']
   useEffect(()=>{
     getFileList()
   },[])
@@ -28,27 +28,29 @@ function FileList(props) {
 
   const beforeUpload = (file) =>{
     
-    const isFileType1 = fileTypeList1.find(item=>item === file.type)
-    const isFileType2 = fileTypeList2.find(item=>item === file.type)
+    const isFileType1 = fileTypeList1.find(item=>file.name.indexOf(item)>-1)
+    const isFileType2 = fileTypeList2.find(item=>file.name.indexOf(item)>-1)
     if (!isFileType1&&!isFileType2) {
       message.error(`文件格式只支持${[...fileTypeList1,...fileTypeList2].join(',')}`);
       return false
     }
     const isLt5M = file.size / 1024 / 1024 < 5;
     const isLt10M = file.size / 1024 / 1024 < 10;
+
+    debugger
     if (isFileType1 &&!isLt5M) {
-      message.error('文件最大支持上传5M');
+      message.error('课件最大支持上传5M');
       return false
     }
     if (isFileType2 &&!isLt10M) {
-      message.error('文件最大支持上传10M');
+      message.error('媒体文件最大支持上传10M');
       return false
     }
     return true
   }
 
   const customRequest = (file)=> {
-    if(beforeUpload){
+    if(beforeUpload(file.file)){
       const params = new FormData();
       params.append("roomId",roomId);
       params.append("userId",userId);
@@ -83,6 +85,7 @@ function FileList(props) {
       </header>
       <div className="file-upload">
         <Upload 
+          //  accept={[...fileTypeList1,...fileTypeList2].join('')}
           showUploadList={false}
           customRequest= {(file)=>{customRequest(file)}}>
           <Button loading={status}>

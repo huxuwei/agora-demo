@@ -26,19 +26,19 @@ class JoinHome extends React.Component{
    
     this.props.history.push({
       pathname: '/room',
-      search: `scheduleStr=3faf065f28b249ef&&crmUserStr=10da4dcba07b32ca&&roleStr=425413fcd9ab7f73`
+      search: `scheduleStr=2d394cbc8c4f115c&crmUserStr=2d93241eb821e499&roleStr=425413fcd9ab7f73`
     })
   }
   replay = () =>{
     this.props.history.push({
       pathname: '/room',
-      search: `scheduleStr=3faf065f28b249ef&&crmUserStr=0ee4782a261c3659&&roleStr=425413fcd9ab7f73`
+      search: `scheduleStr=2d394cbc8c4f115c&crmUserStr=4e9390f2415a2887&roleStr=425413fcd9ab7f73`
     })
   }
   teach= ()=>{
     this.props.history.push({
       pathname: '/room',
-      search: `scheduleStr=3faf065f28b249ef&&crmUserStr=99068348943be0b4&&roleStr=f39e88cf9f175538`
+      search: `scheduleStr=2d394cbc8c4f115c&crmUserStr=c6982b71367f0af1&roleStr=f39e88cf9f175538`
     })
   }
   add= ()=>{

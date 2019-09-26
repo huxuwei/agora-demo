@@ -1,7 +1,7 @@
 import React from 'react'
 import GIcon from '@/components/GIcon'
 import {connect} from 'react-redux'
-import { createChannel, sendMessage} from '@/utils/chatAction.js'
+import {  sendMessage} from '@/utils/chatAction.js'
 
 class VideoTools extends React.Component{
   constructor(props){
