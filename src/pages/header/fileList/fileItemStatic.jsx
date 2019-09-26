@@ -2,7 +2,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
-
 class FileItem extends React.Component{
   constructor(props){
     super(props)
@@ -21,8 +20,7 @@ class FileItem extends React.Component{
       ]
     }
   }
-  componentDidMount() {
-
+  componentDidMount(){
     this.setState({
       list: [...this.state.list, ...this.props.fileList],
     })
@@ -36,6 +34,24 @@ class FileItem extends React.Component{
       
     })
   }
+  componentWillReceiveProps(nextProps) {
+    if(this.props.fileList.length !== nextProps.fileList.length ){
+      this.setState({
+        list: [...this.state.list, ...nextProps.fileList],
+      })
+      this.state.list.forEach((item,i)=>{
+        if(i === 0){
+          localStorage.setItem(item.name, 2)
+        }
+        if(localStorage.getItem(item.name)){
+          localStorage.setItem(item.name, 1)
+        }
+        
+      })
+    }
+    
+  }
+  
   choose(item, i) {
     this.setState({
       activeIndex: i
@@ -87,6 +103,7 @@ class FileItem extends React.Component{
     // console.log("scenceState", scenceState);
    
   }
+
   render() {
     let {activeIndex, list } = this.state
     return (

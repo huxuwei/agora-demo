@@ -17,7 +17,9 @@ const apis = {
     // 获取文件
     getCourseware: room + '/getCourseware',
     // 回放
-    getPlayBackInfo: room +'/getPlayBackInfo'
+    getPlayBackInfo: room +'/getPlayBackInfo',
+    // 文件上传
+    uploads: room + '/uploads'
 
 }
 export const getApi = key => apis[key];
