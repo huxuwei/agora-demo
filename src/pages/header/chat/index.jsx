@@ -1,7 +1,7 @@
 import React from 'react'
 import queryString from 'query-string'
 import './index.less'
-import { Button } from 'antd';
+import { Button, Message } from 'antd';
 import { createChannel, sendMessage} from '@/utils/chatAction.js'
 import { connect } from "react-redux";
 import {videoConfig, roleConifg, channelConfig} from '@/utils/config.js'
@@ -22,18 +22,22 @@ class Chat extends React.Component{
     
     this.props.comDidMouted()
 
-    this.props.msgClient.then(res=>{
-      console.log('MessageClientMessageClientMessageClient',res)
-
-      createChannel(res, channelConfig.channelChat, (text)=>{
-        // console.log('回调成功',text,typeof text)
-        this.setMessageContent(text, false)
-        this.props.getMessage(text)
-      }).then(res=>{
-        console.log('channelchannelchannel',res)
-        this.channel = res
+    try {
+      this.props.msgClient.then(res=>{
+        console.log('MessageClientMessageClientMessageClient',res)
+  
+        createChannel(res, channelConfig.channelChat, (text)=>{
+          // console.log('回调成功',text,typeof text)
+          this.setMessageContent(text, false)
+          this.props.getMessage(text)
+        }).then(res=>{
+          console.log('channelchannelchannel',res)
+          this.channel = res
+        })
       })
-    })
+    } catch (error) {
+      Message.error('加入聊天频道失败')
+    }
   }
 
   send = ()=>{

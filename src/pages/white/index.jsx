@@ -81,6 +81,12 @@ class White extends React.Component{
       currentApplianceName: val
     });
   }
+  addRoomEvent() {
+    // this.room.addMagixEventListener('claaStart',this.message('开始上课啦')) ;
+    // this.room.addMagixEventListener('claaStop', this.classStop);
+    // this.room.addMagixEventListener('stop', this.stop);
+    // this.room.addMagixEventListener('play', this.play);
+  }
   render() {
     const {changeTool} = this
     return (

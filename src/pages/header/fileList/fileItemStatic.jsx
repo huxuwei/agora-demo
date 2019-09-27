@@ -87,7 +87,7 @@ class FileItem extends React.Component{
     // 为这个 ppt 文件起一个独一无二的名字。
     // 如果你的白板中可能出现多个 ppt，这样有助于管理它们。
     // var pptName = item.name.split('.')[0];
-    var pptName = item.key
+    var pptName = item.key+ ''
 
     console.log("pppp:", "/" + pptName, scenes);
     let first = localStorage.getItem(item.key)
