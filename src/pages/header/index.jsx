@@ -5,7 +5,7 @@ import GIcon from '@/components/GIcon'
 import './index.less'
 import FileList from './fileList'
 import Chatting from './chat'
-import { roleConifg, channelConfig } from '@/utils/config.js'
+import { roleConifg, orderMsgConfig } from '@/utils/config.js'
 import { sendMessage } from '@/utils/chatAction.js'
 import {connect} from 'react-redux'
 
@@ -65,7 +65,7 @@ class RoomHeader extends React.Component {
             this.props.startClass(false)
             // console.log('channelchannelchannelthis.props.channelOrder',this.props.channelOrder)
             //  下课发送离开指令,同时自已也离开
-            sendMessage(this.props.channelOrder, 'video_leave')
+            sendMessage(this.props.channelOrder, orderMsgConfig['video_leave'])
             this.props.client.leave()
           }).catch(err => {
             this.setState({
@@ -98,8 +98,10 @@ class RoomHeader extends React.Component {
   }
   drawClose =()=> {
     this.setState({
-      drawVisible: false
+      drawVisible: false,
+      active: {}
     })
+
   }
   chooseShow=(val)=> {
     if (this.state.active.type === val) {
@@ -115,6 +117,9 @@ class RoomHeader extends React.Component {
     }
   }
   getMessage=(val)=> {
+    if(this.state.active.type === 'chat'){
+      return
+    }
     this.setState({
       msgNum:  this.state.msgNum +1
     })

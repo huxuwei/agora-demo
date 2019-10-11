@@ -2,6 +2,7 @@ import React from 'react'
 import GIcon from '@/components/GIcon'
 import {connect} from 'react-redux'
 import {  sendMessage} from '@/utils/chatAction.js'
+import { orderMsgConfig } from '@/utils/config.js'
 
 class VideoTools extends React.Component{
   constructor(props){
@@ -14,7 +15,7 @@ class VideoTools extends React.Component{
   closeAudio=()=>{
     const {stream, uid} = this.props.remote
     stream.disableAudio()
-    sendMessage(this.props.channelOrder, `video_closeAudio_${uid}`)
+    sendMessage(this.props.channelOrder, `${orderMsgConfig['video_closeAudio']}_${uid}`)
     this.setState({
       audioStatus: false
     })
@@ -22,7 +23,7 @@ class VideoTools extends React.Component{
   closeVideo=()=>{
     const {stream, uid} = this.props.remote
     stream.disableVideo()
-    sendMessage(this.props.channelOrder, `video_closeVideo_${uid}`)
+    sendMessage(this.props.channelOrder, `${video_closeAudio['video_closeVideo']}_${uid}`)
     this.setState({
       videoStatus: false
     })
@@ -31,7 +32,7 @@ class VideoTools extends React.Component{
     const {stream, uid} = this.props.remote
     stream.enableAudio()
     stream.enableVideo()
-    sendMessage(this.props.channelOrder, `video_resume_${uid}`)
+    sendMessage(this.props.channelOrder, `${video_closeAudio['video_resume']}_${uid}`)
     this.setState({
       videoStatus: true,
       audioStatus: true

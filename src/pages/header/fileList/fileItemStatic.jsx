@@ -61,9 +61,9 @@ class FileItem extends React.Component{
     this.pptShow(item,i)
   }
   pptShow(item,index) {
-    const whiteWrapW= document.querySelector('#whiteWrap').clientWidth
-    const whiteWrapH= document.querySelector('#whiteWrap').clientHeight
-    console.log('clientWidth',whiteWrap.clientWidth,whiteWrapH)
+    const whiteWrapW= document.querySelector('#whiteWrap').clientWidth 
+    const whiteWrapH= document.querySelector('#whiteWrap').clientHeight 
+    
 
     const {whiteRoom: room } = this.props
     // scenes 就是用来创建 pptx 对应的场景的描述信息
@@ -75,13 +75,31 @@ class FileItem extends React.Component{
 
    
   let scenes = item.coursewares.map((item, i)=>{
+    const diffW = whiteWrapW / item.width,
+          diffH = whiteWrapH / item.height
+    let width = item.width
+    let height = item.height
+    console.log('clientWidth',whiteWrap.clientWidth,whiteWrapH, width,height, diffW, diffH)
+    if(diffW - diffH >0 ){
+      width = width * diffH
+      height = height * diffH
+    }else{
+      width = width * diffW
+      height = height * diffW
+    }
+  
+    if(diffW >1 && diffH>1){
+      width = item.width
+      height = item.height
+    }
+
     return {
       name: (i+1)+'',
       ppt: {
         ...item,
         src: item.conversionFileUrl,
-        width: whiteWrapW,
-        height:whiteWrapH
+        width,
+        height
       },
       fisrt: true
     }

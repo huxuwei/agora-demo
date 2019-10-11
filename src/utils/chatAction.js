@@ -39,7 +39,7 @@ export async function createChannel (client,channelNum , fn, ) {
 
 // 发送消息
 export const sendMessage = (channel, text)=>{
-  channel.sendMessage({ text }).then(() => {
+  channel && channel.sendMessage({ text }).then(() => {
     /* 频道消息发送成功的处理逻辑 */
     console.log('频道消息发送成功')
   }).catch(error => {
