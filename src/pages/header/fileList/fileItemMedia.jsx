@@ -17,6 +17,11 @@ class FileItemMedia extends React.Component{
       list: [ ...this.props.fileList],
     })
   }
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      list: [ ...nextProps.fileList],
+    })
+  }
   choose(item, i) {
     this.setState({
       activeIndex: i

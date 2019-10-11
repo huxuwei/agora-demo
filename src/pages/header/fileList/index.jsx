@@ -37,7 +37,6 @@ function FileList(props) {
     const isLt5M = file.size / 1024 / 1024 < 5;
     const isLt10M = file.size / 1024 / 1024 < 10;
 
-    debugger
     if (isFileType1 &&!isLt5M) {
       message.error('课件最大支持上传5M');
       return false

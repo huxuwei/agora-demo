@@ -5,6 +5,7 @@ import { Button, Message } from 'antd';
 import { createChannel, sendMessage} from '@/utils/chatAction.js'
 import { connect } from "react-redux";
 import {videoConfig, roleConifg, channelConfig} from '@/utils/config.js'
+import {add0} from '@/utils/util.js'
 class Chat extends React.Component{
   constructor(props) {
     super(props)
@@ -53,9 +54,9 @@ class Chat extends React.Component{
   setMessageContent(msg, pos) {
     this.setState({
       chatList: [...this.state.chatList,{msg, pos}]
+    },()=>{
+      this.refs.chatMainInner.scrollTop = parseFloat(getComputedStyle(this.refs.chatMain).height) 
     })
-    this.refs.chatMainInner.scrollTop = 30000
-    // this.refs.chatMainInner.scrollHeight
   }
   onKeyDown(e){
     if(e.keyCode === 13) {
@@ -65,19 +66,21 @@ class Chat extends React.Component{
     
   }
   render() {
-    let {message,chatList } = this.state
+    let {message,chatList, } = this.state
+    const {roomInfo} = this.props
+    const date = new Date()
     return (
       <div className='chat-wrap'>
         <header className='chat-header'>聊天</header>
-        <main className='chat-main'>
+        <main className='chat-main' ref='chatMain'>
           <div className='chat-main-inner' ref='chatMainInner'>
             {
               chatList.map((item,i)=>(
                 <div className={['user-msg-box', item.pos? 'right':'left'].join(' ')} 
                   key={i+1}>
                   <div className='user-title'>
-                    <span>10:20</span>
-                    <span>角色名</span>
+                    <span>{`${add0(date.getHours())}:${add0(date.getMinutes())}  `}</span>
+                    <span>{roomInfo.userInfo.name}</span>
                   </div>
                   <div className='user-message'>
                     <span>{item.msg}</span>

@@ -29,7 +29,14 @@ export function formatTime(msTime) {
   let second = Math.floor(time) %60;
 
   return {
-      day, hour, minute, second
+    day, hour, minute, second
   }
 
+}
+
+export function add0(val){
+ if(val<10){
+   return '0'+val
+ }
+ return val
 }

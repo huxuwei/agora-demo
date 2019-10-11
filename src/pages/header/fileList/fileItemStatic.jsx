@@ -5,24 +5,26 @@ import {connect} from 'react-redux'
 class FileItem extends React.Component{
   constructor(props){
     super(props)
+    this.white =  {
+      name: '白板',
+      coursewares: Array(20).fill(0).map(item=>{
+        return {
+          ppt: undefined,
+        }
+      }),
+      key: 'init',
+    }
     this.state = {
       activeIndex: -1,
+      
       list: [
-        {
-          name: '白板',
-          coursewares: Array(20).fill(0).map(item=>{
-            return {
-              ppt: undefined,
-            }
-          }),
-          key: 'init',
-        }
+        
       ]
     }
   }
   componentDidMount(){
     this.setState({
-      list: [...this.state.list, ...this.props.fileList],
+      list: [this.white, ...this.props.fileList],
     })
     this.state.list.forEach((item,i)=>{
       if(i === 0){
@@ -37,7 +39,7 @@ class FileItem extends React.Component{
   componentWillReceiveProps(nextProps) {
     if(this.props.fileList.length !== nextProps.fileList.length ){
       this.setState({
-        list: [...this.state.list, ...nextProps.fileList],
+        list: [this.white, ...nextProps.fileList],
       })
       this.state.list.forEach((item,i)=>{
         if(i === 0){

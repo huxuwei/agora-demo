@@ -9,6 +9,7 @@ import {Button, Spin} from 'antd'
 import {throttle, formatTime } from '@/utils/util'
 import "video.js/dist/video-js.css";
 import GIcon from '@/components/GIcon'
+import videojs from "video.js"
 
 
 export default class Replay extends React.Component{
@@ -84,7 +85,7 @@ export default class Replay extends React.Component{
     }).then((player)=> {
       // 获取到 player 实例
       // 与 room 调用类似，与获取到 player 实例后，你需要将 player 绑定到 HTML 的 div 上。
-      // videojs(this.$refs.videoPlayer, playerOptions);
+      // videojs(this.refs.videoPlayer, );
       // player.bindHtmlElement(this.refs.whiteboard);
       // this.player = player
       this.setState({
@@ -130,7 +131,7 @@ export default class Replay extends React.Component{
           </div>
           <div className='player-box-wrap'>
             <PlayerWhiteboard className="player-box" player={this.state.player}/>
-            <video className="video-js video-layout"  id="white-sdk-video-js"></video>
+            {/* <video className="video-js video-layout" ref="videoPlayer"  id="white-sdk-video-js"></video> */}
           </div>
           <div className='progress'>
             <Button onClick={()=>{this.play()}} type='link'>

@@ -1,6 +1,6 @@
 
 import AgoraRTM from 'agora-rtm-sdk'
-
+import {Message} from 'antd'
 // 登陆
 export async function msgLogin(options ,fn) {
   try {
@@ -32,6 +32,7 @@ export async function createChannel (client,channelNum , fn, ) {
     return channel
   }catch(error){
     console.log(`加入频道${channelNum}失败:${error}`)
+    Message.error(`加入聊天失败:${error}`)
     return {}
   }
 }
