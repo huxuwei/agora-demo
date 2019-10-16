@@ -47,6 +47,8 @@ class RoomHeader extends React.Component {
           classStatus: !this.state.classStatus
         })
         this.props.startClass(true)
+        // 课程结束前提前请求延长课程时间
+        this.timeOut()
       }).catch(err => {
         this.setState({
           classStartLoading: false
@@ -78,11 +80,26 @@ class RoomHeader extends React.Component {
         },
       });
     }
-
-
-
-
-
+  }
+  timeOut() {
+    const {  timeRemaining} = this.props.roomInfo
+    const time = timeRemaining - roomConfig.timeSec
+    this.delay(time)
+  }
+  delay(time) {
+    const { id: roomId, userInfo: { id: userId } } = this.props.roomInfo
+    setTimeout(() => {
+      const params = {
+        roomId,
+        userId,
+        minute: roomConfig.delayTime
+      }
+      http.get('delay', params ).then(res=>{
+        const time = res.data - roomConfig.timeSec
+        this.delay(time)
+        console.log(`课程延长了${roomConfig.delayTime}分钟`)
+      })
+    }, time);
   }
   showDraw =(item, i)=> {
     this.setState({

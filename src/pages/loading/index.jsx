@@ -18,11 +18,9 @@ class LoadingStart extends React.Component {
     this.init()
   }
   init() {
-    const { scheduleStr, crmUserStr, roleStr } = queryString.parse(window.location.hash.split('?')[1])
+    const { code } = queryString.parse(window.location.hash.split('?')[1])
     const params = {
-      scheduleStr,
-      crmUserStr,
-      roleStr
+      code
     }
     http.get("joinRoom", params).then(res => {
       const {agora, hereWhite} = res.data

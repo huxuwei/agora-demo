@@ -2,12 +2,18 @@
 import AgoraRTM from 'agora-rtm-sdk'
 import {Message} from 'antd'
 // 登陆
-export async function msgLogin(options ,fn) {
+export async function msgLogin(options) {
   try {
-    const {appID, token, uid} = options
+    const {appID, token, uid , aborted} = options
     const client = AgoraRTM.createInstance(appID);
     const res = await client.login({ token, uid })
     console.log('AgoraRTM client login success: info登陆成功',client);
+    client.on('ConnectionStateChanged',  (newState, reason)=> {
+      console.log('ConnectionStateChanged',newState, reason)
+      if(newState === 'ABORTED') {
+        aborted instanceof Function && aborted()
+      }
+    });
     return client
   } catch (error) {
     console.log('AgoraRTM client login failure', error);

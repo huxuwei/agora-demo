@@ -41,3 +41,21 @@ export const orderMsgConfig = {
   video_resume: 'video_resume',         // 恢复音视频
   
 }
+
+// export const roomConfig = {
+//   time:2, //每次延长时间(分钟)
+//   delayTime:5, //每次延长时间(分钟)
+//   timeSec: function(){
+//     return 1000 * 60 * this.time
+//   }
+// }
+
+export const roomConfig = (() =>{
+  const time = 2     // 提前请求延长的时间(分钟)
+  const delayTime =5 //每次延长时间(分钟)
+  return {
+    time,
+    delayTime, //每次延长时间(分钟)
+    timeSec: 1000 * 60 * time
+  }
+})()

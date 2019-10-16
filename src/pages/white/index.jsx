@@ -51,6 +51,7 @@ class White extends React.Component{
      room.setMemberState({
        strokeColor: [255, 0, 0],
      });
+     this.addRoomEvent()
      this.changeTool('selector')
      this.readOnly(room)
      
@@ -58,6 +59,8 @@ class White extends React.Component{
      this.setState({
       loaded: true
      })
+     
+     
 
     //  let pptConverter = whiteWebSdk.pptConverter(roomToken);
     //   pptConverter.convert({
@@ -75,22 +78,36 @@ class White extends React.Component{
       room.disableOperations = true;
       room.setViewMode(ViewMode.Follower);
     }
+    
   }
   changeTool = (val)=>{
     this.room.setMemberState({
       currentApplianceName: val
     });
+    
+  }
+  message(eventObject){
+    console.log('eventObject',eventObject)
   }
   addRoomEvent() {
+      this.room.addMagixEventListener('whiteOrder',this.message) ;
     // this.room.addMagixEventListener('claaStart',this.message('开始上课啦')) ;
     // this.room.addMagixEventListener('claaStop', this.classStop);
     // this.room.addMagixEventListener('stop', this.stop);
     // this.room.addMagixEventListener('play', this.play);
   }
+  dispatch() {
+    console.log(2222)
+    this.room.dispatchMagixEvent('eventObject',{
+      a: 1,
+      b: 2
+    });
+  }
   render() {
     const {changeTool} = this
     return (
       <div className="white-wrap">
+        {/* <button onClick= {()=>this.dispatch()}>触发自定义事件</button> */}
         <div className="wrap" ref="whiteWrap" id="whiteWrap"></div>
         {
           (this.props.roomInfo && this.props.roomInfo.userInfo && 

@@ -23,7 +23,7 @@ class VideoTools extends React.Component{
   closeVideo=()=>{
     const {stream, uid} = this.props.remote
     stream.disableVideo()
-    sendMessage(this.props.channelOrder, `${video_closeAudio['video_closeVideo']}_${uid}`)
+    sendMessage(this.props.channelOrder, `${orderMsgConfig['video_closeVideo']}_${uid}`)
     this.setState({
       videoStatus: false
     })
@@ -32,7 +32,7 @@ class VideoTools extends React.Component{
     const {stream, uid} = this.props.remote
     stream.enableAudio()
     stream.enableVideo()
-    sendMessage(this.props.channelOrder, `${video_closeAudio['video_resume']}_${uid}`)
+    sendMessage(this.props.channelOrder, `${orderMsgConfig['video_resume']}_${uid}`)
     this.setState({
       videoStatus: true,
       audioStatus: true

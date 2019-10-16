@@ -19,7 +19,9 @@ const apis = {
     // 回放
     getPlayBackInfo: room +'/getPlayBackInfo',
     // 文件上传
-    uploads: room + '/uploads'
+    uploads: room + '/uploads',
+    // 课程延长
+    delay: room+ '/delay'
 
 }
 export const getApi = key => apis[key];
