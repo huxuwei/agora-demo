@@ -5,9 +5,10 @@ import GIcon from '@/components/GIcon'
 import './index.less'
 import FileList from './fileList'
 import Chatting from './chat'
-import { roleConifg, orderMsgConfig } from '@/utils/config.js'
+import { roleConifg, orderMsgConfig,roomConfig  } from '@/utils/config.js'
 import { sendMessage } from '@/utils/chatAction.js'
 import {connect} from 'react-redux'
+
 
 const { confirm } = Modal;
 class RoomHeader extends React.Component {
@@ -32,6 +33,7 @@ class RoomHeader extends React.Component {
       roomName: channel,
       classStatus: status === 1 ? true : false
     })
+    this.timeOut()
   }
   start =()=> {
     this.setState({
@@ -49,6 +51,7 @@ class RoomHeader extends React.Component {
         this.props.startClass(true)
         // 课程结束前提前请求延长课程时间
         this.timeOut()
+        debugger
       }).catch(err => {
         this.setState({
           classStartLoading: false
@@ -88,12 +91,14 @@ class RoomHeader extends React.Component {
   }
   delay(time) {
     const { id: roomId, userInfo: { id: userId } } = this.props.roomInfo
+    console.log('开始倒计时',time)
     setTimeout(() => {
       const params = {
         roomId,
         userId,
         minute: roomConfig.delayTime
       }
+      console.log('发送延长请求')
       http.get('delay', params ).then(res=>{
         const time = res.data - roomConfig.timeSec
         this.delay(time)

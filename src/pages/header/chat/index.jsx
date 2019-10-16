@@ -54,9 +54,8 @@ class Chat extends React.Component{
   setMessageContent(msg, pos) {
     this.setState({
       chatList: [...this.state.chatList,{msg, pos}]
-    },()=>{
-      this.refs.chatMainInner.scrollTop = parseFloat(getComputedStyle(this.refs.chatMain).height) 
     })
+    this.refs.chatMainInner.scrollTop = parseFloat(getComputedStyle(this.refs.chatMain).height)
   }
   onKeyDown(e){
     if(e.keyCode === 13) {

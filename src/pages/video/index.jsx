@@ -54,7 +54,10 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
               case 'closeAudio': item.stream.disableAudio();break;
               case 'closeVideo':item.stream.disableVideo();break;
               case 'resume':item.stream.enableAudio();item.stream.enableVideo();break;
-              case 'leave': this.client.leave();break;
+              case 'leave': 
+                this.client.leave();
+                Message.success('课程结束,您已离开教室!')
+                break;
               default:
                 break;
             }
@@ -66,7 +69,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
         })
       })
     } catch (error) {
-      Message.error('加入信道频道失败!')
+      Message.error('加入信道频道失败!',error)
     }
 
     this.props.msgClient.then(res=>{

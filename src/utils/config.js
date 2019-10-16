@@ -12,6 +12,10 @@ export const whiteConfig= {}
   
 /**
  * 角色配置
+ * 1: 老师
+ * 2: 学生
+ * 4: 助教
+ * 5: 巡课
  */
 export const roleConifg= {
   teach: 1,
@@ -23,8 +27,9 @@ export const roleConifg= {
 /**
  * 频道参数
  */
-const queryString = require('querystring')
+
 export const channelConfig = (()=>{
+  const queryString = require('querystring')
   const scheduleStr = queryString.parse(window.location.hash.split('?')[1]).scheduleStr
   return {
     channel: scheduleStr, 

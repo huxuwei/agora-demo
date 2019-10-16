@@ -165,5 +165,5 @@
     "@babel/plugin-transform-react-jsx-self": "^7.2.0",
     "@babel/plugin-transform-react-jsx-source": "^7.5.0"
   },
-  "proxy": "https://192.168.0.104:8091"
+  "proxy": "https://pay.boluozaixian.net:8091"
 }
