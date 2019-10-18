@@ -47,6 +47,20 @@ class Room extends React.Component {
     })
   }
   
+
+  closeWindow = ()=>{
+    var userAgent = navigator.userAgent;
+    if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") !=-1) {
+        // window.location.href="";
+        window.opener = null;
+        window.open("", "_self");
+        window.parent.close();
+    } else {
+        window.opener = null;
+        window.open("", "_self");
+        window.close();
+    }
+  }
   render() {
     const {roomInfo} = this.props
 
@@ -72,6 +86,7 @@ class Room extends React.Component {
             visible={true}
             okText='确认'
             cancelText={null}
+            // onOk={this.closeWindow}
             footer={null}
           >
             <h1>有相同用户进入教室,您已离开教室!</h1>

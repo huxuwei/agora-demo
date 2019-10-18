@@ -29,10 +29,10 @@ export async function createChannel (client,channelNum , fn, ) {
   try{
     const res = await channel.join()
     console.log(`加入频道${channelNum}成功`)
-    channel.on('ChannelMessage', ({ text }, senderId) => { // text 为收到的频道消息文本，senderId 为发送方的 User ID
+    channel.on('ChannelMessage', ({text}, senderId) => { // text 为收到的频道消息文本，senderId 为发送方的 User ID
       /* 收到频道消息的处理逻辑 */
       console.log('消息接收成功:', text,senderId ,typeof fn ==='function')
-      typeof fn ==='function' && fn(text)
+      typeof fn ==='function' && fn(text, senderId)
     });
     console.log('channel',channel)
     return channel

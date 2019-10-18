@@ -9,7 +9,7 @@ import {add0} from '@/utils/util.js'
 class Chat extends React.Component{
   constructor(props) {
     super(props)
-    this.scheduleStr = queryString.parse(window.location.hash.split('?')[1]).scheduleStr
+    // this.scheduleStr = queryString.parse(window.location.hash.split('?')[1]).scheduleStr
     this.state = {
       message: '',
       chatList: [],
@@ -22,15 +22,19 @@ class Chat extends React.Component{
   componentDidMount(){
     
     this.props.comDidMouted()
-
+    const { agora: {channel}, agoraUsers } = this.props.roomInfo
     try {
-      this.props.msgClient.then(res=>{
+      this.props.msgClient.then((res)=>{
         console.log('MessageClientMessageClientMessageClient',res)
   
-        createChannel(res, channelConfig.channelChat, (text)=>{
+        createChannel(res, channelConfig(channel).channelChat, (text, senderId)=>{
           // console.log('回调成功',text,typeof text)
-          this.setMessageContent(text, false)
+          const senderName = agoraUsers.find(item=>item.uid==senderId).name
+          this.setMessageContent(text, false, senderName)
           this.props.getMessage(text)
+          console.log('senderIdsenderId:',senderId)
+         
+          
         }).then(res=>{
           console.log('channelchannelchannel',res)
           this.channel = res
@@ -49,11 +53,12 @@ class Chat extends React.Component{
     })
     sendMessage(this.channel, msg)
     this.refs.chatContent.innerHTML = ''
-    this.setMessageContent(msg, true)
+    this.setMessageContent(msg, true, this.props.roomInfo.userInfo.name )
+
   }
-  setMessageContent(msg, pos) {
+  setMessageContent(msg, pos, name) {
     this.setState({
-      chatList: [...this.state.chatList,{msg, pos}]
+      chatList: [...this.state.chatList,{msg, pos,name}]
     },()=>{
       this.refs.chatMain.scrollTop =this.refs.chatMainInner.scrollHeight
     })
@@ -67,7 +72,7 @@ class Chat extends React.Component{
   }
   render() {
     let {message,chatList, } = this.state
-    const {roomInfo} = this.props
+    const {roomInfo:{agoraUsers, userInfo}} = this.props
     const date = new Date()
     return (
       <div className='chat-wrap'>
@@ -79,8 +84,8 @@ class Chat extends React.Component{
                 <div className={['user-msg-box', item.pos? 'right':'left'].join(' ')} 
                   key={i+1}>
                   <div className='user-title'>
+                    <span>{ `${item.name} `}</span>
                     <span>{`${add0(date.getHours())}:${add0(date.getMinutes())}  `}</span>
-                    <span>{roomInfo.userInfo.name}</span>
                   </div>
                   <div className='user-message'>
                     <span>{item.msg}</span>

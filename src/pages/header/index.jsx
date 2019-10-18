@@ -32,8 +32,10 @@ class RoomHeader extends React.Component {
     this.setState({
       roomName: channel,
       classStatus: status === 1 ? true : false
+    },()=>{
+      // this.timeOut()
     })
-    this.timeOut()
+    
   }
   start =()=> {
     this.setState({
@@ -47,11 +49,12 @@ class RoomHeader extends React.Component {
         this.setState({
           classStartLoading: false,
           classStatus: !this.state.classStatus
+        },()=>{
+          this.timeOut()
         })
         this.props.startClass(true)
         // 课程结束前提前请求延长课程时间
-        this.timeOut()
-        debugger
+        
       }).catch(err => {
         this.setState({
           classStartLoading: false
@@ -87,12 +90,16 @@ class RoomHeader extends React.Component {
   timeOut() {
     const {  timeRemaining} = this.props.roomInfo
     const time = timeRemaining - roomConfig.timeSec
+    console.log('timout调用了')
     this.delay(time)
+    // return this.delay
   }
   delay(time) {
-    const { id: roomId, userInfo: { id: userId } } = this.props.roomInfo
+    const { id: roomId, userInfo: { id: userId, role } } = this.props.roomInfo
+    
+    if(!this.state.classStatus && role !== roomConfig.teach )return
     console.log('开始倒计时',time)
-    setTimeout(() => {
+    const s = setTimeout(() => {
       const params = {
         roomId,
         userId,
@@ -101,9 +108,11 @@ class RoomHeader extends React.Component {
       console.log('发送延长请求')
       http.get('delay', params ).then(res=>{
         const time = res.data - roomConfig.timeSec
-        this.delay(time)
+        this.delay(roomConfig.delayTime* 1000*60)
+        console.log(`res.data的值为${res.data},time的值为${roomConfig.delayTime* 1000*60}`)
         console.log(`课程延长了${roomConfig.delayTime}分钟`)
       })
+      clearTimeout(s)
     }, time);
   }
   showDraw =(item, i)=> {

@@ -26,11 +26,9 @@ export default class Replay extends React.Component{
     }
   }
   componentDidMount() {
-    const { scheduleStr, crmUserStr,roleStr } = queryString.parse(window.location.hash.split('?')[1])
+    const { code } = queryString.parse(window.location.hash.split('?')[1])
     const params = {
-      scheduleStr,
-      crmUserStr,
-      roleStr
+      code
     }
     http.get('getPlayBackInfo',params).then(res=>{
       this.replay(res.data)

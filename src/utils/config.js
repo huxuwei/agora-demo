@@ -28,15 +28,15 @@ export const roleConifg= {
  * 频道参数
  */
 
-export const channelConfig = (()=>{
-  const queryString = require('querystring')
-  const scheduleStr = queryString.parse(window.location.hash.split('?')[1]).scheduleStr
+export const channelConfig = (scheduleStr)=>{
+  // const queryString = require('querystring')
+  // const scheduleStr = queryString.parse(window.location.hash.split('?')[1]).scheduleStr
   return {
     channel: scheduleStr, 
     channelChat: scheduleStr + '_8888',  //聊天频道
     channelOrder: scheduleStr + '_9999', //指令频道
   }
-})()
+}
 
 // 指令信息
 export const orderMsgConfig = {

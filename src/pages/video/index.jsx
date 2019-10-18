@@ -41,10 +41,10 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
   // 加入执行频道处理信道指令
   joinChaanel(){
     const {remoteStreamList} = this.state
-
+    const { agora: {channel} } = this.props.roomInfo
     try {
       this.props.msgClient.then(res=>{
-        createChannel(res, channelConfig.channelOrder , (text)=>{
+        createChannel(res, channelConfig(channel).channelOrder , (text)=>{
           // 控制消息格式'类型_指令_对象'
           const msg = text.split('_')
           if(msg[0] === 'video'){
@@ -70,30 +70,9 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
       })
     } catch (error) {
       Message.error('加入信道频道失败!',error)
+      
     }
 
-    this.props.msgClient.then(res=>{
-      createChannel(res, channelConfig.channelOrder , (text)=>{
-        // 控制消息格式'类型_指令_对象'
-        const msg = text.split('_')
-        if(msg[0] === 'video'){
-          const item = remoteStreamList.find(item=>item.uid ==msg[2])
-          console.log('text',text,item,remoteStreamList)
-          switch (msg[1]) {
-            case 'closeAudio': item.stream.disableAudio();break;
-            case 'closeVideo':item.stream.disableVideo();break;
-            case 'resume':item.stream.enableAudio();item.stream.enableVideo();break;
-            case 'leave': this.client.leave();break;
-            default:
-              break;
-          }
-        }
-      }).then(res=>{
-        console.log('channelchannelchannel',res)
-        this.channel = res
-        this.props.Set_channelOrder(res)
-      })
-    })
   }
   init(nextProps){
     let { mode, codec } = videoConfig;

@@ -11,7 +11,7 @@ import "white-web-sdk/style/index.css";
 class White extends React.Component{
   constructor(props){
     super(props)
-    this.channel = queryString.parse(window.location.hash.split('?')[1]).room
+    // this.channel = queryString.parse(window.location.hash.split('?')[1]).room
     this.state = {
       loaded: false
     }
