@@ -78,8 +78,9 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
     let { mode, codec } = videoConfig;
     let {appId } = nextProps.roomInfo.agora
     // let {client} = this.state
-    
+    AgoraRTC.Logger.enableLogUpload();
     this.client = AgoraRTC.createClient({ mode, codec });
+    
     console.log(appId,this.client)
     this.client.init( appId,() => {
         console.log("AgoraRTC client 初始化成功");
