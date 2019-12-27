@@ -1,76 +1,98 @@
-.chat-wrap{
+.chat-wrap {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: rgba(31,32,39,.96);
-  .chat-header{
+  background: rgba(31, 32, 39, .96);
+
+  .chat-header {
     height: 60px;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid hsla(0,0%,100%,.251);
+    border-bottom: 1px solid hsla(0, 0%, 100%, .251);
   }
-  .chat-main{
+
+  .chat-main {
     flex: 1;
-    border-bottom: 1px solid hsla(0,0%,100%,.251);
+    border-bottom: 1px solid hsla(0, 0%, 100%, .251);
     display: flex;
     flex-direction: column;
     padding: 10px;
     overflow-y: auto;
-    .chat-main-inner{
+
+    .chat-main-inner {
       // overflow: auto;
     }
-    .user-msg-box{
+
+    .user-msg-box {
       width: 100%;
-      span{
+
+      span {
         color: white;
       }
-      .user-message{
+
+      .user-message {
         border-radius: 0 6px 6px;
-        padding:2px 4px;
-        span{
+        padding: 2px 4px;
+
+        span {
           // display: inline-block;
           // width: 100%;
+          word-break: break-all;
+          padding: 0 6px;
+          border-radius: 4px;
         }
       }
     }
-    .right{
+
+    .right {
       align-self: flex-end;
       display: flex;
       flex-direction: column;
-      
+
       padding: 10px;
-      .user-title{
+
+      .user-title {
         align-self: flex-end;
       }
-      .user-message{
+
+      .user-message {
+
         // align-self: flex-end;
-        background: rgba(0,119,255,.9);
+        span {
+          background: rgba(0, 119, 255, .9);
+          float: right;
+
+        }
       }
     }
-    .left{
+
+    .left {
       align-self: flex-start;
       display: flex;
       flex-direction: column;
-      .user-message{
-        // align-self: flex-start;
-        background: rgba(70,70,73,.9);
+
+      .user-message {
+        span {
+          background: rgba(70, 70, 73, .9);
+        }
       }
-     
     }
-    
   }
-  .chat-footer{
+
+  .chat-footer {
     height: 100px;
     position: relative;
-    >div{
+
+    >div {
       color: white;
       padding: 10px;
       height: 100%;
       overflow: auto;
     }
-    .chat-send{
+
+    .chat-send {
       position: absolute;
       right: 10px;
       bottom: 10px;

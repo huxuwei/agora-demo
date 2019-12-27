@@ -5,9 +5,10 @@ import GIcon from '@/components/GIcon'
 import './index.less'
 import FileList from './fileList'
 import Chatting from './chat'
-import { roleConifg, orderMsgConfig,roomConfig  } from '@/utils/config.js'
+import TalkingStatus from './talkingStatus'
+import { roleConifg, orderMsgConfig, roomConfig } from '@/utils/config.js'
 import { sendMessage } from '@/utils/chatAction.js'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
 
 const { confirm } = Modal;
@@ -18,26 +19,23 @@ class RoomHeader extends React.Component {
       classStatus: false,
       classStartLoading: false,
       drawVisible: true,
+      talkingStatusVisible: false,
       active: { type: 'chat' },
       roomName: '',
       msgNum: 0
     }
-    this.buttonList = [
-      { type: 'file', icon: 'iconziyuan' },
-      { type: 'chat', icon: 'iconliaotian' },
-    ]
   }
   componentDidMount() {
     const { agora: { channel }, status } = this.props.roomInfo
     this.setState({
       roomName: channel,
       classStatus: status === 1 ? true : false
-    },()=>{
+    }, () => {
       // this.timeOut()
     })
-    
+
   }
-  start =()=> {
+  start = () => {
     this.setState({
       classStartLoading: true
     })
@@ -49,12 +47,12 @@ class RoomHeader extends React.Component {
         this.setState({
           classStartLoading: false,
           classStatus: !this.state.classStatus
-        },()=>{
+        }, () => {
           this.timeOut()
         })
         this.props.startClass(true)
         // 课程结束前提前请求延长课程时间
-        
+
       }).catch(err => {
         this.setState({
           classStartLoading: false
@@ -64,7 +62,7 @@ class RoomHeader extends React.Component {
       confirm({
         title: '确认消息?',
         content: '确认要下课吗?',
-        onOk : ()=> {
+        onOk: () => {
           http.get(api, { roomId, userId }).then(res => {
             this.setState({
               classStartLoading: false,
@@ -81,14 +79,14 @@ class RoomHeader extends React.Component {
             })
           })
         },
-        onCancel: ()=> {
+        onCancel: () => {
           console.log('Cancel');
         },
       });
     }
   }
   timeOut() {
-    const {  timeRemaining} = this.props.roomInfo
+    const { timeRemaining } = this.props.roomInfo
     const time = timeRemaining - roomConfig.timeSec
     console.log('timout调用了')
     this.delay(time)
@@ -96,9 +94,9 @@ class RoomHeader extends React.Component {
   }
   delay(time) {
     const { id: roomId, userInfo: { id: userId, role } } = this.props.roomInfo
-    
-    if(!this.state.classStatus && role !== roomConfig.teach )return
-    console.log('开始倒计时',time)
+
+    if (!this.state.classStatus && role !== roomConfig.teach) return
+    console.log('开始倒计时', time)
     const s = setTimeout(() => {
       const params = {
         roomId,
@@ -106,35 +104,40 @@ class RoomHeader extends React.Component {
         minute: roomConfig.delayTime
       }
       console.log('发送延长请求')
-      http.get('delay', params ).then(res=>{
+      http.get('delay', params).then(res => {
         const time = res.data - roomConfig.timeSec
-        this.delay(roomConfig.delayTime* 1000*60)
-        console.log(`res.data的值为${res.data},time的值为${roomConfig.delayTime* 1000*60}`)
+        this.delay(roomConfig.delayTime * 1000 * 60)
+        console.log(`res.data的值为${res.data},time的值为${roomConfig.delayTime * 1000 * 60}`)
         console.log(`课程延长了${roomConfig.delayTime}分钟`)
       })
       clearTimeout(s)
     }, time);
   }
-  showDraw =(item, i)=> {
+  showDraw = (item, i) => {
     this.setState({
       drawVisible: !this.state.drawVisible,
       active: item
     })
-    
+
     if (item.type === 'chat') {
       this.setState({
         msgNum: 0
       })
     }
   }
-  drawClose =()=> {
+  talkingStatusShow = () => {
+    this.setState({
+      talkingStatusVisible: true
+    })
+  }
+  drawClose = () => {
     this.setState({
       drawVisible: false,
       active: {}
     })
 
   }
-  chooseShow=(val)=> {
+  chooseShow = (val) => {
     if (this.state.active.type === val) {
       return {
         display: 'block',
@@ -147,46 +150,61 @@ class RoomHeader extends React.Component {
       }
     }
   }
-  getMessage=(val)=> {
-    if(this.state.active.type === 'chat'){
+  getMessage = (val) => {
+    if (this.state.active.type === 'chat') {
       return
     }
     this.setState({
-      msgNum:  this.state.msgNum +1
+      msgNum: this.state.msgNum + 1
     })
   }
   render() {
-    const {showDraw,getMessage,chooseShow,drawClose,start, buttonList ,
-      state:{roomName,msgNum,classStartLoading , classStatus ,drawVisible ,active }} = this
+    const { showDraw, getMessage, chooseShow, drawClose, start, talkingStatusShow,
+      state: { roomName, msgNum, classStartLoading, classStatus, drawVisible,
+        active, talkingStatusVisible
+      },
+    } = this
+    // 是否是老师
+    const isTeach = this.props.roomInfo.userInfo.role === roleConifg.teach
+    const isStu = this.props.roomInfo.userInfo.role === roleConifg.stu
     return (
       <React.Fragment>
         <div className="room-info">
-          <div>房间号：{roomName.slice(0,10)}...</div>
+          <div>房间号：{roomName.slice(0, 10)}...</div>
           {/* <span>{roomName}</span> */}
         </div>
         <div className="room-action">
-          {buttonList.map((item, i) => (
-            <div className='action-wrap' onClick={() => showDraw(item, i)} key={i + 1}>
-    
-              {
-                item.type === 'chat' ?
-                  <Badge count={msgNum}>
-                    <Button type='default' shape="circle">
-                      <GIcon icon={item.icon}></GIcon>
-                    </Button>
-                  </Badge> :
-                  <Button type='default' shape="circle">
-                    <GIcon icon={item.icon}></GIcon>
-                  </Button>
-              }
-            </div>
-          ))}
+          {/* 课件 */}
           {
-            (this.props.roomInfo.userInfo.role === roleConifg.teach) ?
-              <Button type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课' : '上课'}</Button> :
-              null
+            isStu ? null:
+            <div className='action-wrap' onClick={() => showDraw({ type: 'file' })}>
+              <Button type='default' shape="circle">
+                <GIcon icon='iconziyuan'></GIcon>
+              </Button>
+            </div>
           }
-    
+          {/* 聊天 */}
+          <div className='action-wrap' onClick={() => showDraw({ type: 'chat' })}>
+            <Badge count={msgNum}>
+              <Button type='default' shape="circle">
+                <GIcon icon='iconliaotian'></GIcon>
+              </Button>
+            </Badge>
+          </div>
+          {/* 网络信息 */}
+          <div className='action-wrap' onClick={() => talkingStatusShow()}>
+            <Button type='default' shape="circle">
+              <GIcon icon='iconnetwork-management'></GIcon>
+            </Button>
+          </div>
+          {/* 上课/下课 */}
+          {
+            isTeach ?
+            <Button type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课' : '上课'}</Button>
+            :
+            null
+          }
+
         </div>
         <Drawer
           title="Basic Drawer"
@@ -200,16 +218,22 @@ class RoomHeader extends React.Component {
         >
           <div style={chooseShow('chat')}>
             <Chatting getMessage={getMessage} comDidMouted={drawClose} agora={this.props.roomInfo.agora}></Chatting>;
-              </div>
+          </div>
           <div style={chooseShow('file')}>
             <FileList roomInfo={this.props.roomInfo}></FileList>;
-              </div>
-          {/* {chooseShow()} */}
+          </div>
         </Drawer>
+        <Modal
+          footer={null}
+          onCancel={() => this.setState({ talkingStatusVisible: false })}
+          visible={talkingStatusVisible}
+        >
+          <TalkingStatus></TalkingStatus>
+        </Modal>
       </React.Fragment>
     )
   }
-  
+
 }
 function mapStateToProps(state) {
   return {
