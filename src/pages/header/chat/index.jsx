@@ -6,6 +6,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
 import { connect } from "react-redux";
 import {videoConfig, roleConifg, channelConfig} from '@/utils/config.js'
 import {add0} from '@/utils/util.js'
+import http from '@/utils/request'
 class Chat extends React.Component{
   constructor(props) {
     super(props)
@@ -43,8 +44,21 @@ class Chat extends React.Component{
     } catch (error) {
       Message.error('加入聊天频道失败')
     }
+    
+    this.getMessage()
   }
-
+  getMessage() {
+    const { id: roomId, userInfo: { id:userId, role}, agora: {uid} } = this.props.roomInfo
+    const params ={roomId, userId}
+    http.get('queryMessages', params).then(res=> {
+      this.setState({
+        chatList: res.data.map(item=>{
+          return {...item, pos:item.uid == uid }
+        })
+      })
+    })
+  }
+  
   send = ()=>{
     const msg = this.refs.chatContent.innerHTML.trim()
     if(!msg)return
@@ -57,8 +71,10 @@ class Chat extends React.Component{
 
   }
   setMessageContent(msg, pos, name) {
+    const date = new Date()
+    const time = `${add0(date.getHours())}:${add0(date.getMinutes())}  `
     this.setState({
-      chatList: [...this.state.chatList,{msg, pos,name}]
+      chatList: [...this.state.chatList,{msg, pos,name, time}]
     },()=>{
       this.refs.chatMain.scrollTop =this.refs.chatMainInner.scrollHeight
     })
@@ -73,7 +89,7 @@ class Chat extends React.Component{
   render() {
     let {message,chatList, } = this.state
     const {roomInfo:{agoraUsers, userInfo}} = this.props
-    const date = new Date()
+    
     return (
       <div className='chat-wrap'>
         <header className='chat-header'>聊天</header>
@@ -84,8 +100,8 @@ class Chat extends React.Component{
                 <div className={['user-msg-box', item.pos? 'right':'left'].join(' ')} 
                   key={i+1}>
                   <div className='user-title'>
-                    <span>{ `${item.name} `}</span>
-                    <span>{`${add0(date.getHours())}:${add0(date.getMinutes())}  `}</span>
+                    <span>{ item.name}</span>
+                    <span>{ item.time}</span>
                   </div>
                   <div className='user-message'>
                     <span>{item.msg}</span>

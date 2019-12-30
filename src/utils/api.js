@@ -21,7 +21,9 @@ const apis = {
     // 文件上传
     uploads: room + '/uploads',
     // 课程延长
-    delay: room+ '/delay'
+    delay: room+ '/delay',
+    // 消息历史
+    queryMessages: room+ '/queryMessages'
 
 }
 export const getApi = key => apis[key];
