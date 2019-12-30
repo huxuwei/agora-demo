@@ -217,7 +217,7 @@ class RoomHeader extends React.Component {
           visible={drawVisible}
         >
           <div style={chooseShow('chat')}>
-            <Chatting getMessage={getMessage} comDidMouted={drawClose} agora={this.props.roomInfo.agora}></Chatting>;
+            <Chatting getMessage={getMessage} visible={drawVisible} comDidMouted={drawClose} agora={this.props.roomInfo.agora}></Chatting>;
           </div>
           <div style={chooseShow('file')}>
             <FileList roomInfo={this.props.roomInfo}></FileList>;
