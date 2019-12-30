@@ -18,7 +18,9 @@ class Chat extends React.Component{
     }
   }
   componentDidUpdate(val){
-    console.log('chatvalval',val)
+    if(!val.visible){
+      this.refs.chatMain.scrollTop =99999999
+    }
   }
   componentDidMount(){
     
@@ -55,6 +57,8 @@ class Chat extends React.Component{
         chatList: res.data.map(item=>{
           return {...item, pos:item.uid == uid }
         })
+      },()=>{
+        // this.refs.chatMain.scrollTop =999999
       })
     })
   }
@@ -93,14 +97,14 @@ class Chat extends React.Component{
     return (
       <div className='chat-wrap'>
         <header className='chat-header'>聊天</header>
-        <main className='chat-main' ref='chatMain'>
+        <main className='chat-main scroll' ref='chatMain'>
           <div className='chat-main-inner' ref='chatMainInner'>
             {
               chatList.map((item,i)=>(
                 <div className={['user-msg-box', item.pos? 'right':'left'].join(' ')} 
                   key={i+1}>
                   <div className='user-title'>
-                    <span>{ item.name}</span>
+                    <span>{ `${item.name}  `}</span>
                     <span>{ item.time}</span>
                   </div>
                   <div className='user-message'>
@@ -113,8 +117,9 @@ class Chat extends React.Component{
         </main>
         <footer className='chat-footer'>
           <div ref='chatContent' 
+            
             onKeyDown={(e)=>{this.onKeyDown(e)}}
-            className='chat-send-content'
+            className='chat-send-content scroll'
             contentEditable="plaintext-only"
             suppressContentEditableWarning="true"  placeholder='按回车键发送您的消息'>
             {message}
