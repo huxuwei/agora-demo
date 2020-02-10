@@ -2,7 +2,6 @@
 import * as React from 'react'
 import './index.less'
 import { Input, Button, Radio  } from 'antd'
-import AFrom from '../from/index'
 class JoinHome extends React.Component{
   constructor(props) {
     super(props)
@@ -76,7 +75,6 @@ class JoinHome extends React.Component{
           </div>
         </div>
         <div className="page-box-right"></div>
-        {/* <AFrom ref={this.myRef} ></AFrom> */}
       </div>
     )
   }

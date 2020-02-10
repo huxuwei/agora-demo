@@ -73,6 +73,7 @@ class RoomHeader extends React.Component {
             //  下课发送离开指令,同时自已也离开
             sendMessage(this.props.channelOrder, orderMsgConfig['video_leave'])
             this.props.client.leave()
+            window.close()
           }).catch(err => {
             this.setState({
               classStartLoading: false
@@ -80,7 +81,10 @@ class RoomHeader extends React.Component {
           })
         },
         onCancel: () => {
-          console.log('Cancel');
+          this.setState({
+            classStartLoading: false
+          })
+          // console.log('Cancel');
         },
       });
     }

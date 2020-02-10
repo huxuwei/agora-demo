@@ -71,7 +71,8 @@
     "webpack": "4.29.6",
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
-    "white-react-sdk": "^2.3.7",
+    "white-react-sdk": "^2.5.4",
+    "white-web-sdk": "^2.5.4",
     "workbox-webpack-plugin": "4.2.0"
   },
   "scripts": {
