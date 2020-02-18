@@ -9,11 +9,12 @@ import {Upload, Button, Icon, message} from 'antd'
 
 function FileList(props) {
   let [activeIndex, setActiveIndex] = useState(0)
-  let [fileList, setFileList] = useState({ordinary:[],media:[]})
+  let [fileList, setFileList] = useState({ordinary:[],media:[],image:[]})
   let [status, setstatus] = useState(false)
   const headerList = ['课件库','媒体库']
   const { id: roomId, userInfo: { id:userId, role}} = props.roomInfo
-  const fileTypeList1 = ['.pdf','.ppt','.pptx','.doc','.docx']
+  const imgTypeList = ['png','jpg','jpeg']
+  const fileTypeList1 = ['.pdf','.ppt','.pptx','.doc','.docx',...imgTypeList]
   const fileTypeList2 = ['.mp3']
   useEffect(()=>{
     getFileList()
@@ -94,8 +95,8 @@ function FileList(props) {
       </div>
       <main className="file-list-main">
         {
-          activeIndex === 0  && fileList.ordinary ? 
-          <FileItemStatic fileList={fileList.ordinary}></FileItemStatic>:null
+          activeIndex === 0  && (fileList.ordinary || fileList.image) ? 
+          <FileItemStatic fileList={[...fileList.ordinary, ...fileList.image]}></FileItemStatic>:null
         }
         {
           activeIndex === 1 && fileList.media ? 

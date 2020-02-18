@@ -33,7 +33,10 @@ class White extends React.Component{
     
     const {hereWhite:{roomToken, uuid}, userInfo:{role}} = nextProps.roomInfo
     // 初始化 SDK，并且调用其成员方法 joinRoom
-    const whiteWebSdk = new WhiteWebSdk();
+    const whiteWebSdk = new WhiteWebSdk({
+      handToolKey: " ",
+      deviceType: "desktop", 
+    });
     this.room = await  whiteWebSdk.joinRoom({
       uuid,
       roomToken
@@ -46,7 +49,7 @@ class White extends React.Component{
      // 设置成主播
      role === 1 && room.setViewMode("broadcaster");
      // 禁止缩放
-     room.disableCameraTransform='YES'
+    //  room.disableCameraTransform='YES'
      // 设置初始颜色
      room.setMemberState({
        strokeColor: [255, 0, 0],

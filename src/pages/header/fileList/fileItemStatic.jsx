@@ -53,12 +53,31 @@ class FileItem extends React.Component{
     }
     
   }
-  
+  insertImage(item) {
+    const {uuid} = this.props.roomInfo.hereWhite
+    console.log('uuid',uuid)
+    this.props.whiteRoom.insertImage({
+        uuid, 
+        centerX: 0, 
+        centerY: 0, 
+        width: item.width, 
+        height: item.height
+    });
+    this.props.whiteRoom.completeImageUpload(uuid, item.url)
+  }
+
   choose(item, i) {
     this.setState({
       activeIndex: i
     })
-    this.pptShow(item,i)
+    const reg = /\.(png|jpe?g|gig)/
+    if(reg.test(item.name)){
+      // 插入图片
+      this.insertImage(item)
+    }else{
+      this.pptShow(item,i)
+    }
+    
   }
   pptShow(item,index) {
     const whiteWrapW= document.querySelector('#whiteWrap').clientWidth 
