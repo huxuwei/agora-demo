@@ -13,9 +13,9 @@ function FileList(props) {
   let [status, setstatus] = useState(false)
   const headerList = ['课件库','媒体库']
   const { id: roomId, userInfo: { id:userId, role}} = props.roomInfo
-  const imgTypeList = ['png','jpg','jpeg']
+  const imgTypeList = ['png','jpg','jpeg','.gif','.bmp']
   const fileTypeList1 = ['.pdf','.ppt','.pptx','.doc','.docx',...imgTypeList]
-  const fileTypeList2 = ['.mp3']
+  const fileTypeList2 = ['.mp3','.mp4']
   useEffect(()=>{
     getFileList()
   },[])
@@ -35,15 +35,15 @@ function FileList(props) {
       message.error(`文件格式只支持${[...fileTypeList1,...fileTypeList2].join(',')}`);
       return false
     }
-    const isLt5M = file.size / 1024 / 1024 < 5;
+    const isLt5M = file.size / 1024 / 1024 < 50;
     const isLt10M = file.size / 1024 / 1024 < 10;
 
     if (isFileType1 &&!isLt5M) {
-      message.error('课件最大支持上传5M');
+      message.error('课件最大支持上传50M');
       return false
     }
-    if (isFileType2 &&!isLt10M) {
-      message.error('媒体文件最大支持上传10M');
+    if (isFileType2 &&!isLt5M) {
+      message.error('媒体文件最大支持上传50M');
       return false
     }
     return true
@@ -85,13 +85,15 @@ function FileList(props) {
       </header>
       <div className="file-upload">
         <Upload 
+        disabled={status}
           //  accept={[...fileTypeList1,...fileTypeList2].join('')}
           showUploadList={false}
           customRequest= {(file)=>{customRequest(file)}}>
-          <Button loading={status}>
-            <Icon type="upload" /> 上传
+          <Button  loading={status} >
+            <Icon type="upload" /> 本地上传
           </Button>
         </Upload>
+        
       </div>
       <main className="file-list-main">
         {
@@ -100,7 +102,9 @@ function FileList(props) {
         }
         {
           activeIndex === 1 && fileList.media ? 
-          <FileItemMedia fileList={fileList.media}></FileItemMedia>:  null
+          <FileItemMedia 
+            getFileList={getFileList}
+            fileList={fileList.media}></FileItemMedia>:  null
         }
         
         {/* <FileItemMedia v-show="activeIndex == 1"></FileItemMedia>  */}

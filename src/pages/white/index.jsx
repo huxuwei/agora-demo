@@ -6,8 +6,13 @@ import queryString from 'query-string'
 import { connect } from "react-redux";
 import WhiteTools from './whiteTools'
 import WhiteAction from './whiteAction'
-import {WhiteWebSdk} from 'white-react-sdk'
+import {WhiteWebSdk, createPlugins } from 'white-react-sdk'
+import {videoPlugin} from "@netless/white-video-plugin";
+import {audioPlugin} from "@netless/white-audio-plugin";
 import "white-web-sdk/style/index.css";
+
+
+
 class White extends React.Component{
   constructor(props){
     super(props)
@@ -32,10 +37,16 @@ class White extends React.Component{
   async initAndJoinRoom(nextProps) {
     
     const {hereWhite:{roomToken, uuid}, userInfo:{role}} = nextProps.roomInfo
+    
+    const plugins = createPlugins({ "video": videoPlugin, "audio": audioPlugin });
+                plugins.setPluginContext("video", { identity: "host" });
+                plugins.setPluginContext("audio", { identity: "host" });
+                
     // 初始化 SDK，并且调用其成员方法 joinRoom
     const whiteWebSdk = new WhiteWebSdk({
-      handToolKey: " ",
-      deviceType: "desktop", 
+      handToolKey: "",
+      deviceType: "desktop",
+      plugins: plugins
     });
     this.room = await  whiteWebSdk.joinRoom({
       uuid,
@@ -62,6 +73,16 @@ class White extends React.Component{
      this.setState({
       loaded: true
      })
+
+  //    room.insertPlugin("video", {
+  //     originX: 0,
+  //     originY: 0,
+  //     width: 480,
+  //     height: 86,
+  //     attributes: {
+  //         pluginAudioUrl: 'http://vfx.mtime.cn/Video/2019/03/21/mp4/190321153853126488.mp4',
+  //     },
+  // });
      
      
 

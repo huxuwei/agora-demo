@@ -20,13 +20,13 @@ export function formatTime(msTime) {
 
   let time = msTime /1000;
 
-  let day = Math.floor(time /60 /60 /24);
+  let day =add0 (Math.floor(time /60 /60 /24));
 
-  let hour = Math.floor(time /60 /60) %24;
+  let hour = add0(Math.floor(time /60 /60) %24);
 
-  let minute = Math.floor(time /60) %60;
+  let minute = add0(Math.floor(time /60) %60);
 
-  let second = Math.floor(time) %60;
+  let second = add0(Math.floor(time) %60);
 
   return {
     day, hour, minute, second

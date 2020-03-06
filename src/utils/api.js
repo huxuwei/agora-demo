@@ -23,7 +23,9 @@ const apis = {
     // 课程延长
     delay: room+ '/delay',
     // 消息历史
-    queryMessages: room+ '/queryMessages'
+    queryMessages: room+ '/queryMessages',
+    // 删除课件
+    deleteFile: room+ '/deleteFile'
 
 }
 export const getApi = key => apis[key];

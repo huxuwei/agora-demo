@@ -6,6 +6,8 @@
     "@babel/core": "7.4.3",
     "@netless/react-seek-slider": "^1.0.4",
     "@netless/react-tool-box": "^1.0.6",
+    "@netless/white-audio-plugin": "^1.1.10",
+    "@netless/white-video-plugin": "^1.1.17",
     "@svgr/webpack": "4.1.0",
     "@typescript-eslint/eslint-plugin": "1.6.0",
     "@typescript-eslint/parser": "1.6.0",
@@ -71,8 +73,8 @@
     "webpack": "4.29.6",
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
-    "white-react-sdk": "^2.5.4",
-    "white-web-sdk": "^2.5.4",
+    "white-react-sdk": "^2.6.4",
+    "white-web-sdk": "^2.6.4",
     "workbox-webpack-plugin": "4.2.0"
   },
   "scripts": {

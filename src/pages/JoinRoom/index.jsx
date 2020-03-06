@@ -16,7 +16,14 @@ class JoinHome extends React.Component{
       [item]:value.target.value
     })
   }
+  componentDidMount() {
+    navigator.mediaDevices.enumerateDevices().then(res=>{
+       console.log(1111,res)
+    })
+   
 
+
+  }
   joinRoom = () =>{
     // console.log(1111,this.myRef.current);
     // // this.form.createaa()

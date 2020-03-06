@@ -2,15 +2,16 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: rgba(31, 32, 39, .96);
+  background:rgba(240,240,240,1);
 
   .chat-header {
     height: 60px;
-    color: white;
+    color: #141415;
     display: flex;
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid hsla(0, 0%, 100%, .251);
+    background:rgba(255,255,255,1);
   }
 
   .chat-main {
@@ -28,9 +29,6 @@
     .user-msg-box {
       width: 100%;
       padding: 6px;
-      span {
-        color: white;
-      }
 
       .user-message {
         border-radius: 0 6px 6px;
@@ -39,6 +37,7 @@
         span {
           // display: inline-block;
           // width: 100%;
+          color: white;
           word-break: break-all;
           padding: 0 6px;
           border-radius: 4px;
@@ -50,20 +49,14 @@
       align-self: flex-end;
       display: flex;
       flex-direction: column;
-
-      
-
       .user-title {
         align-self: flex-end;
+        color:rgba(119,122,139,1);
       }
-
       .user-message {
-
-        // align-self: flex-end;
         span {
           background: rgba(0, 119, 255, .9);
           float: right;
-
         }
       }
     }
@@ -72,10 +65,11 @@
       align-self: flex-start;
       display: flex;
       flex-direction: column;
-
       .user-message {
         span {
-          background: rgba(70, 70, 73, .9);
+          background:rgba(255,255,255,1);
+          color:rgba(20,20,21,1);
+          float: left;
         }
       }
     }
@@ -84,9 +78,9 @@
   .chat-footer {
     height: 100px;
     position: relative;
-
+    margin-bottom: 10px;
     >div {
-      color: white;
+      background:rgba(249,250,253,1);
       padding: 10px;
       height: 100%;
       overflow: auto;

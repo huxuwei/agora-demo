@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import http from '@/utils/request'
 import GIcon from '@/components/GIcon'
+import {Message, Spin} from 'antd'
 
 class FileItemMedia extends React.Component{
   constructor(props){
@@ -9,7 +10,8 @@ class FileItemMedia extends React.Component{
     this.state = {
       activeIndex: -1,
       list: [],
-      playStatus: false
+      playStatus: false,
+      delLoading: false
     }
   }
   componentDidMount() {
@@ -22,28 +24,42 @@ class FileItemMedia extends React.Component{
       list: [ ...nextProps.fileList],
     })
   }
-  choose(item, i) {
+  choose=(item, i)=> {
     this.setState({
       activeIndex: i
     })
-    this.props.stream && this.props.stream.stopAudioMixing(() => {
-      console.log("停止音频播放");
-      this.props.stream.startAudioMixing({
-          playTime: 0,
-          filePath: item.url
-        },(error)=> {
-          if (error) {
-            // 错误处理
-            console.log("音频播放错误:" + error);
-            return;
-          }else{
-            this.setState({
-              playStatus: true
-            })
-          }
-        }
-      )
-    })
+    console.log(11111,this.props.whiteRoom.insertPlugin,item.url.replace(/http/,'https'))
+    
+    // return
+    this.props.whiteRoom.insertPlugin("video", {
+        originX: 0,
+        originY: 0,
+        width: 480,
+        height: 86,
+        attributes: {
+            pluginAudioUrl: item.url.replace(/http/,'https'),
+        },
+    });
+
+
+    // this.props.stream && this.props.stream.stopAudioMixing(() => {
+    //   console.log("停止音频播放");
+    //   this.props.stream.startAudioMixing({
+    //       playTime: 0,
+    //       filePath: item.url
+    //     },(error)=> {
+    //       if (error) {
+    //         // 错误处理
+    //         console.log("音频播放错误:" + error);
+    //         return;
+    //       }else{
+    //         this.setState({
+    //           playStatus: true
+    //         })
+    //       }
+    //     }
+    //   )
+    // })
     
   }
   play=(e)=> {
@@ -71,27 +87,53 @@ class FileItemMedia extends React.Component{
     }
     e.stopPropagation()
   }
-
+  delFile= (e, item)=>{
+    const { id: roomId, userInfo: { id:userId}} = this.props.roomInfo
+    const params = {
+      roomId,
+      userId,
+      key: item.key
+    }
+    this.setState({
+      delLoading: true
+    })
+    http.get("deleteFile", params).then(res => {
+      // const {agora, hereWhite} = res.data
+      this.props.getFileList()
+      Message.success('删除成功')
+    }).catch(err=>{
+      this.setState({
+        delLoading: false
+      })
+    })
+    e.stopPropagation()
+  }
   render() {
-    let {activeIndex, list, playStatus } = this.state
+    let {activeIndex, list, playStatus,delLoading } = this.state
     return (
       <div className="file-list-item-wrap">
         {
           list.map((item, i)=>
-          <div key={i}
+          <Spin spinning={false}  tip="Loading..."  key={i}>
+           
+           <div key={i}
             className= { i === activeIndex ? 'active file-list-item': 'file-list-item'}
             onClick={()=>{this.choose(item,i)}}>
+            
             <span>{item.name}</span>
+            <span onClick={(e)=>this.delFile(e,item)}><GIcon icon='iconshanchu'></GIcon></span>
+            
             {
-              i === activeIndex ?
-              <span onClick={this.play} className='media-control'>
-              {
-                playStatus ? '暂停': '播放'
-              }
-              <GIcon icon={item.icon}></GIcon></span>:null
+              // i === activeIndex ?
+              // <span onClick={this.play} className='media-control'>
+              // {
+              //   playStatus ? '暂停': '播放'
+              // }
+              // <GIcon icon={item.icon}></GIcon></span>:null
             }
             
-          </div>
+          </div> 
+          </Spin>
           )
         }
         
@@ -102,7 +144,10 @@ class FileItemMedia extends React.Component{
 
 function mapStateToProps(state){
   return {
-    stream: state.stream
+    stream: state.stream,
+    whiteRoom: state.whiteRoom,
+    roomInfo: state.roomInfo
+    
   }
 }
 function maoDispathToProps(dispath) {

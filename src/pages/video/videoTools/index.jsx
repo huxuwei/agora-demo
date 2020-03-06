@@ -43,13 +43,13 @@ class VideoTools extends React.Component{
     return (
       <div className='video-tools-wrap'>
         <span onClick={()=>{this.closeAudio()}}>
-          <GIcon icon={audioStatus?'iconmaikefeng1':'iconcanhuiren-jinyongmaikefeng'} width='2em'></GIcon>
+          <GIcon icon={audioStatus?'iconhuatong':'iconjinhuatong'} width='1em'></GIcon>
         </span>
         <span onClick={()=>{this.closeVideo()}}>
-          <GIcon icon={videoStatus?'iconshipin':'iconjinyongshipin'} width='2em'></GIcon>
+          <GIcon icon={videoStatus?'iconshipin1':'iconjinshipin'} width='1em'></GIcon>
         </span>
         <span onClick={()=>{this.resume()}}>
-        <GIcon icon={'iconhuifu'} width='2em'></GIcon>
+        <GIcon icon={'iconchexiao'} width='1em'></GIcon>
         
         </span>
       </div>

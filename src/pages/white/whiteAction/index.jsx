@@ -21,12 +21,6 @@ class WhiteAction extends React.Component {
       current: pageNow
     })
   }
-  // static getDerivedStateFromProps(prevProps,state) {
-  //   console.log('getDerivedStateFromProps',prevProps,state)
-  //   return {
-  //     current: 1
-  //   }
-  // }
   componentWillUpdate(val) {
     //  每次切换文件的都跳到第一页
     if(val.fileInfo.key !== this.props.fileInfo.key){

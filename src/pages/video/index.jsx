@@ -85,6 +85,9 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
     this.client.init( appId,() => {
         console.log("AgoraRTC client 初始化成功");
         this.props.Set_client(this.client)
+
+        this.check()
+
         this.join(nextProps);
       },
       function(err) {
@@ -92,6 +95,11 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
       }
     );
   }
+
+  check(){
+    console.log(333,this.client.startEchoTest)
+  }
+
   // 加入
   join(nextProps) {
     const {client} = this
@@ -207,6 +215,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
           setTimeout(() => {
             remoteStream.play(id);
           }, 1000);
+
         });
       },
       function(err) {
@@ -250,7 +259,7 @@ import { createChannel, sendMessage} from '@/utils/chatAction.js'
       },
       function(err) {
         console.log("getUserMedia failed", err);
-        Message.error('检测不到设备信息!')
+        Message.error('检测不到设备信息!', 0)
       }
     );
     //

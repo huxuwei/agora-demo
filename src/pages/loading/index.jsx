@@ -5,6 +5,10 @@ import Room from '@/pages/room'
 import queryString from 'querystring'
 import {Spin, Message } from 'antd'
 import { connect } from "react-redux";
+
+// import './get.js'
+
+
 class LoadingStart extends React.Component {
   constructor(props){
     super(props)

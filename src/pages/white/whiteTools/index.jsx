@@ -10,13 +10,13 @@ import {connect} from 'react-redux'
       activeIndex: 0
     }
     this.list = [
-      {text: 'selector',icon: 'iconxuanze' },
-      {text: 'pencil',icon: 'iconpencil' },
-      {text: 'rectangle',icon: 'iconrectangle' },
-      {text: 'ellipse',icon: 'iconellipse' },
-      {text: 'eraser',icon: 'iconeraser1' },
-      {text: 'text',icon: 'icontext1' },
-      {text: 'clear',icon: 'iconclear'},
+      {text: 'selector',icon: 'iconshubiao' },
+      {text: 'pencil',icon: 'iconhuabi' },
+      {text: 'rectangle',icon: 'iconkuangxuan' },
+      {text: 'ellipse',icon: 'iconyuanxingkuangxuan' },
+      {text: 'eraser',icon: 'iconxiangpica' },
+      {text: 'text',icon: 'iconshuruwenzi' },
+      {text: 'clear',icon: 'iconshanchu'},
     ]
   }
   changeTool=(item,i)=> {
@@ -37,15 +37,17 @@ import {connect} from 'react-redux'
     const {list, state:{activeIndex}, changeTool} = this
     return (
       <div className="tools-wrap">
-        {
-          list.map((item, i) => 
-            <Button size='small' type='link' key= {item.text} 
-              onClick= {()=>{changeTool(item,i)}}>
-              <GIcon  color= {i===activeIndex?'rgb(236, 52, 85)':''}  
-                icon={item.icon}></GIcon>
-            </Button>
-          )
-        }
+        <div className='tools-wrap-content'>
+          {
+            list.map((item, i) => 
+              <Button size='small' type='link' key= {item.text} 
+                onClick= {()=>{changeTool(item,i)}}>
+                <GIcon width='20px' height='20px' color= {i===activeIndex?'#95AAFE':'#5F5F5F'}  
+                  icon={item.icon}></GIcon>
+              </Button>
+            )
+          }
+        </div>
       </div>
     )
   }

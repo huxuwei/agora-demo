@@ -70,7 +70,7 @@ class FileItem extends React.Component{
     this.setState({
       activeIndex: i
     })
-    const reg = /\.(png|jpe?g|gig)/
+    const reg = /\.(png|jpe?g|gif|bmp)/
     if(reg.test(item.name)){
       // 插入图片
       this.insertImage(item)
@@ -92,7 +92,6 @@ class FileItem extends React.Component{
     return
    }
 
-   
   let scenes = item.coursewares.map((item, i)=>{
     const diffW = whiteWrapW / item.width,
           diffH = whiteWrapH / item.height

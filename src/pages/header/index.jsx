@@ -6,10 +6,11 @@ import './index.less'
 import FileList from './fileList'
 import Chatting from './chat'
 import TalkingStatus from './talkingStatus'
+import Setting from './setting'
 import { roleConifg, orderMsgConfig, roomConfig } from '@/utils/config.js'
 import { sendMessage } from '@/utils/chatAction.js'
 import { connect } from 'react-redux'
-
+import {formatTime} from '@/utils/util.js'
 
 const { confirm } = Modal;
 class RoomHeader extends React.Component {
@@ -20,21 +21,47 @@ class RoomHeader extends React.Component {
       classStartLoading: false,
       drawVisible: true,
       talkingStatusVisible: false,
+      SettingVisible: false, 
       active: { type: 'chat' },
       roomName: '',
-      msgNum: 0
+      msgNum: 0,
+      classStartTime: '00:00:00'
     }
   }
   componentDidMount() {
-    const { agora: { channel }, status } = this.props.roomInfo
+    const { agora: { channel }, status, startTimeAfter } = this.props.roomInfo
+
+    let time = formatTime(startTimeAfter) 
+   
     this.setState({
       roomName: channel,
-      classStatus: status === 1 ? true : false
+      classStatus: status === 1 ? true : false,
+      classStartTime: `${time.hour}:${time.minute}:${time.second}`
     }, () => {
       // this.timeOut()
     })
-
+    this.classStartTime()
   }
+
+  // 开始上课时间
+  classStartTime() {
+    const {  startTimeAfter } = this.props.roomInfo
+
+    let startTime = startTimeAfter
+
+    const timer = setInterval(() => {
+      if(!this.state.classStatus){
+        clearInterval(timer)
+      }
+      startTime += 1000
+      let time = formatTime(startTime)
+      this.setState({
+        classStartTime: `${time.hour}:${time.minute}:${time.second}`
+      })
+    }, 1000);
+  }
+
+
   start = () => {
     this.setState({
       classStartLoading: true
@@ -43,6 +70,7 @@ class RoomHeader extends React.Component {
     const { id: roomId, userInfo: { id: userId } } = this.props.roomInfo
 
     if (!this.state.classStatus) {
+      // 开始上课
       http.get(api, { roomId, userId }).then(res => {
         this.setState({
           classStartLoading: false,
@@ -50,9 +78,10 @@ class RoomHeader extends React.Component {
         }, () => {
           this.timeOut()
         })
+        this.classStartTime()
         this.props.startClass(true)
         // 课程结束前提前请求延长课程时间
-
+        
       }).catch(err => {
         this.setState({
           classStartLoading: false
@@ -89,6 +118,7 @@ class RoomHeader extends React.Component {
       });
     }
   }
+  // 课程时间长度延迟
   timeOut() {
     const { timeRemaining } = this.props.roomInfo
     const time = timeRemaining - roomConfig.timeSec
@@ -165,48 +195,53 @@ class RoomHeader extends React.Component {
   render() {
     const { showDraw, getMessage, chooseShow, drawClose, start, talkingStatusShow,
       state: { roomName, msgNum, classStartLoading, classStatus, drawVisible,
-        active, talkingStatusVisible
+        active, talkingStatusVisible, SettingVisible, classStartTime
       },
     } = this
     // 是否是老师
     const isTeach = this.props.roomInfo.userInfo.role === roleConifg.teach
     const isStu = this.props.roomInfo.userInfo.role === roleConifg.stu
+    const iconStyle ={width:'24px', height: '24px', color:'#262626'}
     return (
       <React.Fragment>
         <div className="room-info">
-          <div>房间号：{roomName.slice(0, 10)}...</div>
-          {/* <span>{roomName}</span> */}
+          <div><span>房间号：</span><b>{roomName.slice(0,10)}</b></div>
+          <span>{classStartTime}</span>
         </div>
         <div className="room-action">
           {/* 课件 */}
           {
             isStu ? null:
             <div className='action-wrap' onClick={() => showDraw({ type: 'file' })}>
-              <Button type='default' shape="circle">
-                <GIcon icon='iconziyuan'></GIcon>
+              <Button type='link' shape="circle">
+                <GIcon icon='iconkejianku' color={iconStyle.color}  width={iconStyle.width} height={iconStyle.height}></GIcon>
               </Button>
             </div>
           }
           {/* 聊天 */}
           <div className='action-wrap' onClick={() => showDraw({ type: 'chat' })}>
             <Badge count={msgNum}>
-              <Button type='default' shape="circle">
-                <GIcon icon='iconliaotian'></GIcon>
+              <Button type='link' shape="circle">
+                <GIcon icon='iconliuyan' color={iconStyle.color}  width={iconStyle.width} height={iconStyle.height}></GIcon>
               </Button>
             </Badge>
           </div>
           {/* 网络信息 */}
-          <div className='action-wrap' onClick={() => talkingStatusShow()}>
-            <Button type='default' shape="circle">
-              <GIcon icon='iconnetwork-management'></GIcon>
+          <div className='action-wrap' onClick={() =>this.setState({talkingStatusVisible: true})}>
+            <Button type='link' shape="circle">
+              <GIcon icon='icondiannao' color={iconStyle.color} width={iconStyle.width} height={iconStyle.height}></GIcon>
+            </Button>
+          </div>
+          {/* 设置 */ }
+          <div className='action-wrap' onClick={() => this.setState({SettingVisible:true})}>
+            <Button type='link' shape="circle">
+              <GIcon color={iconStyle.color} width={iconStyle.width} height={iconStyle.height} icon='iconsetting'></GIcon>
             </Button>
           </div>
           {/* 上课/下课 */}
           {
-            isTeach ?
-            <Button type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课' : '上课'}</Button>
-            :
-            null
+            isTeach &&
+            <Button className='class-start-end' type='primary' loading={classStartLoading} onClick={start}>{classStatus ? '下课' : '上课'}</Button>
           }
 
         </div>
@@ -233,6 +268,15 @@ class RoomHeader extends React.Component {
           visible={talkingStatusVisible}
         >
           <TalkingStatus></TalkingStatus>
+        </Modal>
+
+        <Modal
+          width='500px'
+          footer={null}
+          onCancel={() => this.setState({ SettingVisible: false })}
+          visible={SettingVisible}
+        >
+          <Setting></Setting>
         </Modal>
       </React.Fragment>
     )

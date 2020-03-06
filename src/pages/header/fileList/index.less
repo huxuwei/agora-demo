@@ -7,24 +7,30 @@
   // width: 100%;
   // z-index: 33;
   
-  background-color: #28292f;
+  // background-color: #28292f;
   .file-list-header{
     display: flex;
-    padding-top: 10px;
+    height: 76px;
+    border-bottom: 1px solid #CFD0D1;
     >div{
-      width: 100px;
+      flex: 1;
+      height: 100%;
       border-radius: 12px;
       color: #8c8c93;;
-      background-color: white;
-      margin-left: 10px;
       text-align: center;
-      line-height: 24px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      span{
+        display: inline-block;
+        font-weight:400;
+      }
     }
     .active{
-      background-color: #07f;
       span{
-        color: white;
+        font-weight:600;
+        color: #141415;
       }
     }
   }
@@ -32,22 +38,29 @@
     // display: flex;
     // justify-content: center;
     padding:1rem ;
+    button{
+      width:118px;
+      height:36px;
+      background:linear-gradient(270deg,rgba(164,167,255,1) 0%,rgba(134,173,253,1) 100%);
+      border-radius:4px;
+      color: white;
+    }
   }
   .file-list-main{
     margin: 20px;
     .file-list-item-wrap{
       .file-list-item{
-        margin-top: 14px;
+        padding-top: 14px;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
         >span{
-          color: white;
+          // color: white;
         }
       }
       .active{
         >span{
-          color: red;
+          // color: red;
         }
       }
     }
